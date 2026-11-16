@@ -1,11 +1,12 @@
 import { ViewTransition } from "react";
-import { ShoppingCart, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { kinds, type Product } from "@/data/products";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { discountPercent, formatPrice } from "@/lib/format";
 import { enterDelay, productArtName } from "@/lib/motion";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { Reveal } from "@/components/ui/Reveal";
 import { ProductArt } from "./ProductArt";
@@ -78,14 +79,7 @@ export function ProductCard({ product, reveal, enter }: Props) {
               <span className="text-[0.625rem] font-medium text-muted sm:text-xs">{t("currency")}</span>
             </p>
           </div>
-          <button
-            type="button"
-            aria-label={t("addToCart")}
-            disabled={!product.inStock}
-            className="btn btn-primary relative z-20 size-9 shrink-0 rounded-xl p-0 disabled:opacity-30 sm:size-10 sm:rounded-[0.875rem]"
-          >
-            <ShoppingCart className="size-[1.125rem]" strokeWidth={1.8} />
-          </button>
+          <AddToCartButton productId={product.id} inStock={product.inStock} />
         </div>
       </div>
     </>

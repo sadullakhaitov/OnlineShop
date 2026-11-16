@@ -15,6 +15,8 @@
   --btn: #16130f;
   --btn-text: #ffffff;
   --hairline: rgba(22, 19, 15, 0.08);
+  --danger: #cf3a41;
+  --success: #1f9d61;
 
   --glass: rgba(255, 255, 255, 0.52);
   --glass-strong: rgba(255, 255, 255, 0.74);
@@ -42,6 +44,8 @@
   --btn: #f5f2ed;
   --btn-text: #121110;
   --hairline: rgba(255, 255, 255, 0.08);
+  --danger: #ff7b7f;
+  --success: #4fd397;
 
   --glass: rgba(255, 255, 255, 0.055);
   --glass-strong: rgba(30, 29, 32, 0.72);
@@ -65,6 +69,8 @@
   --color-btn: var(--btn);
   --color-btn-text: var(--btn-text);
   --color-hairline: var(--hairline);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
   --font-sans:
     -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
     "Inter Variable", "Helvetica Neue", Arial, sans-serif;
@@ -264,6 +270,20 @@
     transform: translateY(-1px);
   }
 
+  .btn-accent {
+    background: var(--accent);
+    color: var(--btn-text);
+    box-shadow: 0 10px 24px -12px var(--glass-shadow);
+  }
+
+  .btn-accent:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn:disabled {
+    cursor: not-allowed;
+  }
+
   .icon-btn {
     display: inline-grid;
     place-items: center;
@@ -308,6 +328,157 @@
 
   .field::placeholder {
     color: var(--faint);
+  }
+
+  /* A field with something in front of the input, like the +998 prefix */
+  .field-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    width: 100%;
+    border-radius: 0.875rem;
+    border: 1px solid var(--hairline);
+    background: var(--glass);
+    padding: 0 0.875rem;
+    font-size: 0.875rem;
+    transition:
+      border-color 0.3s var(--ease),
+      background-color 0.3s var(--ease);
+  }
+
+  .field-group:focus-within {
+    border-color: var(--accent);
+    background: var(--glass-strong);
+  }
+
+  .field-group[data-invalid="true"] {
+    border-color: var(--danger);
+  }
+
+  .field-group input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    background: transparent;
+    color: var(--text);
+    outline: none;
+  }
+
+  .field-group input::placeholder {
+    color: var(--faint);
+  }
+
+  /* Phones zoom into inputs with small text; 16px keeps the page still. */
+  @media (pointer: coarse) {
+    .field,
+    .field-group {
+      font-size: 1rem;
+    }
+  }
+
+  textarea.field {
+    height: auto;
+    min-height: 5.5rem;
+    padding: 0.75rem 0.875rem;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  select.field {
+    appearance: none;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+
+  .field[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+
+  /* A selectable card: delivery or pickup, payment method */
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 1rem;
+    border: 1px solid var(--hairline);
+    background: var(--glass);
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    transition:
+      border-color 0.3s var(--ease),
+      background-color 0.3s var(--ease);
+  }
+
+  .choice:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .choice:has(input:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .choice input:focus-visible {
+    outline: none;
+  }
+
+  .radio {
+    appearance: none;
+    display: inline-grid;
+    place-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    border: 1.5px solid var(--faint);
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease),
+      border-color 0.25s var(--ease);
+  }
+
+  .radio::after {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: var(--btn-text);
+    transform: scale(0);
+    transition: transform 0.25s var(--ease);
+  }
+
+  .radio:checked {
+    background: var(--btn);
+    border-color: var(--btn);
+  }
+
+  .radio:checked::after {
+    transform: scale(1);
+  }
+
+  /* Count bubble on the cart and favourites icons */
+  .badge {
+    display: grid;
+    place-items: center;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.25rem;
+    border-radius: 9999px;
+    background: var(--accent);
+    color: var(--btn-text);
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1;
+    animation: pop 0.45s var(--ease) backwards;
+  }
+
+  /* Placeholder shown while content is loading */
+  .skeleton {
+    border-radius: 0.75rem;
+    background: var(--hairline);
+    animation: pulse 1.2s ease-in-out infinite alternate;
   }
 
   .check {
@@ -434,6 +605,19 @@
   }
   to {
     transform: translate3d(0, -8px, 0);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.45;
   }
 }
 

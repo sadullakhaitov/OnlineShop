@@ -1,5 +1,5 @@
 import { categories } from "@/data/categories";
-import { kinds, products, type Product } from "@/data/products";
+import { kinds, products, type ArtKind, type Product } from "@/data/products";
 import type { Locale } from "@/i18n/routing";
 
 /**
@@ -66,6 +66,42 @@ export function findProducts(query: CatalogQuery = {}): Product[] {
 
 export function getProduct(slug: string): Product | undefined {
   return products.find((product) => product.slug === slug);
+}
+
+export function getProductById(id: string): Product | undefined {
+  return products.find((product) => product.id === id);
+}
+
+/** What the cart and the checkout need to know about a product. */
+export type CartProduct = {
+  id: string;
+  slug: string;
+  title: string;
+  kind: string;
+  art: ArtKind;
+  price: number;
+  oldPrice?: number;
+  inStock: boolean;
+};
+
+/** Current data of the given products; ids that no longer exist are left out. */
+export function getCartProducts(ids: string[], locale: Locale): CartProduct[] {
+  return ids.flatMap((id) => {
+    const product = getProductById(id);
+    if (!product) return [];
+    return [
+      {
+        id: product.id,
+        slug: product.slug,
+        title: product.title,
+        kind: kinds[product.art].name[locale],
+        art: product.art,
+        price: product.price,
+        oldPrice: product.oldPrice,
+        inStock: product.inStock,
+      },
+    ];
+  });
 }
 
 export function getAllProducts(): Product[] {

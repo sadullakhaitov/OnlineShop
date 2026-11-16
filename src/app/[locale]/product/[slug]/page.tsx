@@ -1,6 +1,6 @@
 import { ViewTransition } from "react";
 import type { Metadata } from "next";
-import { CreditCard, RotateCcw, ShieldCheck, ShoppingCart, Star, Truck } from "lucide-react";
+import { CreditCard, RotateCcw, ShieldCheck, Star, Truck } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { kinds, type SpecKey } from "@/data/products";
@@ -8,6 +8,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { getAllProducts, getCategory, getProduct, getRelatedProducts } from "@/lib/catalog";
 import { discountPercent, formatPrice } from "@/lib/format";
 import { enterDelay, productArtName } from "@/lib/motion";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { ProductArt } from "@/components/product/ProductArt";
 import { ProductCard } from "@/components/product/ProductCard";
@@ -136,14 +137,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
 
             <div className="mt-6 flex gap-3">
-              <button
-                type="button"
-                disabled={!product.inStock}
-                className="btn btn-primary h-12 min-w-0 flex-1 px-6 text-[0.9375rem] disabled:opacity-40"
-              >
-                <ShoppingCart className="size-[1.125rem]" strokeWidth={1.8} />
-                {product.inStock ? t("productPage.addToCart") : t("productPage.outOfStock")}
-              </button>
+              <AddToCartButton productId={product.id} inStock={product.inStock} variant="full" />
               <FavoriteButton productId={product.id} variant="full" />
             </div>
 

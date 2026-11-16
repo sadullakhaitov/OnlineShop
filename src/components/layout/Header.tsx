@@ -1,6 +1,7 @@
-import { ShoppingCart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { AccountLink } from "@/components/account/AccountLink";
+import { CartLink } from "@/components/cart/CartLink";
 import { FavoritesLink } from "@/components/favorites/FavoritesLink";
 import { SearchDialog } from "@/components/search/SearchDialog";
 import { Logo } from "./Logo";
@@ -40,16 +41,11 @@ export function Header() {
         <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
           <SearchDialog />
           <FavoritesLink />
-          {/* Cart and sign-in become active in the checkout step. */}
-          <button type="button" className="icon-btn hidden md:inline-grid" aria-label={t("cart")}>
-            <ShoppingCart className="size-5" strokeWidth={1.7} />
-          </button>
+          <CartLink />
           <ThemeToggle />
           <span className="mx-1 hidden h-5 w-px bg-hairline sm:block" />
           <LocaleSwitcher />
-          <button type="button" className="btn btn-ghost ml-2 hidden h-10 px-4 md:inline-flex">
-            {t("login")}
-          </button>
+          <AccountLink />
         </div>
       </div>
     </header>

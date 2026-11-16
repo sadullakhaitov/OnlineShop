@@ -31,7 +31,7 @@ const columns: { key: "customers" | "company" | "support"; links: FooterLink[] }
       { key: "feedback" },
       { key: "service" },
       { key: "manuals" },
-      { key: "orderStatus" },
+      { key: "orderStatus", href: "/account" },
     ],
   },
 ];

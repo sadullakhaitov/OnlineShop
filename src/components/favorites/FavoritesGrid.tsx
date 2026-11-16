@@ -4,7 +4,8 @@ import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Product } from "@/data/products";
 import { Link } from "@/i18n/navigation";
-import { useFavorites, useHydrated } from "@/lib/favorites";
+import { useFavorites } from "@/lib/favorites";
+import { useHydrated } from "@/lib/hydration";
 import { gridDelay } from "@/lib/motion";
 import { ProductCard } from "@/components/product/ProductCard";
 
