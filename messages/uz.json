@@ -1,0 +1,131 @@
+{
+  "meta": {
+    "title": "Multimedia — Buxoroda maishiy texnika do'koni",
+    "description": "Multimedia: muzlatgich, kir yuvish mashinasi, televizor, konditsioner va oshxona texnikasi. Buxoro shahri va tumanlari bo'ylab yetkazib berish, rasmiy kafolat, Click va Payme orqali to'lov."
+  },
+  "brand": {
+    "name": "Multimedia",
+    "tagline": "maishiy texnika"
+  },
+  "nav": {
+    "catalog": "Katalog",
+    "brands": "Brendlar",
+    "deals": "Aksiyalar",
+    "delivery": "Yetkazib berish va to'lov",
+    "support": "Yordam",
+    "search": "Qidirish",
+    "favorites": "Sevimlilar",
+    "cart": "Savat",
+    "login": "Kirish",
+    "home": "Asosiy",
+    "profile": "Kabinet",
+    "menu": "Menyu",
+    "close": "Yopish",
+    "theme": "Tungi yoki kungi rejim",
+    "language": "Til"
+  },
+  "hero": {
+    "prev": "Oldingi",
+    "next": "Keyingi",
+    "primary": "Katalogga o'tish",
+    "secondary": "Batafsil",
+    "slides": {
+      "home": {
+        "eyebrow": "Uyingizni qulay qiladigan texnika",
+        "title": "Uyingiz uchun aqlli texnika",
+        "text": "Har bir detalda innovatsiya, sifat va qulaylik."
+      },
+      "kitchen": {
+        "eyebrow": "Oshxona uchun hamma narsa",
+        "title": "Mazali taomlar oson tayyorlanadi",
+        "text": "Duxovka, kofemashina va aerogrillar chegirma bilan."
+      },
+      "climate": {
+        "eyebrow": "Yil bo'yi qulay havo",
+        "title": "Uyingizda toza va salqin havo",
+        "text": "Konditsioner va havo tozalagichlar, o'rnatish xizmati bilan."
+      }
+    }
+  },
+  "promo": {
+    "delivery": {
+      "title": "Buxoro bo'ylab tez yetkazib berish",
+      "text": "Shahar va tumanlarga sizga qulay vaqtda yetkazamiz",
+      "cta": "Batafsil"
+    },
+    "warranty": {
+      "title": "Rasmiy sifat kafolati",
+      "text": "Barcha texnikaga ishlab chiqaruvchi kafolati",
+      "cta": "Ko'proq bilish"
+    }
+  },
+  "categories": {
+    "all": "Barcha kategoriyalar",
+    "label": "Kategoriyalar"
+  },
+  "popular": {
+    "title": "Mashhur tovarlar",
+    "all": "Hammasini ko'rish"
+  },
+  "product": {
+    "hit": "Xit savdo",
+    "new": "Yangi",
+    "reviews": "{count} ta sharh",
+    "currency": "so'm",
+    "addToCart": "Savatga qo'shish",
+    "addToFavorites": "Sevimlilarga qo'shish"
+  },
+  "collections": {
+    "cta": "Tanlash",
+    "kitchen": {
+      "title": "Oshxona texnikasi",
+      "text": "Duxovka va pishirish panellariga −25% gacha"
+    },
+    "clean": {
+      "title": "Tozalik oson",
+      "text": "Changyutgich va robot-changyutgichlarga −30% gacha"
+    },
+    "climate": {
+      "title": "Qulay iqlim",
+      "text": "Konditsionerlar va havo tozalagichlar"
+    }
+  },
+  "benefits": {
+    "delivery": { "title": "1 kunda yetkazish", "text": "Buxoro shahri bo'ylab" },
+    "payment": { "title": "Click va Payme", "text": "Onlayn yoki qabul qilganda" },
+    "warranty": { "title": "Rasmiy kafolat", "text": "3 yilgacha" },
+    "install": { "title": "O'rnatish xizmati", "text": "Usta bilan birga" }
+  },
+  "extended": {
+    "title": "Kengaytirilgan kafolat",
+    "text": "Texnikangizni himoya qiling va uning ishlashiga ishonchingiz komil bo'lsin",
+    "cta": "Batafsil"
+  },
+  "footer": {
+    "about": "Buxoro shahri va tumanlari bo'ylab yetkazib beriladigan maishiy texnika internet-do'koni. Ishonchli sifat.",
+    "customers": "Xaridorlarga",
+    "company": "Kompaniya haqida",
+    "support": "Yordam",
+    "contacts": "Aloqa",
+    "links": {
+      "catalog": "Katalog",
+      "deals": "Aksiyalar",
+      "delivery": "Yetkazib berish va to'lov",
+      "returns": "Kafolat va qaytarish",
+      "faq": "Savol-javoblar",
+      "about": "Biz haqimizda",
+      "news": "Yangiliklar",
+      "brands": "Brendlar",
+      "careers": "Vakansiyalar",
+      "contacts": "Kontaktlar",
+      "support247": "Yordam xizmati",
+      "feedback": "Qayta aloqa",
+      "service": "Servis markazlari",
+      "manuals": "Yo'riqnomalar",
+      "orderStatus": "Buyurtmani tekshirish"
+    },
+    "hours": "Har kuni 9:00 dan 21:00 gacha",
+    "address": "Buxoro shahri",
+    "rights": "Barcha huquqlar himoyalangan."
+  }
+}
