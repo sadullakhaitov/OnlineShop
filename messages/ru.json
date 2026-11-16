@@ -9,7 +9,6 @@
   },
   "nav": {
     "catalog": "Каталог",
-    "brands": "Бренды",
     "deals": "Акции",
     "delivery": "Доставка и оплата",
     "support": "Поддержка",
@@ -20,9 +19,9 @@
     "home": "Главная",
     "profile": "Кабинет",
     "menu": "Меню",
-    "close": "Закрыть",
     "theme": "Тёмная или светлая тема",
-    "language": "Язык"
+    "language": "Язык",
+    "breadcrumbs": "Путь по сайту"
   },
   "hero": {
     "prev": "Назад",
@@ -73,7 +72,8 @@
     "reviews": "{count, plural, one {# отзыв} few {# отзыва} other {# отзывов}}",
     "currency": "сум",
     "addToCart": "В корзину",
-    "addToFavorites": "В избранное"
+    "addToFavorites": "В избранное",
+    "outOfStock": "Нет в наличии"
   },
   "collections": {
     "cta": "Выбрать",
@@ -91,10 +91,22 @@
     }
   },
   "benefits": {
-    "delivery": { "title": "Доставка за 1 день", "text": "По городу Бухара" },
-    "payment": { "title": "Click и Payme", "text": "Онлайн или при получении" },
-    "warranty": { "title": "Официальная гарантия", "text": "До 3 лет" },
-    "install": { "title": "Установка", "text": "Привезём с мастером" }
+    "delivery": {
+      "title": "Доставка за 1 день",
+      "text": "По городу Бухара"
+    },
+    "payment": {
+      "title": "Click и Payme",
+      "text": "Онлайн или при получении"
+    },
+    "warranty": {
+      "title": "Официальная гарантия",
+      "text": "До 3 лет"
+    },
+    "install": {
+      "title": "Установка",
+      "text": "Привезём с мастером"
+    }
   },
   "extended": {
     "title": "Расширенная гарантия",
@@ -127,5 +139,107 @@
     "hours": "Ежедневно с 9:00 до 21:00",
     "address": "г. Бухара",
     "rights": "Все права защищены."
+  },
+  "catalog": {
+    "title": "Каталог",
+    "allProducts": "Все товары",
+    "searchTitle": "Результаты по запросу «{q}»",
+    "found": "{count, plural, one {# товар} few {# товара} other {# товаров}}",
+    "filters": "Фильтры",
+    "categories": "Категории",
+    "all": "Все",
+    "brands": "Бренды",
+    "price": "Цена, сум",
+    "from": "от",
+    "to": "до",
+    "apply": "Применить",
+    "onlySale": "Со скидкой",
+    "onlyInStock": "В наличии",
+    "reset": "Сбросить",
+    "sort": "Сортировка",
+    "show": "Показать: {count}",
+    "close": "Закрыть",
+    "sortOptions": {
+      "popular": "Популярные",
+      "price-asc": "Сначала дешёвые",
+      "price-desc": "Сначала дорогие",
+      "rating": "По рейтингу",
+      "new": "Новинки"
+    },
+    "emptyTitle": "Ничего не найдено",
+    "emptyText": "Попробуйте изменить фильтры или поискать другими словами.",
+    "page": "Страница {page}",
+    "pagination": "Страницы",
+    "showAllBrands": "Все бренды ({count})",
+    "showLess": "Свернуть"
+  },
+  "productPage": {
+    "home": "Главная",
+    "inStock": "В наличии",
+    "outOfStock": "Нет в наличии",
+    "sku": "Код: {id}",
+    "addToCart": "В корзину",
+    "favorite": "В избранное",
+    "favorited": "В избранном",
+    "about": "Описание",
+    "specs": "Характеристики",
+    "related": "Похожие товары",
+    "economy": "Экономия: {amount} сум",
+    "brand": "Бренд",
+    "color": "Цвет",
+    "warranty": "Гарантия",
+    "warrantyValue": "{years, plural, one {# год} few {# года} other {# лет}}",
+    "perks": {
+      "delivery": "Доставим по Бухаре за 1 день",
+      "warranty": "Официальная гарантия: {years, plural, one {# год} few {# года} other {# лет}}",
+      "payment": "Оплата через Click, Payme или при получении",
+      "returns": "Возврат в течение 14 дней"
+    }
+  },
+  "spec": {
+    "power": "Мощность",
+    "volume": "Объём",
+    "capacity": "Загрузка",
+    "screen": "Экран",
+    "resolution": "Разрешение",
+    "energy": "Класс энергопотребления",
+    "noise": "Уровень шума",
+    "area": "Площадь помещения",
+    "battery": "Батарея",
+    "spin": "Скорость отжима",
+    "type": "Тип",
+    "memory": "Память",
+    "camera": "Камера",
+    "feature": "Особенности"
+  },
+  "colors": {
+    "black": "Чёрный",
+    "white": "Белый",
+    "silver": "Серебристый",
+    "beige": "Бежевый",
+    "graphite": "Графит",
+    "blue": "Синий"
+  },
+  "favorites": {
+    "title": "Избранное",
+    "emptyTitle": "Пока пусто",
+    "emptyText": "Нажмите на сердечко у понравившегося товара, и он сохранится здесь.",
+    "toCatalog": "Перейти в каталог",
+    "add": "В избранное",
+    "remove": "Убрать из избранного"
+  },
+  "search": {
+    "placeholder": "Товар, бренд или категория",
+    "submit": "Найти",
+    "showAll": "Все результаты",
+    "nothing": "Ничего не найдено",
+    "popular": "Часто ищут",
+    "close": "Закрыть"
+  },
+  "notFound": {
+    "title": "Страница не найдена",
+    "text": "Возможно, она была перемещена или удалена.",
+    "catalog": "Перейти в каталог",
+    "home": "На главную"
   }
 }

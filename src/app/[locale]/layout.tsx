@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import "@fontsource-variable/inter";
 import "../globals.css";
 import { routing } from "@/i18n/routing";
+import { themeScript } from "@/lib/theme";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
@@ -39,9 +40,6 @@ export const viewport: Viewport = {
   ],
 };
 
-// Runs before paint so the saved theme never flashes.
-const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
-
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
@@ -51,6 +49,10 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* Scroll reveals need JavaScript; without it everything is simply visible. */}
+        <noscript>
+          <style>{`[data-reveal]{opacity:1!important}`}</style>
+        </noscript>
       </head>
       <body className="min-h-dvh">
         <div className="ambient" aria-hidden="true">

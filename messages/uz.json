@@ -9,7 +9,6 @@
   },
   "nav": {
     "catalog": "Katalog",
-    "brands": "Brendlar",
     "deals": "Aksiyalar",
     "delivery": "Yetkazib berish va to'lov",
     "support": "Yordam",
@@ -20,9 +19,9 @@
     "home": "Asosiy",
     "profile": "Kabinet",
     "menu": "Menyu",
-    "close": "Yopish",
     "theme": "Tungi yoki kungi rejim",
-    "language": "Til"
+    "language": "Til",
+    "breadcrumbs": "Sahifa yo'li"
   },
   "hero": {
     "prev": "Oldingi",
@@ -73,7 +72,8 @@
     "reviews": "{count} ta sharh",
     "currency": "so'm",
     "addToCart": "Savatga qo'shish",
-    "addToFavorites": "Sevimlilarga qo'shish"
+    "addToFavorites": "Sevimlilarga qo'shish",
+    "outOfStock": "Hozircha yo'q"
   },
   "collections": {
     "cta": "Tanlash",
@@ -91,10 +91,22 @@
     }
   },
   "benefits": {
-    "delivery": { "title": "1 kunda yetkazish", "text": "Buxoro shahri bo'ylab" },
-    "payment": { "title": "Click va Payme", "text": "Onlayn yoki qabul qilganda" },
-    "warranty": { "title": "Rasmiy kafolat", "text": "3 yilgacha" },
-    "install": { "title": "O'rnatish xizmati", "text": "Usta bilan birga" }
+    "delivery": {
+      "title": "1 kunda yetkazish",
+      "text": "Buxoro shahri bo'ylab"
+    },
+    "payment": {
+      "title": "Click va Payme",
+      "text": "Onlayn yoki qabul qilganda"
+    },
+    "warranty": {
+      "title": "Rasmiy kafolat",
+      "text": "3 yilgacha"
+    },
+    "install": {
+      "title": "O'rnatish xizmati",
+      "text": "Usta bilan birga"
+    }
   },
   "extended": {
     "title": "Kengaytirilgan kafolat",
@@ -127,5 +139,107 @@
     "hours": "Har kuni 9:00 dan 21:00 gacha",
     "address": "Buxoro shahri",
     "rights": "Barcha huquqlar himoyalangan."
+  },
+  "catalog": {
+    "title": "Katalog",
+    "allProducts": "Barcha tovarlar",
+    "searchTitle": "«{q}» bo'yicha natijalar",
+    "found": "{count} ta tovar",
+    "filters": "Filtrlar",
+    "categories": "Kategoriyalar",
+    "all": "Hammasi",
+    "brands": "Brendlar",
+    "price": "Narx, so'm",
+    "from": "dan",
+    "to": "gacha",
+    "apply": "Qo'llash",
+    "onlySale": "Chegirmadagilar",
+    "onlyInStock": "Mavjudlari",
+    "reset": "Tozalash",
+    "sort": "Saralash",
+    "show": "Ko'rsatish: {count}",
+    "close": "Yopish",
+    "sortOptions": {
+      "popular": "Mashhurlari",
+      "price-asc": "Avval arzonlari",
+      "price-desc": "Avval qimmatlari",
+      "rating": "Reyting bo'yicha",
+      "new": "Yangilari"
+    },
+    "emptyTitle": "Hech narsa topilmadi",
+    "emptyText": "Filtrlarni o'zgartirib ko'ring yoki boshqa so'z bilan qidiring.",
+    "page": "{page}-sahifa",
+    "pagination": "Sahifalar",
+    "showAllBrands": "Barcha brendlar ({count})",
+    "showLess": "Yig'ish"
+  },
+  "productPage": {
+    "home": "Asosiy",
+    "inStock": "Mavjud",
+    "outOfStock": "Hozircha yo'q",
+    "sku": "Kod: {id}",
+    "addToCart": "Savatga qo'shish",
+    "favorite": "Sevimlilarga",
+    "favorited": "Sevimlilarda",
+    "about": "Tavsif",
+    "specs": "Xususiyatlar",
+    "related": "O'xshash tovarlar",
+    "economy": "Tejaysiz: {amount} so'm",
+    "brand": "Brend",
+    "color": "Rang",
+    "warranty": "Kafolat",
+    "warrantyValue": "{years} yil",
+    "perks": {
+      "delivery": "Buxoro bo'ylab 1 kunda yetkazamiz",
+      "warranty": "Rasmiy kafolat: {years} yil",
+      "payment": "Click, Payme yoki qabul qilganda to'lov",
+      "returns": "14 kun ichida qaytarish"
+    }
+  },
+  "spec": {
+    "power": "Quvvat",
+    "volume": "Hajm",
+    "capacity": "Sig'im",
+    "screen": "Ekran",
+    "resolution": "Tasvir aniqligi",
+    "energy": "Energiya sinfi",
+    "noise": "Shovqin darajasi",
+    "area": "Xona maydoni",
+    "battery": "Batareya",
+    "spin": "Siqish tezligi",
+    "type": "Turi",
+    "memory": "Xotira",
+    "camera": "Kamera",
+    "feature": "Xususiyati"
+  },
+  "colors": {
+    "black": "Qora",
+    "white": "Oq",
+    "silver": "Kumushrang",
+    "beige": "Bej",
+    "graphite": "Grafit",
+    "blue": "Ko'k"
+  },
+  "favorites": {
+    "title": "Sevimlilar",
+    "emptyTitle": "Hozircha bo'sh",
+    "emptyText": "Yoqqan tovardagi yurakchani bosing, u shu yerda saqlanadi.",
+    "toCatalog": "Katalogga o'tish",
+    "add": "Sevimlilarga qo'shish",
+    "remove": "Sevimlilardan olib tashlash"
+  },
+  "search": {
+    "placeholder": "Tovar, brend yoki kategoriya",
+    "submit": "Qidirish",
+    "showAll": "Barcha natijalar",
+    "nothing": "Hech narsa topilmadi",
+    "popular": "Ko'p qidiriladi",
+    "close": "Yopish"
+  },
+  "notFound": {
+    "title": "Sahifa topilmadi",
+    "text": "Bu sahifa ko'chirilgan yoki o'chirilgan bo'lishi mumkin.",
+    "catalog": "Katalogga o'tish",
+    "home": "Bosh sahifa"
   }
 }

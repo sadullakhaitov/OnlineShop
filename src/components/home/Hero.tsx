@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { ProductArt } from "@/components/product/ProductArt";
 import type { ArtKind } from "@/data/products";
 
@@ -37,7 +38,7 @@ export function Hero() {
 
   return (
     <div
-      className="glass glass-sheen relative min-h-[34rem] overflow-hidden rounded-[1.75rem] sm:min-h-[27rem] lg:min-h-[29rem]"
+      className="glass glass-sheen enter relative min-h-[34rem] overflow-hidden rounded-[1.75rem] sm:min-h-[27rem] lg:min-h-[29rem]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -71,12 +72,12 @@ export function Hero() {
                 {t(`slides.${slide.key}.text`)}
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <a href="#catalog" className="btn btn-primary">
+                <Link href="/catalog" className="btn btn-primary">
                   {t("primary")}
-                </a>
-                <a href="#deals" className="btn btn-ghost">
+                </Link>
+                <Link href={{ pathname: "/catalog", query: { sale: "1" } }} className="btn btn-ghost">
                   {t("secondary")}
-                </a>
+                </Link>
               </div>
             </div>
 

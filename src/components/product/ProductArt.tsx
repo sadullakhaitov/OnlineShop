@@ -267,6 +267,89 @@ export function ProductArt({ kind, className }: Props) {
           <rect x="154" y="168" width="16" height="6" rx="2" fill="#6e6a64" />
         </g>
       )}
+      {kind === "kettle" && (
+        <g>
+          <path d="M62 60h76l10 108a12 12 0 0 1-12 14H64a12 12 0 0 1-12-14z" fill={url("steel")} />
+          <path d="M62 60h76l2 20H60z" fill={url("dark")} />
+          <path d="M72 84l-6 84" stroke="#fff" strokeWidth="5" strokeLinecap="round" opacity="0.6" />
+          <path d="M62 62l-18 6 14 16z" fill={url("steel")} />
+          <rect x="84" y="46" width="32" height="14" rx="6" fill={url("dark")} />
+          <path d="M140 74h14a12 12 0 0 1 12 12v48a12 12 0 0 1-12 12h-10" fill="none" stroke="#26262a" strokeWidth="9" strokeLinecap="round" />
+          <rect x="50" y="172" width="100" height="10" rx="4" fill={url("dark")} />
+          <circle cx="100" cy="177" r="2" fill="#7fd6c2" />
+        </g>
+      )}
+
+      {kind === "iron" && (
+        <g>
+          <path d="M24 150c4-46 40-78 96-78h30a24 24 0 0 1 24 24v54z" fill={url("white")} stroke="#cfcbc5" strokeWidth="1.5" />
+          <path d="M76 104c10-12 26-18 46-18h20a10 10 0 0 1 10 10v8z" fill="#3f6fb5" opacity="0.9" />
+          <path d="M70 124c14-6 30-8 50-8h54v34H24c8-12 24-20 46-26z" fill="#3f6fb5" />
+          <path d="M18 150h160a4 4 0 0 1 4 4v8a8 8 0 0 1-8 8H30a14 14 0 0 1-14-14v-2a4 4 0 0 1 2-4z" fill={url("steel")} />
+          <circle cx="150" cy="134" r="8" fill="#f4f2ef" stroke="#2c4f85" />
+          <rect x="149" y="128" width="2" height="6" rx="1" fill="#2c4f85" />
+          <path d="M40 140c6-18 20-32 40-40" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" opacity="0.7" />
+        </g>
+      )}
+
+      {kind === "hairdryer" && (
+        <g>
+          <rect x="88" y="78" width="26" height="104" rx="13" fill={url("dark")} />
+          <rect x="94" y="86" width="5" height="84" rx="2.5" fill="#fff" opacity="0.14" />
+          <rect x="34" y="34" width="132" height="60" rx="30" fill={url("dark")} />
+          <circle cx="136" cy="64" r="30" fill={url("copper")} />
+          <circle cx="136" cy="64" r="21" fill="#17171a" />
+          <circle cx="136" cy="64" r="12" fill="none" stroke="#5a5a60" strokeWidth="2" />
+          <rect x="24" y="44" width="16" height="40" rx="6" fill={url("copper")} />
+          <circle cx="101" cy="112" r="3.5" fill="#7fd6c2" />
+          <circle cx="101" cy="126" r="3.5" fill="#5a5a60" />
+          <path d="M50 44h56" stroke="#fff" strokeWidth="3" strokeLinecap="round" opacity="0.22" />
+        </g>
+      )}
+
+      {kind === "phone" && (
+        <g>
+          <rect x="60" y="14" width="80" height="168" rx="16" fill={url("dark")} />
+          <rect x="64" y="18" width="72" height="160" rx="12" fill={url("screen")} />
+          <rect x="88" y="24" width="24" height="7" rx="3.5" fill="#0d0d0f" />
+          <circle cx="100" cy="92" r="20" fill="#ffdcae" opacity="0.8" />
+          <path d="M64 150l22-22 16 14 14-18 20 22v20a12 12 0 0 1-12 12H76a12 12 0 0 1-12-12z" fill="#181b3d" opacity="0.6" />
+          <rect x="86" y="168" width="28" height="3" rx="1.5" fill="#fff" opacity="0.8" />
+          <path d="M68 22h34l-34 60z" fill="#fff" opacity="0.1" />
+        </g>
+      )}
+
+      {kind === "headphones" && (
+        <g>
+          <path d="M44 118V96a56 56 0 0 1 112 0v22" fill="none" stroke={url("dark")} strokeWidth="12" strokeLinecap="round" />
+          <path d="M58 70a48 48 0 0 1 60-26" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" opacity="0.2" />
+          <rect x="26" y="104" width="38" height="74" rx="18" fill={url("dark")} />
+          <rect x="136" y="104" width="38" height="74" rx="18" fill={url("dark")} />
+          <rect x="22" y="116" width="12" height="50" rx="6" fill={url("steel")} />
+          <rect x="166" y="116" width="12" height="50" rx="6" fill={url("steel")} />
+          <circle cx="155" cy="141" r="7" fill="none" stroke={url("copper")} strokeWidth="2" />
+          <circle cx="45" cy="141" r="7" fill="none" stroke={url("copper")} strokeWidth="2" />
+        </g>
+      )}
+
+      {kind === "speaker" && (
+        <g>
+          <rect x="18" y="70" width="164" height="96" rx="48" fill={url("dark")} />
+          <g fill="#3a3a3f">
+            {[92, 104, 116, 128, 140].map((y, row) =>
+              [62, 76, 90, 104, 118, 132].map((x) => (
+                <circle key={`${x}-${y}`} cx={x + (row % 2 ? 7 : 0)} cy={y} r="2.6" />
+              )),
+            )}
+          </g>
+          <circle cx="36" cy="118" r="20" fill="#17171a" stroke={url("copper")} strokeWidth="3" />
+          <circle cx="164" cy="118" r="20" fill="#17171a" stroke={url("copper")} strokeWidth="3" />
+          <circle cx="36" cy="118" r="7" fill={url("copper")} />
+          <circle cx="164" cy="118" r="7" fill={url("copper")} />
+          <rect x="82" y="62" width="36" height="10" rx="5" fill="#3a3a3f" />
+          <path d="M60 80h80" stroke="#fff" strokeWidth="3" strokeLinecap="round" opacity="0.14" />
+        </g>
+      )}
     </svg>
   );
 }

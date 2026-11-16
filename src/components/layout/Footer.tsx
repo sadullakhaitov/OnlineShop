@@ -1,12 +1,40 @@
 import { Clock, Mail, MapPin, Phone, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Logo } from "./Logo";
 
-const columns = [
-  { key: "customers", links: ["catalog", "deals", "delivery", "returns", "faq"] },
-  { key: "company", links: ["about", "news", "brands", "careers", "contacts"] },
-  { key: "support", links: ["support247", "feedback", "service", "manuals", "orderStatus"] },
-] as const;
+type FooterLink = {
+  key: string;
+  /** Missing while the page does not exist yet; the item then shows as plain text. */
+  href?: React.ComponentProps<typeof Link>["href"];
+};
+
+const columns: { key: "customers" | "company" | "support"; links: FooterLink[] }[] = [
+  {
+    key: "customers",
+    links: [
+      { key: "catalog", href: "/catalog" },
+      { key: "deals", href: { pathname: "/catalog", query: { sale: "1" } } },
+      { key: "delivery", href: "/#delivery" },
+      { key: "returns" },
+      { key: "faq" },
+    ],
+  },
+  {
+    key: "company",
+    links: [{ key: "about" }, { key: "news" }, { key: "brands", href: "/catalog" }, { key: "careers" }, { key: "contacts" }],
+  },
+  {
+    key: "support",
+    links: [
+      { key: "support247" },
+      { key: "feedback" },
+      { key: "service" },
+      { key: "manuals" },
+      { key: "orderStatus" },
+    ],
+  },
+];
 
 // Placeholder contacts until the shop's real details are provided.
 const contact = {
@@ -20,7 +48,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer id="support" className="mx-auto w-full max-w-[1280px] px-3 pb-28 sm:px-6 md:pb-8 lg:px-8">
+    <footer id="support" className="mx-auto w-full max-w-[1280px] scroll-mt-28 px-3 pb-28 sm:px-6 md:pb-8 lg:px-8">
       <div className="glass rounded-[1.75rem] px-6 py-10 sm:px-10">
         <div className="grid gap-10 lg:grid-cols-[1.3fr_repeat(3,1fr)_1.2fr]">
           <div>
@@ -43,10 +71,14 @@ export function Footer() {
                 <h3 className="text-sm font-semibold">{t(column.key)}</h3>
                 <ul className="mt-4 space-y-2.5">
                   {column.links.map((link) => (
-                    <li key={link}>
-                      <a href="#" className="text-sm text-muted transition-colors duration-300 hover:text-ink">
-                        {t(`links.${link}`)}
-                      </a>
+                    <li key={link.key} className="text-sm text-muted">
+                      {link.href ? (
+                        <Link href={link.href} className="transition-colors duration-300 hover:text-ink">
+                          {t(`links.${link.key}`)}
+                        </Link>
+                      ) : (
+                        t(`links.${link.key}`)
+                      )}
                     </li>
                   ))}
                 </ul>

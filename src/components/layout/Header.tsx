@@ -1,15 +1,18 @@
-import { Heart, Search, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { FavoritesLink } from "@/components/favorites/FavoritesLink";
+import { SearchDialog } from "@/components/search/SearchDialog";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
+// `wide` links only fit next to the icons on large screens.
 const links = [
-  { key: "catalog", href: "#catalog" },
-  { key: "brands", href: "#popular" },
-  { key: "deals", href: "#deals" },
-  { key: "delivery", href: "#delivery" },
-  { key: "support", href: "#support" },
+  { key: "catalog", href: "/catalog", wide: false },
+  { key: "deals", href: { pathname: "/catalog", query: { sale: "1" } }, wide: false },
+  { key: "delivery", href: "/#delivery", wide: true },
+  { key: "support", href: "/#support", wide: true },
 ] as const;
 
 export function Header() {
@@ -20,25 +23,24 @@ export function Header() {
       <div className="glass glass-strong mx-auto flex h-16 max-w-[1280px] items-center gap-4 rounded-[1.375rem] pl-5 pr-3 sm:pl-6">
         <Logo />
 
-        <nav className="ml-6 hidden items-center gap-1 lg:flex" aria-label={t("menu")}>
+        <nav className="hidden items-center gap-1 md:flex lg:ml-6" aria-label={t("menu")}>
           {links.map((link) => (
-            <a
+            <Link
               key={link.key}
               href={link.href}
-              className="rounded-full px-3 py-2 text-sm text-muted transition-colors duration-300 hover:bg-hairline hover:text-ink"
+              className={`rounded-full px-3 py-2 text-sm text-muted transition-colors duration-300 hover:bg-hairline hover:text-ink ${
+                link.wide ? "hidden lg:block" : ""
+              }`}
             >
               {t(link.key)}
-            </a>
+            </Link>
           ))}
         </nav>
 
         <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
-          <button type="button" className="icon-btn" aria-label={t("search")}>
-            <Search className="size-5" strokeWidth={1.7} />
-          </button>
-          <button type="button" className="icon-btn hidden md:inline-grid" aria-label={t("favorites")}>
-            <Heart className="size-5" strokeWidth={1.7} />
-          </button>
+          <SearchDialog />
+          <FavoritesLink />
+          {/* Cart and sign-in become active in the checkout step. */}
           <button type="button" className="icon-btn hidden md:inline-grid" aria-label={t("cart")}>
             <ShoppingCart className="size-5" strokeWidth={1.7} />
           </button>
