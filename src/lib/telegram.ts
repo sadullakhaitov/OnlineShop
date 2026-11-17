@@ -19,6 +19,10 @@ export type WebApp = {
   /** The same data, read without checking; fine for showing, never for trusting. */
   initDataUnsafe?: { user?: { first_name?: string; photo_url?: string } };
   version: string;
+  /** "ios", "android", "tdesktop", "weba"… */
+  platform?: string;
+  /** Bot API 8.0: the app over the whole screen, Telegram's buttons floating on top. */
+  requestFullscreen?(): void;
   colorScheme: "light" | "dark";
   isVersionAtLeast(version: string): boolean;
   ready(): void;
@@ -83,7 +87,8 @@ export function openExternal(url: string): void {
  * Inside Telegram it marks the page, loads Telegram's script and picks the
  * colour scheme Telegram uses, so nothing flashes in the wrong theme.
  * Telegram's loading screen is closed as soon as its script arrives, not
- * after the whole page has started, so the shop shows up sooner.
+ * after the whole page has started, so the shop shows up sooner. On phones
+ * the shop then fills the whole screen (Telegram 8.0 and newer).
  */
 export const telegramScript = `(function(){try{var s=sessionStorage,h=location.hash,p=new URLSearchParams(h.slice(1));
 if(!p.get("tgWebAppData")&&!s.getItem("${TELEGRAM_FLAG}"))return;
@@ -93,4 +98,5 @@ var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.subst
 s.setItem("${TELEGRAM_DARK}",Math.sqrt(.299*r*r+.587*g*g+.114*b*b)<120?"1":"0")}
 d.classList.toggle("dark",s.getItem("${TELEGRAM_DARK}")==="1");
 var e=document.createElement("script");e.src="${TELEGRAM_SCRIPT}";
-e.onload=function(){var w=window.Telegram&&Telegram.WebApp;if(w){w.ready();w.expand()}};document.head.appendChild(e)}catch(x){}})()`;
+e.onload=function(){var w=window.Telegram&&Telegram.WebApp;if(!w)return;w.ready();w.expand();
+if(/^(ios|android)$/.test(w.platform)&&w.isVersionAtLeast("8.0")&&w.requestFullscreen)try{w.requestFullscreen()}catch(x){}};document.head.appendChild(e)}catch(x){}})()`;

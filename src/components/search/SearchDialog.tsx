@@ -83,7 +83,7 @@ export function SearchDialog() {
 
       {open &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-start justify-center px-3 pt-3 sm:pt-20" role="dialog" aria-modal="true" aria-label={t("nav.search")}>
+          <div className="tg-top fixed inset-0 z-50 flex items-start justify-center px-3 pt-3 sm:pt-20" role="dialog" aria-modal="true" aria-label={t("nav.search")}>
             <button
               type="button"
               aria-label={t("search.close")}

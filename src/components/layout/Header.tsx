@@ -20,7 +20,7 @@ export function Header() {
   const t = useTranslations("nav");
 
   return (
-    <header className="sticky top-0 z-40 px-3 pt-3 sm:px-6 lg:px-8">
+    <header className="tg-top sticky top-0 z-40 px-3 pt-3 sm:px-6 lg:px-8">
       <div className="glass glass-strong mx-auto flex h-16 max-w-[1280px] items-center gap-4 rounded-[1.375rem] pl-5 pr-3 sm:pl-6">
         <Logo />
 
