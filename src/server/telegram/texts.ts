@@ -1,6 +1,6 @@
 import type { Order, OrderItem, TelegramEvent } from "@/db/schema";
 import { getDeliveryZone } from "@/data/delivery";
-import { formatPrice } from "@/lib/format";
+import { formatDateTime, formatPrice } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
 import { escapeHtml as h } from "./api";
 
@@ -78,62 +78,105 @@ export type OrderForMessage = Order & { items: OrderItem[] };
 
 const shopTexts = {
   uz: {
-    placed: "🛒 <b>Yangi buyurtma №{n}</b>",
-    paid: "💳 <b>To'lov qabul qilindi</b> · №{n}",
-    refunded: "↩️ <b>To'lov qaytarildi</b> · №{n}\nBuyurtma bekor qilindi.",
-    pickup: "Do'kondan olib ketish",
+    placed: "🛒 <b>YANGI BUYURTMA</b>  №{n}",
+    paid: "✅ <b>TO'LOV KELDI</b>  №{n}",
+    refunded: "↩️ <b>TO'LOV QAYTARILDI</b>  №{n}",
+    refundedNote: "Buyurtma bekor qilingan, pul xaridorga qaytarildi.",
+    customer: "Xaridor",
+    pickup: "Do'kondan olib ketadi",
     delivery: "Yetkazib berish",
-    unpaid: "to'lanmagan",
-    paidMark: "to'langan",
+    payment: "To'lov",
+    unpaid: "⏳ hali to'lanmagan",
+    paidMark: "✅ to'langan",
+    cashNote: "tovarni olganda",
     comment: "Izoh",
-    total: "Jami",
+    items: "Tovarlar",
+    pieces: "dona",
+    subtotal: "Tovarlar",
     fee: "Yetkazib berish",
     free: "bepul",
-    open: "Buyurtmani ochish",
+    total: "JAMI",
+    amount: "Summa",
+    open: "📋 Buyurtmani ochish",
   },
   ru: {
-    placed: "🛒 <b>Новый заказ №{n}</b>",
-    paid: "💳 <b>Оплата получена</b> · №{n}",
-    refunded: "↩️ <b>Оплата возвращена</b> · №{n}\nЗаказ отменён.",
-    pickup: "Самовывоз",
+    placed: "🛒 <b>НОВЫЙ ЗАКАЗ</b>  №{n}",
+    paid: "✅ <b>ОПЛАТА ПОЛУЧЕНА</b>  №{n}",
+    refunded: "↩️ <b>ОПЛАТА ВОЗВРАЩЕНА</b>  №{n}",
+    refundedNote: "Заказ отменён, деньги возвращены покупателю.",
+    customer: "Покупатель",
+    pickup: "Самовывоз из магазина",
     delivery: "Доставка",
-    unpaid: "не оплачен",
-    paidMark: "оплачен",
+    payment: "Оплата",
+    unpaid: "⏳ ещё не оплачен",
+    paidMark: "✅ оплачен",
+    cashNote: "при получении",
     comment: "Комментарий",
-    total: "Итого",
+    items: "Товары",
+    pieces: "шт.",
+    subtotal: "Товары",
     fee: "Доставка",
     free: "бесплатно",
-    open: "Открыть заказ",
+    total: "ИТОГО",
+    amount: "Сумма",
+    open: "📋 Открыть заказ",
   },
 };
 
-/** What the shop's chat is told: the whole order when it arrives, a line about money later. */
+const LINE = "────────────────";
+
+/**
+ * What the shop's chat is told: the whole order when it arrives, laid out in
+ * labelled blocks so staff can read it at a glance; a short note about money later.
+ */
 export function shopMessage(order: OrderForMessage, event: TelegramEvent, locale: BotLocale): { text: string; button: string } {
   const t = shopTexts[locale];
   const n = String(order.number);
   const method = methodName[locale][order.paymentMethod];
-  if (event === "paid") return { text: `${t.paid.replace("{n}", n)}\n${money(order.total, locale)} · ${method}`, button: t.open };
-  if (event === "refunded") return { text: `${t.refunded.replace("{n}", n)}\n${money(order.total, locale)} · ${method}`, button: t.open };
+  const who = `👤 ${h(order.name)}\n📞 ${formatPhone(order.phone)}`;
+
+  if (event === "paid" || event === "refunded") {
+    const lines = [
+      (event === "paid" ? t.paid : t.refunded).replace("{n}", n),
+      LINE,
+      `💰 ${t.amount}: <b>${money(order.total, locale)}</b>`,
+      `💳 ${t.payment}: ${method}`,
+      who,
+    ];
+    if (event === "refunded") lines.push("", t.refundedNote);
+    return { text: lines.join("\n"), button: t.open };
+  }
 
   const zone = getDeliveryZone(order.zone);
-  const lines = [
-    t.placed.replace("{n}", n),
-    "",
-    `👤 ${h(order.name)} · ${formatPhone(order.phone)}`,
-    order.deliveryType === "pickup"
-      ? `🏬 ${t.pickup}`
-      : `🚚 ${t.delivery}: ${h([zone?.name[locale], order.address].filter(Boolean).join(", "))}`,
-    `💳 ${method}${order.paymentMethod === "cash" ? "" : ` · ${order.paymentStatus === "paid" ? t.paidMark : t.unpaid}`}`,
-  ];
-  if (order.comment) lines.push(`💬 ${t.comment}: ${h(order.comment)}`);
-  lines.push("");
-  for (const item of order.items) {
-    lines.push(`• ${h(item.title)} × ${item.quantity} — ${money(item.price * item.quantity, locale)}`);
+  const count = order.items.reduce((total, item) => total + item.quantity, 0);
+  const lines = [t.placed.replace("{n}", n), `🕐 ${formatDateTime(order.createdAt, locale)}`, LINE, `<b>${t.customer}</b>`, who, ""];
+
+  if (order.deliveryType === "pickup") {
+    lines.push(`<b>🏬 ${t.pickup}</b>`, "");
+  } else {
+    lines.push(`<b>🚚 ${t.delivery}</b>`);
+    if (zone) lines.push(`📍 ${h(zone.name[locale])}`);
+    if (order.address) lines.push(`🏠 ${h(order.address)}`);
+    lines.push("");
   }
+
+  const state = order.paymentMethod === "cash" ? t.cashNote : order.paymentStatus === "paid" ? t.paidMark : t.unpaid;
+  lines.push(`<b>💳 ${t.payment}</b>`, `${method} · ${state}`, "");
+
+  if (order.comment) lines.push(`<b>💬 ${t.comment}</b>`, `<i>${h(order.comment)}</i>`, "");
+
+  lines.push(`<b>📦 ${t.items} (${count} ${t.pieces})</b>`);
+  order.items.forEach((item, index) => {
+    lines.push(`${index + 1}. ${h(item.title)}`);
+    lines.push(`     ${item.quantity} × ${formatPrice(item.price)} = <b>${money(item.price * item.quantity, locale)}</b>`);
+  });
+
+  lines.push(LINE);
   if (order.deliveryType === "delivery") {
+    lines.push(`${t.subtotal}: ${money(order.subtotal, locale)}`);
     lines.push(`${t.fee}: ${order.deliveryFee > 0 ? money(order.deliveryFee, locale) : t.free}`);
   }
-  lines.push(`<b>${t.total}: ${money(order.total, locale)}</b>`);
+  lines.push(`💰 <b>${t.total}: ${money(order.total, locale)}</b>`);
   return { text: lines.join("\n"), button: t.open };
 }
 

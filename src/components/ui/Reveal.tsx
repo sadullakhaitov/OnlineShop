@@ -23,15 +23,20 @@ export function Reveal({ as = "div", children, className, id, delay = 0 }: Props
   // Every allowed tag accepts the same props, so one element type covers them.
   const Tag = as as "div";
   const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(false);
+  // "idle" until the page runs: the element is plainly visible, so a slow
+  // phone never waits for JavaScript to see what is already on screen.
+  const [state, setState] = useState<"idle" | "out" | "in">("idle");
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // Already on screen when the page woke up: leave it as it is.
+    if (el.getBoundingClientRect().top < window.innerHeight) return;
+    setState("out");
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setShown(true);
+          setState("in");
           observer.disconnect();
         }
       },
@@ -45,7 +50,7 @@ export function Reveal({ as = "div", children, className, id, delay = 0 }: Props
     <Tag
       ref={ref}
       id={id}
-      data-reveal={shown ? "in" : "out"}
+      data-reveal={state === "idle" ? undefined : state}
       className={className}
       style={{ "--reveal-delay": `${delay}ms` } as React.CSSProperties}
     >

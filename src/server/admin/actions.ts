@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { getDb } from "@/db";
 import type { OrderStatus, ProductRow } from "@/db/schema";
@@ -11,6 +11,7 @@ import { addressHashOf } from "@/server/http";
 import { adminLogin, adminLogout } from "./auth";
 import { ORDER_STATUSES, changeOrderPayment, changeOrderStatus, type PaymentAction } from "./orders";
 import { createProduct, setProductFlag, updateProduct, type ProductFlag } from "./products";
+import { CATALOG_TAG } from "@/server/catalog";
 import { getSiteUrl, getTelegramConfig } from "@/server/config";
 import { isPublicUrl } from "@/server/telegram/api";
 import { connectBot, sendTelegramLater, sendTestMessage } from "@/server/telegram/setup";
@@ -104,7 +105,10 @@ export async function orderPaymentAction(_previous: AdminActionState, form: Form
  * catalogue makes all of them fresh, and the admin pages beneath the same
  * layout with them.
  */
-const refreshShop = () => revalidatePath("/[locale]", "layout");
+const refreshShop = () => {
+  updateTag(CATALOG_TAG);
+  revalidatePath("/[locale]", "layout");
+};
 
 export type ProductSaveResult =
   | { ok: true; product: ProductRow }

@@ -80,6 +80,8 @@ export function openExternal(url: string): void {
  * Runs in <head> before the first paint, as a string for the inline script.
  * Inside Telegram it marks the page, loads Telegram's script and picks the
  * colour scheme Telegram uses, so nothing flashes in the wrong theme.
+ * Telegram's loading screen is closed as soon as its script arrives, not
+ * after the whole page has started, so the shop shows up sooner.
  */
 export const telegramScript = `(function(){try{var s=sessionStorage,h=location.hash,p=new URLSearchParams(h.slice(1));
 if(!p.get("tgWebAppData")&&!s.getItem("${TELEGRAM_FLAG}"))return;
@@ -88,4 +90,5 @@ var t=p.get("tgWebAppThemeParams");if(t){var c=(JSON.parse(t).bg_color||"#ffffff
 var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);
 s.setItem("${TELEGRAM_DARK}",Math.sqrt(.299*r*r+.587*g*g+.114*b*b)<120?"1":"0")}
 d.classList.toggle("dark",s.getItem("${TELEGRAM_DARK}")==="1");
-var e=document.createElement("script");e.src="${TELEGRAM_SCRIPT}";document.head.appendChild(e)}catch(x){}})()`;
+var e=document.createElement("script");e.src="${TELEGRAM_SCRIPT}";
+e.onload=function(){var w=window.Telegram&&Telegram.WebApp;if(w){w.ready();w.expand()}};document.head.appendChild(e)}catch(x){}})()`;

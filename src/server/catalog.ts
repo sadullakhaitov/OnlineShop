@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { connection } from "next/server";
 import { asc, desc, eq, sql } from "drizzle-orm";
 import { databaseKind, getDb, type Db } from "@/db";
@@ -74,9 +75,27 @@ let sample: Catalog | undefined;
  * kept ready between visits and so cannot wait for a request (see there).
  */
 export const readCatalog = cache(async (): Promise<Catalog> => {
-  if (databaseKind() === "none") return (sample ??= createCatalog(sampleProducts));
-  return loadCatalog(await getDb());
+  const kind = databaseKind();
+  if (kind === "none") return (sample ??= createCatalog(sampleProducts));
+  if (kind === "embedded") return loadCatalog(await getDb());
+  return createCatalog(await savedProducts());
 });
+
+/** Marks the saved copy of the catalogue; the admin panel clears it on every product change. */
+export const CATALOG_TAG = "catalog";
+
+/**
+ * With PostgreSQL on a host such as Vercel every visit may start a fresh
+ * server, and a free database sleeps when nobody uses it. So the products are
+ * kept in the host's cache: pages answer without waking the database, and a
+ * product saved in the admin panel clears the copy at once. Ten minutes is
+ * only a safety net for changes made outside the admin panel.
+ */
+const savedProducts = unstable_cache(
+  async (): Promise<Product[]> => (await loadCatalog(await getDb())).all(),
+  ["catalog-products-v1"],
+  { tags: [CATALOG_TAG], revalidate: 600 },
+);
 
 /**
  * The catalogue for pages and routes.

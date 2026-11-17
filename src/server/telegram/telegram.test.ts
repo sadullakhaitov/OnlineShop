@@ -167,7 +167,7 @@ describe("Telegram bot and order messages", () => {
     expect(await sendQueuedMessages(db, SITE)).toEqual({ sent: 1, failed: 0 });
     const [shop] = sent();
     expect(shop.params.chat_id).toBe("-1001234567890");
-    expect(shop.params.text).toContain(`Yangi buyurtma №${order.number}`);
+    expect(shop.params.text).toContain(`YANGI BUYURTMA</b>  №${order.number}`);
     expect(shop.params.text).toContain("Aziz &lt;b&gt;");
     expect(JSON.stringify(shop.params.reply_markup)).toContain(`${SITE}/uz/admin/orders/${order.id}`);
     expect(await sendQueuedMessages(db, SITE)).toEqual({ sent: 0, failed: 0 });
@@ -188,7 +188,7 @@ describe("Telegram bot and order messages", () => {
 
     const texts = sent().map((call) => `${call.params.chat_id}: ${String(call.params.text).split("\n")[0]}`);
     expect(texts).toEqual([
-      `-1001234567890: 💳 <b>To'lov qabul qilindi</b> · №${order.number}`,
+      `-1001234567890: ✅ <b>TO'LOV KELDI</b>  №${order.number}`,
       "5001: 💳 <b>Оплата получена</b>",
       `5001: 📦 <b>Заказ №${order.number} готов</b>`, // picked up in the shop
     ]);
