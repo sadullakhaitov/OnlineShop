@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { sortOptions } from "@/lib/catalog";
+import { Select } from "@/components/ui/Select";
 import { enterDelay } from "@/lib/motion";
 
 type Option = { value: string; label: string; count: number };
@@ -212,22 +213,21 @@ export function CatalogShell({ title, total, categories, brands, searchParams, c
               </span>
             )}
           </button>
-          <label className="relative flex-1 sm:flex-none">
-            <span className="sr-only">{t("sort")}</span>
-            <select
+          <div className="flex-1 sm:flex-none">
+            <Select
+              aria-label={t("sort")}
               value={sort}
-              onChange={(event) => update({ sort: event.target.value === "popular" ? null : event.target.value })}
+              onValueChange={(value) => update({ sort: value === "popular" ? null : value })}
               style={enterDelay(120)}
-              className="btn btn-ghost enter h-11 w-full cursor-pointer appearance-none pl-4 pr-10 text-left font-medium"
+              className="btn btn-ghost enter h-11 pl-4 font-medium"
             >
               {sortOptions.map((option) => (
                 <option key={option} value={option}>
                   {t(`sortOptions.${option}`)}
                 </option>
               ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" strokeWidth={1.8} />
-          </label>
+            </Select>
+          </div>
         </div>
       </div>
 

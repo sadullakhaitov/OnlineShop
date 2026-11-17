@@ -1,7 +1,8 @@
 "use client";
 
+import { Select } from "@/components/ui/Select";
 import { useState } from "react";
-import { Banknote, ChevronDown, CreditCard, Store, Truck } from "lucide-react";
+import { Banknote, CreditCard, Store, Truck } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { DeliveryType, PaymentMethod } from "@/db/schema";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -306,13 +307,12 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
                 <label htmlFor="checkout-zone" className={labelClass}>
                   {t("checkout.zone")}
                 </label>
-                <div className="relative">
-                  <select
+                  <Select
                     id="checkout-zone"
                     className="field"
                     value={zoneSlug}
-                    onChange={(event) => {
-                      setZoneSlug(event.target.value);
+                    onValueChange={(value) => {
+                      setZoneSlug(value);
                       clear("zone");
                     }}
                     aria-invalid={errors.includes("zone") || undefined}
@@ -326,12 +326,7 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
                         {item.name}
                       </option>
                     ))}
-                  </select>
-                  <ChevronDown
-                    className="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-muted"
-                    strokeWidth={1.8}
-                  />
-                </div>
+                  </Select>
                 {errorOf("zone") ? (
                   <p id="checkout-zone-error" className={errorClass}>
                     {errorOf("zone")}

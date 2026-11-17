@@ -1,5 +1,5 @@
 import Form from "next/form";
-import { ChevronDown, Plus, Search, X } from "lucide-react";
+import { Plus, Search, X } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getDb } from "@/db";
 import { categories } from "@/data/categories";
@@ -10,7 +10,7 @@ import { PRODUCT_STATES, listAdminProducts, type ProductState } from "@/server/a
 import { requireAdmin } from "@/server/admin/session";
 import { Pagination } from "@/components/admin/Pagination";
 import { ProductRows } from "@/components/admin/ProductRow";
-import { SubmitOnChange } from "@/components/admin/SubmitOnChange";
+import { Select } from "@/components/ui/Select";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -98,17 +98,16 @@ export default async function AdminProductsPage({ params, searchParams }: Props)
             </Link>
           )}
         </div>
-        <div className="relative min-w-0 flex-1 basis-44 sm:max-w-60">
+        <div className="min-w-0 flex-1 basis-44 sm:max-w-60">
           {/* The key makes the select follow the address when a link changes the section. */}
-          <SubmitOnChange key={category ?? ""} name="category" defaultValue={category ?? ""} className="field" aria-label={t("products.category")}>
+          <Select key={category ?? ""} name="category" defaultValue={category ?? ""} submitOnChange aria-label={t("products.category")}>
             <option value="">{t("products.allCategories")}</option>
             {categories.map((item) => (
               <option key={item.slug} value={item.slug}>
                 {item.name[locale]}
               </option>
             ))}
-          </SubmitOnChange>
-          <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" strokeWidth={1.8} />
+          </Select>
         </div>
         <button type="submit" className="btn btn-ghost shrink-0">
           {t("orders.searchSubmit")}

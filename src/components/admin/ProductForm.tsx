@@ -1,7 +1,8 @@
 "use client";
 
+import { Select } from "@/components/ui/Select";
 import { useLayoutEffect, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
-import { Check, ChevronDown, ExternalLink, EyeOff, Plus, X } from "lucide-react";
+import { Check, ExternalLink, EyeOff, Plus, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { categories } from "@/data/categories";
 import {
@@ -232,9 +233,6 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
       </p>
     );
 
-  const chevron = (
-    <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" strokeWidth={1.8} />
-  );
   const spare = specKeys.filter((key) => !rows.includes(key));
   const previewBadge = values.badge ? tAll(`product.${values.badge}`) : discount ? `−${discount}%` : null;
 
@@ -249,11 +247,11 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                 {t("art")}
               </label>
               <div className="relative">
-                <select
+                <Select
                   id="product-art"
                   className="field"
                   value={values.art}
-                  onChange={(event) => pickKind(event.target.value as ArtKind)}
+                  onValueChange={(value) => pickKind(value as ArtKind)}
                   {...invalid("art")}
                 >
                   <option value="" disabled>
@@ -264,8 +262,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                       {kinds[art].name[locale]}
                     </option>
                   ))}
-                </select>
-                {chevron}
+                </Select>
               </div>
               {errorText("art") ?? <p className={hintClass}>{t("artHint")}</p>}
             </div>
@@ -274,13 +271,13 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                 {tAll("admin.products.category")}
               </label>
               <div className="relative">
-                <select
+                <Select
                   id="product-category"
                   className="field"
                   value={values.category}
-                  onChange={(event) => {
+                  onValueChange={(value) => {
                     chosen.current.category = true;
-                    set("category", event.target.value);
+                    set("category", value);
                   }}
                   {...invalid("category")}
                 >
@@ -292,8 +289,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                       {category.name[locale]}
                     </option>
                   ))}
-                </select>
-                {chevron}
+                </Select>
               </div>
               {errorText("category")}
             </div>
@@ -391,18 +387,17 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
               {t("badge")}
             </label>
             <div className="relative sm:max-w-[calc(50%-0.5rem)]">
-              <select
+              <Select
                 id="product-badge"
                 className="field"
                 value={values.badge}
-                onChange={(event) => set("badge", event.target.value as ProductBadge | "")}
+                onValueChange={(value) => set("badge", value as ProductBadge | "")}
                 aria-describedby="product-badge-hint"
               >
                 <option value="">{t("badgeNone")}</option>
                 <option value="hit">{tAll("product.hit")}</option>
                 <option value="new">{tAll("product.new")}</option>
-              </select>
-              {chevron}
+              </Select>
             </div>
             <p id="product-badge-hint" className={hintClass}>
               {t("badgeHint")}
@@ -465,11 +460,11 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
 
           {spare.length > 0 && (
             <div className="relative mt-4 sm:max-w-64">
-              <Plus className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" strokeWidth={1.8} />
-              <select
-                className="field pl-10 text-muted"
+              <Select
+                icon={<Plus className="size-4" strokeWidth={1.8} />}
+                className="field text-muted"
                 value=""
-                onChange={(event) => addRow(event.target.value as SpecKey)}
+                onValueChange={(value) => addRow(value as SpecKey)}
                 aria-label={t("addSpec")}
               >
                 <option value="" disabled>
@@ -480,8 +475,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                     {tAll(`spec.${key}`)}
                   </option>
                 ))}
-              </select>
-              {chevron}
+              </Select>
             </div>
           )}
         </section>
@@ -494,13 +488,13 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                 {t("color")}
               </label>
               <div className="relative">
-                <select
+                <Select
                   id="product-color"
                   className="field"
                   value={values.color}
-                  onChange={(event) => {
+                  onValueChange={(value) => {
                     chosen.current.color = true;
-                    set("color", event.target.value as ColorKey);
+                    set("color", value as ColorKey);
                   }}
                 >
                   {colorKeys.map((color) => (
@@ -508,8 +502,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                       {tAll(`colors.${color}`)}
                     </option>
                   ))}
-                </select>
-                {chevron}
+                </Select>
               </div>
             </div>
             <div>
@@ -517,11 +510,11 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                 {t("warranty")}
               </label>
               <div className="relative">
-                <select
+                <Select
                   id="product-warranty"
                   className="field"
                   value={values.warranty}
-                  onChange={(event) => set("warranty", Number(event.target.value))}
+                  onValueChange={(value) => set("warranty", Number(value))}
                 >
                   {Array.from(
                     { length: PRODUCT_LIMITS.maxWarranty - PRODUCT_LIMITS.minWarranty + 1 },
@@ -531,8 +524,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                       {tAll("productPage.warrantyValue", { years })}
                     </option>
                   ))}
-                </select>
-                {chevron}
+                </Select>
               </div>
             </div>
           </div>
