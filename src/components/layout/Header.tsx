@@ -13,7 +13,7 @@ const links = [
   { key: "catalog", href: "/catalog", wide: false },
   { key: "deals", href: { pathname: "/catalog", query: { sale: "1" } }, wide: false },
   { key: "delivery", href: "/delivery", wide: true },
-  { key: "support", href: "/#support", wide: true },
+  { key: "support", href: "/contacts", wide: true },
 ] as const;
 
 export function Header() {

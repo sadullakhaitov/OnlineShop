@@ -1,5 +1,6 @@
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Reveal } from "@/components/ui/Reveal";
 
 export function ExtendedWarranty() {
@@ -17,10 +18,10 @@ export function ExtendedWarranty() {
         <h2 className="text-lg font-semibold">{t("title")}</h2>
         <p className="mt-1 text-sm text-muted">{t("text")}</p>
       </div>
-      <a href="#support" className="btn btn-primary group self-start sm:self-auto">
+      <Link href="/warranty" className="btn btn-primary group self-start sm:self-auto">
         {t("cta")}
         <ArrowRight className="size-4 transition-transform duration-300 ease-smooth group-hover:translate-x-1" strokeWidth={1.8} />
-      </a>
+      </Link>
     </Reveal>
   );
 }

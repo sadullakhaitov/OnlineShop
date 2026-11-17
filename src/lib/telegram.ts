@@ -16,6 +16,8 @@ type Callback = () => void;
 /** The part of Telegram's API the shop uses. */
 export type WebApp = {
   initData: string;
+  /** The same data, read without checking; fine for showing, never for trusting. */
+  initDataUnsafe?: { user?: { first_name?: string; photo_url?: string } };
   version: string;
   colorScheme: "light" | "dark";
   isVersionAtLeast(version: string): boolean;

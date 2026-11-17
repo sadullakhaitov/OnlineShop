@@ -762,3 +762,9 @@
 [data-tg] .tg-hide {
   display: none;
 }
+/* Phones and the Mini App only: where the footer is left out. */
+@media (min-width: 768px) {
+  html:not([data-tg]) .phone-only {
+    display: none;
+  }
+}

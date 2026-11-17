@@ -17,7 +17,7 @@ export default async function ShopLayout({ children, params }: Props) {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-[1280px] px-3 pb-10 sm:px-6 sm:pb-14 lg:px-8">
+      <main className="mx-auto w-full max-w-[1280px] px-3 pb-28 sm:px-6 md:pb-14 lg:px-8">
         {children}
       </main>
       <Footer />

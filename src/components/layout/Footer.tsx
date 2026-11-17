@@ -25,9 +25,7 @@ const columns: { key: "customers" | "company" | "support"; links: FooterLink[] }
     key: "company",
     links: [
       { key: "about", href: "/about" },
-      { key: "news" },
       { key: "brands", href: "/catalog" },
-      { key: "careers" },
       { key: "contacts", href: "/contacts" },
     ],
   },
@@ -37,7 +35,6 @@ const columns: { key: "customers" | "company" | "support"; links: FooterLink[] }
       { key: "support247", href: "/contacts" },
       { key: "feedback", href: "/contacts" },
       { key: "service", href: "/warranty" },
-      { key: "manuals" },
       { key: "orderStatus", href: "/account" },
     ],
   },
@@ -49,8 +46,10 @@ export function Footer() {
   const t = useTranslations("footer");
   const year = new Date().getFullYear();
 
+  // Phones and the Mini App have no footer: it repeated on every page and made
+  // each one long. The same links are on the account page there.
   return (
-    <footer id="support" className="mx-auto w-full max-w-[1280px] scroll-mt-28 px-3 pb-28 sm:px-6 md:pb-8 lg:px-8">
+    <footer id="support" className="tg-hide mx-auto hidden w-full max-w-[1280px] scroll-mt-28 px-3 pb-8 sm:px-6 md:block lg:px-8">
       <div className="glass rounded-[1.75rem] px-6 py-10 sm:px-10">
         <div className="grid gap-10 lg:grid-cols-[1.3fr_repeat(3,1fr)_1.2fr]">
           <div>

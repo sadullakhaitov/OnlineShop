@@ -9,7 +9,8 @@ import { enterDelay, gridDelay } from "@/lib/motion";
 import { formatPhone } from "@/lib/phone";
 import { listOrders } from "@/server/orders";
 import { getCurrentCustomer } from "@/server/session";
-import { LogoutButton } from "@/components/account/LogoutButton";
+import { ProfileCard } from "@/components/account/ProfileCard";
+import { InfoLinks } from "@/components/info/InfoLinks";
 import { OrderStatusBadge } from "@/components/order/OrderStatusBadge";
 import { ProductArt } from "@/components/product/ProductArt";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -48,22 +49,12 @@ export default async function AccountPage({ params }: Props) {
     <div className="flex flex-col gap-5 pt-5 sm:pt-7">
       <Breadcrumbs items={[{ label: t("productPage.home"), href: "/" }, { label: t("account.title") }]} />
 
-      <section className="glass glass-sheen enter flex flex-wrap items-center justify-between gap-4 rounded-[1.75rem] p-6 sm:p-8">
-        <div className="min-w-0">
-          <h1 className="text-[1.75rem] font-semibold leading-tight sm:text-4xl">
-            {customer.name ? t("account.greeting", { name: customer.name }) : t("account.greetingNoName")}
-          </h1>
-          <p className="mt-2 text-sm text-muted">
-            {t("account.phone")}: <span className="font-medium tabular-nums text-ink">{formatPhone(customer.phone)}</span>
-          </p>
-        </div>
-        <LogoutButton />
-      </section>
+      <ProfileCard name={customer.name} phone={formatPhone(customer.phone)} />
 
       <h2 className="enter mt-2 px-1 text-2xl font-semibold sm:text-[1.75rem]">{t("account.orders")}</h2>
 
       {orders.length === 0 ? (
-        <div className="glass enter flex flex-col items-center rounded-[1.75rem] px-6 py-16 text-center">
+        <div className="glass enter flex flex-col items-center rounded-[1.75rem] px-6 py-10 text-center sm:py-16">
           <span className="grid size-14 place-items-center rounded-2xl bg-accent-soft text-accent">
             <Package className="size-7" strokeWidth={1.5} />
           </span>
@@ -121,6 +112,8 @@ export default async function AccountPage({ params }: Props) {
           ))}
         </ul>
       )}
+
+      <InfoLinks className="phone-only mt-3" />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { ShieldCheck, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { enterDelay } from "@/lib/motion";
 
 const cards = [
@@ -27,9 +28,9 @@ export function PromoCards() {
           <h2 className="max-w-[13rem] text-lg font-semibold leading-snug">{t(`${key}.title`)}</h2>
           <p className="mt-2 max-w-[13rem] text-sm leading-relaxed text-muted">{t(`${key}.text`)}</p>
           <div className="mt-auto pt-6">
-            <a href="#support" className={`btn h-10 px-4 ${primary ? "btn-primary" : "btn-ghost"}`}>
+            <Link href={`/${id}`} className={`btn h-10 px-4 ${primary ? "btn-primary" : "btn-ghost"}`}>
               {t(`${key}.cta`)}
-            </a>
+            </Link>
           </div>
         </article>
       ))}

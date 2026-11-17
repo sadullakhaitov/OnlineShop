@@ -434,7 +434,18 @@
     "ordersEmptyTitle": "Hali buyurtma yo'q",
     "ordersEmptyText": "Birinchi buyurtmangiz shu yerda ko'rinadi.",
     "toCatalog": "Katalogga o'tish",
-    "more": "+{count}"
+    "more": "+{count}",
+    "edit": "Ismni o'zgartirish",
+    "nameLabel": "Ismingiz",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "nameError": "Ism 2 dan 60 tagacha harf bo'lsin.",
+    "saveError": "Saqlab bo'lmadi. Qayta urinib ko'ring.",
+    "saved": "Saqlandi",
+    "phoneNote": "Saytga shu raqam bilan kirasiz.",
+    "help": "Yordam va ma'lumot",
+    "call": "Qo'ng'iroq qilish",
+    "avatar": "Profil rasmi"
   },
   "payDemo": {
     "title": "Test to'lov",

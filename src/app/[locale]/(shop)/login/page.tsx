@@ -4,6 +4,7 @@ import { redirect } from "@/i18n/navigation";
 import { getCurrentCustomer } from "@/server/session";
 import { LoginForm } from "@/components/account/LoginForm";
 import { TelegramLogin } from "@/components/telegram/TelegramLogin";
+import { InfoLinks } from "@/components/info/InfoLinks";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -29,6 +30,7 @@ export default async function LoginPage({ params }: Props) {
         <TelegramLogin />
         <LoginForm />
       </div>
+      <InfoLinks className="phone-only mt-8" />
     </div>
   );
 }
