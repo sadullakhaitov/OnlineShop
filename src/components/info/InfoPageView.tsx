@@ -2,12 +2,13 @@ import { Clock, Mail, MapPin, Phone, Send } from "lucide-react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { shopContacts } from "@/data/contacts";
+import { shopContacts, shopLegal } from "@/data/contacts";
 import { deliveryZones, FREE_DELIVERY_FROM } from "@/data/delivery";
 import { infoLabels as L, infoPages, type InfoSlug } from "@/data/pages";
 import { formatPrice } from "@/lib/format";
 
-const order: InfoSlug[] = ["delivery", "warranty", "faq", "about", "contacts"];
+const order: InfoSlug[] = ["delivery", "warranty", "faq", "about", "contacts", "offer", "privacy"];
+const legal: InfoSlug[] = ["offer", "privacy"];
 
 export function InfoPageView({ slug, locale }: { slug: InfoSlug; locale: Locale }) {
   const page = infoPages[slug];
@@ -19,6 +20,9 @@ export function InfoPageView({ slug, locale }: { slug: InfoSlug; locale: Locale 
       <header className="enter px-1">
         <h1 className="text-[1.75rem] font-semibold leading-tight sm:text-4xl">{t(page.title)}</h1>
         <p className="mt-3 max-w-2xl text-[0.9375rem] leading-relaxed text-muted sm:text-base">{t(page.lead)}</p>
+        {legal.includes(slug) && (
+          <p className="mt-2 text-xs text-faint">{t(L.updated).replace("{date}", shopLegal.updated.split("-").reverse().join("."))}</p>
+        )}
       </header>
 
       <div className="grid gap-5 lg:grid-cols-[1fr_17rem]">
@@ -46,6 +50,27 @@ export function InfoPageView({ slug, locale }: { slug: InfoSlug; locale: Locale 
               ))}
             </section>
           ))}
+
+          {slug === "offer" && (
+            <section className="glass enter rounded-[1.5rem] p-5 sm:p-7">
+              <h2 className="text-lg font-semibold tracking-tight sm:text-xl">{t(L.seller)}</h2>
+              <dl className="mt-3 grid gap-x-6 gap-y-2 text-[0.9375rem] sm:grid-cols-[auto_1fr]">
+                {[
+                  [t(L.sellerName), t(shopLegal.name)],
+                  [t(L.tin), shopLegal.tin],
+                  [t(L.address), t(shopLegal.address)],
+                  [t(L.bank), t(shopLegal.bank)],
+                  [t(L.account), shopLegal.account],
+                  [t(L.phone), shopContacts.phone],
+                ].map(([label, value]) => (
+                  <div key={label} className="contents">
+                    <dt className="text-muted">{label}</dt>
+                    <dd className="font-medium tabular-nums">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
         </div>
 
         <aside className="glass enter h-fit rounded-[1.5rem] p-5 lg:sticky lg:top-28">

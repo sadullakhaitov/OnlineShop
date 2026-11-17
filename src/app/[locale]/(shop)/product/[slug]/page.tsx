@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { kinds, type SpecKey } from "@/data/products";
 import { routing, type Locale } from "@/i18n/routing";
 import { getCategory } from "@/lib/catalog";
+import { publicSiteUrl } from "@/lib/site";
 import { discountPercent, formatPrice } from "@/lib/format";
 import { enterDelay, productArtName } from "@/lib/motion";
 import { getBuildSlugs, readCatalog } from "@/server/catalog";
@@ -37,9 +38,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = (await readCatalog()).bySlug(slug);
   if (!product) return {};
   const kind = kinds[product.art];
+  const title = `${kind.name[locale as Locale]} ${product.title} — Multimedia`;
   return {
-    title: `${kind.name[locale as Locale]} ${product.title} — Multimedia`,
+    title,
     description: kind.about[locale as Locale],
+    alternates: { languages: { uz: `/uz/product/${slug}`, ru: `/ru/product/${slug}` } },
+    // Shared in Telegram or elsewhere, the link shows the product's photo.
+    openGraph: { title, description: kind.about[locale as Locale], images: product.image ? [product.image] : undefined },
   };
 }
 
@@ -74,8 +79,31 @@ export default async function ProductPage({ params }: Props) {
     { icon: RotateCcw, text: t("productPage.perks.returns") },
   ];
 
+  // What search engines show beside the link: price, stock and rating.
+  const structured = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title,
+    brand: { "@type": "Brand", name: product.brand },
+    category: kind.name[locale],
+    description: kind.about[locale],
+    ...(product.image ? { image: product.image } : {}),
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "UZS",
+      price: product.price,
+      availability: product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      url: `${publicSiteUrl()}/${locale}/product/${product.slug}`,
+    },
+  };
+
   return (
     <div className="flex flex-col gap-5 pt-5 sm:pt-7">
+      <script
+        type="application/ld+json"
+        // The values are the shop's own data; "<" is escaped so no text can close the tag.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structured).replace(/</g, "\\u003c") }}
+      />
       <Breadcrumbs
         items={[
           { label: t("productPage.home"), href: "/" },

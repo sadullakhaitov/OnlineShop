@@ -488,6 +488,20 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
         <button type="submit" disabled={sending} className="btn btn-primary mt-5 h-12 w-full text-[0.9375rem] disabled:opacity-60">
           {sending ? t("checkout.sending") : method === "cash" ? t("checkout.submit") : t("checkout.submitPay")}
         </button>
+        <p className="mt-3 text-center text-xs leading-relaxed text-faint">
+          {t.rich("checkout.consent", {
+            offer: (chunks) => (
+              <Link href="/offer" className="underline underline-offset-2 hover:text-ink">
+                {chunks}
+              </Link>
+            ),
+            privacy: (chunks) => (
+              <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
       </aside>
     </form>
   );

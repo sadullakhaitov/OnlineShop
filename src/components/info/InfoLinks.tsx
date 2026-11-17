@@ -1,4 +1,4 @@
-import { ChevronRight, CircleHelp, Info, MessageCircle, Phone, ShieldCheck, Truck } from "lucide-react";
+import { ChevronRight, CircleHelp, FileText, Info, Lock, MessageCircle, Phone, ShieldCheck, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { shopContacts } from "@/data/contacts";
 import { Link } from "@/i18n/navigation";
@@ -9,6 +9,8 @@ const pages = [
   { key: "faq", href: "/faq", icon: CircleHelp },
   { key: "about", href: "/about", icon: Info },
   { key: "contacts", href: "/contacts", icon: MessageCircle },
+  { key: "offer", href: "/offer", icon: FileText },
+  { key: "privacy", href: "/privacy", icon: Lock },
 ] as const;
 
 const row = "flex items-center gap-3.5 px-4 py-3.5 transition-colors duration-300 hover:bg-hairline";

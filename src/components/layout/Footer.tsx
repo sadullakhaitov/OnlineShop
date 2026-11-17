@@ -27,6 +27,8 @@ const columns: { key: "customers" | "company" | "support"; links: FooterLink[] }
       { key: "about", href: "/about" },
       { key: "brands", href: "/catalog" },
       { key: "contacts", href: "/contacts" },
+      { key: "offer", href: "/offer" },
+      { key: "privacy", href: "/privacy" },
     ],
   },
   {

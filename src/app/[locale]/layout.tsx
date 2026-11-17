@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import "@fontsource-variable/inter";
 import "../globals.css";
 import { routing } from "@/i18n/routing";
+import { publicSiteUrl } from "@/lib/site";
+import { Analytics } from "@/components/layout/Analytics";
 import { telegramScript } from "@/lib/telegram";
 import { languageScript } from "@/lib/language";
 import { themeScript } from "@/lib/theme";
@@ -24,8 +26,17 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
   return {
+    metadataBase: new URL(publicSiteUrl()),
     title: t("title"),
     description: t("description"),
+    openGraph: {
+      type: "website",
+      siteName: "Multimedia",
+      locale: locale === "ru" ? "ru_RU" : "uz_UZ",
+      title: t("title"),
+      description: t("description"),
+    },
+    alternates: { languages: { uz: "/uz", ru: "/ru" } },
   };
 }
 
@@ -74,6 +85,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <span />
         </div>
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );

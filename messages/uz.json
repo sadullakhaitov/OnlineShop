@@ -129,7 +129,9 @@
       "support247": "Yordam xizmati",
       "feedback": "Qayta aloqa",
       "service": "Servis markazlari",
-      "orderStatus": "Buyurtmani tekshirish"
+      "orderStatus": "Buyurtmani tekshirish",
+      "offer": "Ommaviy oferta",
+      "privacy": "Maxfiylik siyosati"
     },
     "hours": "Har kuni 9:00 dan 21:00 gacha",
     "address": "Buxoro shahri",
@@ -312,7 +314,8 @@
       "generic": "Buyurtmani yuborib bo'lmadi. Birozdan so'ng qayta urinib ko'ring."
     },
     "emptyTitle": "Savat bo'sh",
-    "emptyText": "Buyurtma berish uchun avval savatga tovar qo'shing."
+    "emptyText": "Buyurtma berish uchun avval savatga tovar qo'shing.",
+    "consent": "Buyurtma berish orqali siz <offer>ommaviy oferta</offer> shartlariga va <privacy>maxfiylik siyosati</privacy>ga rozilik bildirasiz."
   },
   "order": {
     "title": "Buyurtma №{number}",
