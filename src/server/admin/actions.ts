@@ -11,6 +11,7 @@ import { addressHashOf } from "@/server/http";
 import { adminLogin, adminLogout } from "./auth";
 import { ORDER_STATUSES, changeOrderPayment, changeOrderStatus, type PaymentAction } from "./orders";
 import { createProduct, setProductFlag, updateProduct, type ProductFlag } from "./products";
+import { exportProducts, importProducts, type ImportReport } from "./import";
 import { createPromo, deletePromo, setPromoActive, type PromoField } from "./promo";
 import { CATALOG_TAG } from "@/server/catalog";
 import { moderateReview } from "@/server/reviews";
@@ -246,4 +247,23 @@ export async function moderateReviewAction(form: FormData): Promise<void> {
   const productId = await moderateReview(await getDb(), id, action);
   if (productId) refreshShop();
   else refresh();
+}
+
+/** Reads a spreadsheet of products: `apply` false only shows what would happen. */
+export async function importProductsAction(sheet: unknown, apply: boolean): Promise<ImportReport | { ok: false; error: "server" }> {
+  await requireAdmin();
+  try {
+    const report = await importProducts(await getDb(), sheet, apply === true);
+    if (report.ok && report.applied && report.rows.some((row) => row.action === "create" || row.action === "update")) refreshShop();
+    return report;
+  } catch (error) {
+    console.error("Products were not imported", error);
+    return { ok: false, error: "server" };
+  }
+}
+
+/** The catalogue as a CSV file for Excel. */
+export async function exportProductsAction(): Promise<string> {
+  await requireAdmin();
+  return exportProducts(await getDb(), (await getLocale()) === "ru" ? "ru" : "uz");
 }

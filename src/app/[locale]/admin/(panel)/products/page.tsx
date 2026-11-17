@@ -1,5 +1,5 @@
 import Form from "next/form";
-import { Plus, Search, X } from "lucide-react";
+import { FileSpreadsheet, Plus, Search, X } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getDb } from "@/db";
 import { categories } from "@/data/categories";
@@ -67,10 +67,16 @@ export default async function AdminProductsPage({ params, searchParams }: Props)
           <h1 className="text-[1.75rem] font-semibold sm:text-[2rem]">{t("products.title")}</h1>
           <p className="mt-1 text-sm text-muted">{t("products.found", { count: list.total })}</p>
         </div>
-        <Link href="/admin/products/new" className="btn btn-primary">
-          <Plus className="size-4" strokeWidth={2} />
-          {t("products.add")}
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/products/import" className="btn btn-ghost">
+            <FileSpreadsheet className="size-4" strokeWidth={1.8} />
+            {t("products.import")}
+          </Link>
+          <Link href="/admin/products/new" className="btn btn-primary">
+            <Plus className="size-4" strokeWidth={2} />
+            {t("products.add")}
+          </Link>
+        </div>
       </header>
 
       <Form action={getPathname({ href: "/admin/products", locale })} className="flex flex-wrap gap-2">

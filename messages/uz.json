@@ -773,7 +773,8 @@
         "stockPlaceholder": "Sanalmaydi",
         "stockHint": "Sonini yozsangiz, har buyurtmada o'zi kamayadi, tugaganda \"Sotuvda yo'q\" bo'ladi, bekor qilingan buyurtmada qaytadi. Bo'sh qolsa, son hisoblanmaydi."
       },
-      "pieces": "{count} dona"
+      "pieces": "{count} dona",
+      "import": "Excel'dan yuklash"
     },
     "notFound": {
       "title": "Sahifa topilmadi",
@@ -877,6 +878,76 @@
       "delete": "O'chirish",
       "product": "Mahsulot: {title}",
       "gone": "Mahsulot o'chirilgan"
+    },
+    "import": {
+      "title": "Excel'dan yuklash",
+      "subtitle": "Ko'p mahsulotning narxi va sonini bir yo'la yangilang yoki yangi mahsulotlarni qo'shing. Avval nima o'zgarishini ko'rasiz, keyin saqlaysiz.",
+      "step1": "1. Joriy ro'yxatni yuklab oling",
+      "step1Text": "Fayl Excel'da ochiladi. Narx, eski narx, soni va boshqa ustunlarni o'zgartiring. Yangi mahsulot uchun Kod ustunini bo'sh qoldirib, pastga yangi qator qo'shing.",
+      "download": "Ro'yxatni yuklab olish (Excel)",
+      "columnsTitle": "Ustunlar nimani bildiradi",
+      "step2": "2. Faylni yuklang",
+      "step2Text": "Tahrirlangan faylni tanlang yoki shu yerga tashlang. Hali hech narsa saqlanmaydi.",
+      "choose": "Faylni tanlash",
+      "formats": ".xlsx yoki .csv, 1000 qatorgacha",
+      "step3": "3. Tekshiring va saqlang",
+      "doneTitle": "Saqlandi",
+      "counts": {
+        "create": "Yangi: {count}",
+        "update": "Yangilanadi: {count}",
+        "same": "O'zgarishsiz: {count}",
+        "error": "Xato: {count}"
+      },
+      "apply": "{count} ta o'zgarishni saqlash",
+      "errorsSkipped": "Xatoli qatorlar o'tkazib yuboriladi. Ularni faylda tuzatib, qayta yuklashingiz mumkin.",
+      "toProducts": "Mahsulotlar ro'yxatiga",
+      "line": "{line}-qator",
+      "willCreate": "Yangi mahsulot qo'shiladi",
+      "created": "Qo'shildi",
+      "willUpdate": "O'zgaradi: {fields}",
+      "updated": "Yangilandi: {fields}",
+      "unknownCode": "Bunday kodli mahsulot yo'q. Yangi mahsulot uchun Kod ustunini bo'sh qoldiring.",
+      "required": "Yangi mahsulot uchun to'ldiring: {fields}",
+      "badFields": "Tekshiring: {fields}",
+      "errors": {
+        "empty": "Faylda mahsulot qatorlari yo'q.",
+        "header": "Birinchi qatorda ustun nomlari topilmadi: kamida \"Kod\" yoki \"Brend\" va \"Model\" kerak.",
+        "tooLarge": "Fayl juda katta: 1000 qatorgacha bo'lishi kerak.",
+        "file": "Faylni o'qib bo'lmadi. Excel'da .xlsx yoki .csv qilib saqlang.",
+        "server": "Bajarib bo'lmadi. Qayta urinib ko'ring."
+      },
+      "columns": {
+        "id": "Kod",
+        "category": "Kategoriya",
+        "art": "Turi",
+        "brand": "Brend",
+        "model": "Model",
+        "price": "Narx",
+        "oldPrice": "Eski narx",
+        "stock": "Soni",
+        "inStock": "Sotuvda",
+        "color": "Rang",
+        "warranty": "Kafolat",
+        "image": "Rasm",
+        "active": "Ko'rinadi",
+        "badge": "Belgi",
+        "specs": "Xususiyatlar"
+      },
+      "help": {
+        "id": "mahsulot kodi (P-001). Bo'sh bo'lsa, yangi mahsulot qo'shiladi",
+        "brand": "masalan, Samsung",
+        "model": "masalan, RB37 No Frost",
+        "art": "mahsulot turi saytdagidek: Muzlatgich, Televizor…",
+        "category": "Yirik texnika, Kichik texnika…",
+        "price": "so'mda, bo'sh joy bilan ham bo'ladi: 8 990 000",
+        "oldPrice": "chegirmagacha narx; 0 yozsangiz olib tashlanadi",
+        "stock": "ombordagi dona; 0 bo'lsa \"tugagan\" bo'ladi",
+        "inStock": "ha yoki yo'q (soni yozilmagan bo'lsa)",
+        "color": "Qora, Oq, Kumushrang, Bej, Grafit, Ko'k",
+        "warranty": "yil hisobida, 1 dan 10 gacha",
+        "image": "rasm havolasi (https://…)",
+        "active": "ha yoki yo'q: saytda ko'rinadimi"
+      }
     }
   },
   "review": {
