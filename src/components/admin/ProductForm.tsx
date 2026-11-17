@@ -39,6 +39,7 @@ type Values = {
   inStock: boolean;
   active: boolean;
   specs: SpecValues;
+  image: string;
 };
 
 const blank: Values = {
@@ -54,6 +55,7 @@ const blank: Values = {
   inStock: true,
   active: true,
   specs: {},
+  image: "",
 };
 
 function fromRow(product: ProductRow): Values {
@@ -70,6 +72,7 @@ function fromRow(product: ProductRow): Values {
     inStock: product.inStock,
     active: product.active,
     specs: product.specs,
+    image: product.image ?? "",
   };
 }
 
@@ -163,6 +166,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
     if (!values.model.trim()) fields.push("model");
     if (price < PRODUCT_LIMITS.minPrice || price > PRODUCT_LIMITS.maxPrice) fields.push("price");
     if (values.oldPrice && (oldPrice <= price || oldPrice > PRODUCT_LIMITS.maxPrice)) fields.push("oldPrice");
+    if (values.image.trim() && !/^https:\/\/\S+$/.test(values.image.trim())) fields.push("image");
     return fields;
   };
 
@@ -187,6 +191,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
       price,
       oldPrice: values.oldPrice ? oldPrice : null,
       badge: values.badge || null,
+      image: values.image.trim() || null,
       specs: Object.fromEntries(rows.flatMap((key) => (filled(values.specs[key]) ? [[key, values.specs[key]]] : []))),
     };
 
@@ -217,7 +222,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
     if (!errors.includes(field)) return null;
     if (field === "price") return t("errors.price", { min: formatPrice(PRODUCT_LIMITS.minPrice) });
     if (field === "specs") return t("errors.specs", { max: PRODUCT_LIMITS.spec });
-    if (field === "art" || field === "category" || field === "brand" || field === "model" || field === "oldPrice") {
+    if (field === "art" || field === "category" || field === "brand" || field === "model" || field === "oldPrice" || field === "image") {
       return t(`errors.${field}`);
     }
     return t("errors.invalid");
@@ -481,6 +486,27 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
         </section>
 
         <section className={card}>
+          <h2 className={cardTitle}>{t("photo")}</h2>
+          <div className="mt-4">
+            <label htmlFor="product-image" className={labelClass}>
+              {t("image")}
+            </label>
+            <input
+              id="product-image"
+              type="url"
+              inputMode="url"
+              className="field"
+              placeholder="https://…"
+              value={values.image}
+              maxLength={PRODUCT_LIMITS.image}
+              onChange={(event) => set("image", event.target.value)}
+              {...invalid("image")}
+            />
+            {errorText("image") ?? <p className={hintClass}>{t("imageHint")}</p>}
+          </div>
+        </section>
+
+        <section className={card}>
           <h2 className={cardTitle}>{t("extra")}</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
@@ -589,6 +615,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
             {values.art && (
               <ProductArt
                 kind={values.art}
+                image={/^https:\/\//.test(values.image.trim()) ? values.image.trim() : null}
                 className={`absolute inset-[11%] size-[78%] drop-shadow-lg ${values.inStock ? "" : "opacity-50 grayscale"}`}
               />
             )}

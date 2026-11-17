@@ -36,6 +36,18 @@ const inputSchema = z.object({
   warranty: z.number().int().min(PRODUCT_LIMITS.minWarranty).max(PRODUCT_LIMITS.maxWarranty),
   inStock: z.boolean(),
   active: z.boolean(),
+  image: z
+    .string()
+    .trim()
+    .max(PRODUCT_LIMITS.image)
+    .refine((value) => {
+      try {
+        return new URL(value).protocol === "https:";
+      } catch {
+        return false;
+      }
+    })
+    .nullable(),
   // Only the specifications the shop knows how to name.
   specs: z.strictObject(
     Object.fromEntries(specKeys.map((key) => [key, specPair.optional()])) as Record<SpecKey, z.ZodOptional<typeof specPair>>,

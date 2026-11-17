@@ -103,6 +103,9 @@ export default async function ProductPage({ params }: Props) {
             <ViewTransition name={productArtName(product.id)} share="morph" default="none">
               <ProductArt
                 kind={product.art}
+                image={product.image}
+                alt={product.title}
+                eager
                 className={`float h-[72%] w-[72%] drop-shadow-2xl ${product.inStock ? "" : "opacity-50 grayscale"}`}
               />
             </ViewTransition>

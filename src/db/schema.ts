@@ -57,6 +57,8 @@ export const products = pgTable(
     /** Warranty in years */
     warranty: integer("warranty").notNull().default(1),
     specs: jsonb("specs").$type<ProductSpecs>().notNull().default({}),
+    /** Link to the product photo (https). Without one the shop draws the product kind. */
+    image: text("image"),
     /**
      * Grows with every change. The server keeps the catalogue in memory and
      * compares these numbers to notice that its copy is outdated.

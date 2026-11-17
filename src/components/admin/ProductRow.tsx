@@ -13,7 +13,7 @@ import { ProductSwitches } from "./ProductSwitches";
 const columns = "lg:grid-cols-[minmax(0,1fr)_10rem_6.5rem_6.5rem_2.5rem]";
 
 /** A product in the admin list: a table row on wide screens, a small card on phones. */
-export function ProductRow({ product }: { product: Product }) {
+function ProductRow({ product }: { product: Product }) {
   const t = useTranslations("admin.products");
   const tProduct = useTranslations("product");
   const locale = useLocale() as Locale;
@@ -28,7 +28,7 @@ export function ProductRow({ product }: { product: Product }) {
     <div className={`grid grid-cols-2 items-center gap-x-4 gap-y-3 px-4 py-3.5 sm:px-5 ${columns}`}>
       <div className="col-span-2 flex min-w-0 items-center gap-3.5 lg:col-span-1">
         <Link href={href} tabIndex={-1} aria-hidden="true" className="tile grid size-14 shrink-0 place-items-center rounded-2xl">
-          <ProductArt kind={product.art} className={`size-10 ${state === "onSale" ? "" : "opacity-50 grayscale"}`} />
+          <ProductArt kind={product.art} image={product.image} className={`size-10 rounded-lg ${state === "onSale" ? "" : "opacity-50 grayscale"}`} />
         </Link>
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-2">

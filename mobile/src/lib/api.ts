@@ -25,6 +25,7 @@ export type Product = {
   rating: number;
   reviews: number;
   inStock: boolean;
+  image: string | null;
 };
 
 export type ProductDetail = Product & {

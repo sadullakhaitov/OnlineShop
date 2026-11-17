@@ -43,7 +43,7 @@ export default function Cart() {
               {product ? (
                 <Link href={{ pathname: "/product/[slug]", params: { slug: product.slug } }} asChild>
                   <Pressable>
-                    <ProductImage art={product.art} size={88} />
+                    <ProductImage art={product.art} image={product.image} size={88} />
                   </Pressable>
                 </Link>
               ) : (

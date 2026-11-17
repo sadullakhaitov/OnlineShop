@@ -97,7 +97,18 @@ export function Glass({
   );
 }
 
-export function ProductImage({ art, size, style }: { art: string; size?: number; style?: StyleProp<ViewStyle> }) {
+export function ProductImage({
+  art,
+  image,
+  size,
+  style,
+}: {
+  art: string;
+  /** The product photo; the drawing of `art` is shown when there is none. */
+  image?: string | null;
+  size?: number;
+  style?: StyleProp<ViewStyle>;
+}) {
   const c = usePalette();
   return (
     <LinearGradient
@@ -106,7 +117,7 @@ export function ProductImage({ art, size, style }: { art: string; size?: number;
       end={{ x: 1, y: 1 }}
       style={[{ borderRadius: radius.tile, alignItems: "center", justifyContent: "center" }, size ? { width: size, height: size } : null, style]}
     >
-      <Image source={artUrl(art)} style={{ width: "78%", aspectRatio: 1 }} contentFit="contain" transition={250} />
+      <Image source={image || artUrl(art)} style={{ width: image ? "86%" : "78%", aspectRatio: 1 }} contentFit="contain" transition={250} />
     </LinearGradient>
   );
 }

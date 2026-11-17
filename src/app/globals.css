@@ -310,15 +310,6 @@
     background: var(--tile);
   }
 
-  /*
-   * A backdrop-filter stops seeing the page behind it while any ancestor is
-   * semi-transparent, which makes glass visibly "snap" when a fade ends. So
-   * fades are always applied to the glass element itself, never to a wrapper.
-   */
-  .is-pending .glass {
-    opacity: 0.5;
-  }
-
   /* ───────────── Buttons ───────────── */
   .btn {
     display: inline-flex;

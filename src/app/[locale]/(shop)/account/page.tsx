@@ -7,6 +7,7 @@ import { Link, redirect } from "@/i18n/navigation";
 import { formatDateTime, formatPrice } from "@/lib/format";
 import { enterDelay, gridDelay } from "@/lib/motion";
 import { formatPhone } from "@/lib/phone";
+import { getCatalog } from "@/server/catalog";
 import { listOrders } from "@/server/orders";
 import { getCurrentCustomer } from "@/server/session";
 import { ProfileCard } from "@/components/account/ProfileCard";
@@ -36,7 +37,7 @@ export default async function AccountPage({ params }: Props) {
   if (!customer) return redirect({ href: "/login", locale });
 
   const t = await getTranslations();
-  const orders = await listOrders(await getDb(), customer);
+  const [orders, catalog] = await Promise.all([listOrders(await getDb(), customer), getCatalog()]);
 
   // "Not paid" would alarm a customer who chose to pay on receipt.
   const paymentNote = (order: (typeof orders)[number]) => {
@@ -88,7 +89,7 @@ export default async function AccountPage({ params }: Props) {
                         key={item.id}
                         className="tile -ml-2 grid size-11 place-items-center rounded-xl border border-[var(--glass-border)] first:ml-0"
                       >
-                        <ProductArt kind={item.art as ArtKind} className="size-[76%]" />
+                        <ProductArt kind={item.art as ArtKind} image={catalog.byId(item.productId)?.image} className="size-[76%]" />
                       </span>
                     ))}
                     {order.items.length > THUMBS && (

@@ -19,7 +19,7 @@ import { queueOrderMessages } from "@/server/telegram/notify";
 /** What the admin panel reads and changes in orders. */
 
 export const ORDER_STATUSES: OrderStatus[] = ["new", "confirmed", "delivering", "delivered", "cancelled"];
-export const ADMIN_PAGE_SIZE = 20;
+const ADMIN_PAGE_SIZE = 20;
 
 /** Bukhara lives on Tashkent time, five hours ahead of UTC all year round. */
 const TASHKENT_OFFSET = 5 * 60 * 60_000;

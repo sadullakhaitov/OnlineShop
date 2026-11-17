@@ -6,7 +6,7 @@ import { AUTH_HINT_COOKIE } from "@/lib/auth-hint";
 import { SESSION_LIFETIME, getCustomerByToken } from "./auth";
 
 /** The sign-in cookie. JavaScript in the page cannot read it. */
-export const SESSION_COOKIE = "mm_session";
+const SESSION_COOKIE = "mm_session";
 
 const base = {
   path: "/",

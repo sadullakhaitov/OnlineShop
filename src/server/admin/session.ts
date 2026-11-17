@@ -6,7 +6,7 @@ import { redirect } from "@/i18n/navigation";
 import { ADMIN_SESSION_LIFETIME, isAdminToken } from "./auth";
 
 /** The admin sign-in cookie. JavaScript in the page cannot read it. */
-export const ADMIN_COOKIE = "mm_admin";
+const ADMIN_COOKIE = "mm_admin";
 
 const options = {
   path: "/",

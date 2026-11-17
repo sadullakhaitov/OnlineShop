@@ -71,7 +71,6 @@
     "new": "Yangi",
     "reviews": "{count} ta sharh",
     "currency": "so'm",
-    "addToFavorites": "Sevimlilarga qo'shish",
     "outOfStock": "Hozircha yo'q"
   },
   "collections": {
@@ -125,14 +124,11 @@
       "returns": "Kafolat va qaytarish",
       "faq": "Savol-javoblar",
       "about": "Biz haqimizda",
-      "news": "Yangiliklar",
       "brands": "Brendlar",
-      "careers": "Vakansiyalar",
       "contacts": "Kontaktlar",
       "support247": "Yordam xizmati",
       "feedback": "Qayta aloqa",
       "service": "Servis markazlari",
-      "manuals": "Yo'riqnomalar",
       "orderStatus": "Buyurtmani tekshirish"
     },
     "hours": "Har kuni 9:00 dan 21:00 gacha",
@@ -736,8 +732,12 @@
           "stale": "Bu mahsulot boshqa joyda o'zgartirilgan. Sahifani yangilab, o'zgarishlarni qaytadan kiriting.",
           "reload": "Sahifani yangilash",
           "missing": "Mahsulot topilmadi.",
-          "server": "Saqlab bo'lmadi. Qayta urinib ko'ring."
-        }
+          "server": "Saqlab bo'lmadi. Qayta urinib ko'ring.",
+          "image": "Havola https:// bilan boshlanishi kerak"
+        },
+        "photo": "Rasm",
+        "image": "Rasm havolasi",
+        "imageHint": "Rasmning to'g'ridan-to'g'ri havolasini qo'ying (https:// bilan boshlanadi, oxiri odatda .jpg, .png yoki .webp). Oq fondagi rasm eng chiroyli chiqadi. Bo'sh qolsa, tur bo'yicha chizma ko'rsatiladi."
       }
     },
     "notFound": {

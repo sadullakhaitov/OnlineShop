@@ -40,6 +40,8 @@ export function ProductCard({ product, reveal, enter }: Props) {
         <ViewTransition name={productArtName(product.id)} share="morph" default="none">
           <ProductArt
             kind={product.art}
+            image={product.image}
+            alt={product.title}
             className={`absolute inset-[11%] size-[78%] drop-shadow-lg transition-transform duration-700 ease-smooth group-hover:scale-[1.07] ${
               product.inStock ? "" : "opacity-50 grayscale"
             }`}

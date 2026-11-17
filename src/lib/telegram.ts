@@ -5,9 +5,9 @@
  * https://core.telegram.org/bots/webapps
  */
 
-export const TELEGRAM_SCRIPT = "https://telegram.org/js/telegram-web-app.js";
+const TELEGRAM_SCRIPT = "https://telegram.org/js/telegram-web-app.js";
 /** Set for the whole visit once the page was opened inside Telegram. */
-export const TELEGRAM_FLAG = "mm_tg";
+const TELEGRAM_FLAG = "mm_tg";
 /** Telegram's colour scheme, remembered for pages loaded later in the visit. */
 export const TELEGRAM_DARK = "mm_tg_dark";
 
@@ -46,7 +46,7 @@ declare global {
 }
 
 /** True inside the Telegram Mini App. Known before the first paint (see the layout's script). */
-export function inTelegram(): boolean {
+function inTelegram(): boolean {
   return typeof document !== "undefined" && document.documentElement.dataset.tg === "1";
 }
 

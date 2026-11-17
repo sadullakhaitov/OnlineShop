@@ -106,6 +106,7 @@ function CartRow({ line }: { line: CartLine }) {
       >
         <ProductArt
           kind={line.art}
+          image={line.image}
           className={`size-[74%] drop-shadow-md ${line.inStock ? "" : "opacity-50 grayscale"}`}
         />
       </Link>

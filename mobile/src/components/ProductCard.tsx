@@ -27,7 +27,7 @@ export function ProductCard({ product, width }: { product: Product; width?: numb
       <Pressable>
         <Glass style={{ padding: 8 }} radius={24}>
           <View>
-            <ProductImage art={product.art} style={{ aspectRatio: 1, width: "100%", opacity: product.inStock ? 1 : 0.55 }} />
+            <ProductImage art={product.art} image={product.image} style={{ aspectRatio: 1, width: "100%", opacity: product.inStock ? 1 : 0.55 }} />
             <View style={styles.badges}>
               {discount > 0 && <Badge text={`−${discount}%`} color={c.danger} />}
               {product.badge === "hit" && <Badge text={t.common.hit} color={c.accent} />}

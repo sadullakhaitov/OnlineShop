@@ -4,13 +4,40 @@ import type { ArtKind } from "@/data/products";
 type Props = {
   kind: ArtKind;
   className?: string;
+  /** The product photo; the drawing of the kind is shown when there is none. */
+  image?: string | null;
+  /** Read out for the photo; the drawing is decoration. */
+  alt?: string;
+  /** The first photos on a page load at once, the rest when scrolled to. */
+  eager?: boolean;
 };
 
 /**
- * Vector product illustrations used until real product photos are uploaded.
+ * A product's picture: its photo when it has one, otherwise a drawing of
+ * its kind. The drawings are vector illustrations.
  * Every drawing sits in a 200×200 box with its base near y=180.
  */
-export function ProductArt({ kind, className }: Props) {
+export function ProductArt({ image, ...props }: Props) {
+  if (image) return <ProductPhoto image={image} {...props} />;
+  return <ProductDrawing {...props} />;
+}
+
+/** A photo sits in the same box as a drawing, kept whole and centred. */
+function ProductPhoto({ image, className = "", alt = "", eager }: Props & { image: string }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- photos come from many sites; the browser loads them directly.
+    <img
+      src={image}
+      alt={alt}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      referrerPolicy="no-referrer"
+      className={`${className} object-contain mix-blend-multiply dark:mix-blend-normal`}
+    />
+  );
+}
+
+function ProductDrawing({ kind, className }: Omit<Props, "image">) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const id = (name: string) => `${uid}-${name}`;
   const url = (name: string) => `url(#${id(name)})`;

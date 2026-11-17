@@ -157,7 +157,9 @@ export default async function OrderPage({ params }: Props) {
               {order.items.map((item) => {
                 // The order keeps what was bought; the product itself may have left the shop since.
                 const listed = catalog.bySlug(item.slug) !== undefined;
-                const picture = <ProductArt kind={item.art as ArtKind} className="size-[74%] drop-shadow-md" />;
+                const picture = (
+                  <ProductArt kind={item.art as ArtKind} image={catalog.byId(item.productId)?.image} className="size-[74%] drop-shadow-md" />
+                );
                 const tile = "tile grid size-16 shrink-0 place-items-center rounded-2xl";
                 return (
                   <li key={item.id} className="flex items-center gap-3.5 py-3.5">

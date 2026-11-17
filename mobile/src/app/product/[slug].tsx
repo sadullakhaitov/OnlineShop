@@ -75,7 +75,7 @@ export default function ProductScreen() {
         <>
           <ScrollView contentContainerStyle={{ paddingHorizontal: GUTTER, paddingBottom: 130 + insets.bottom, gap: 16 }}>
             <Glass style={{ padding: 10 }}>
-              <ProductImage art={product.art} style={{ width: "100%", aspectRatio: 1.1 }} />
+              <ProductImage art={product.art} image={product.image} style={{ width: "100%", aspectRatio: 1.1 }} />
             </Glass>
 
             <View style={{ gap: 6 }}>

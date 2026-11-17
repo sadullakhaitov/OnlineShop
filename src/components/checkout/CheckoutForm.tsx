@@ -438,7 +438,7 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
           {cart.available.map((line) => (
             <li key={line.id} className="flex items-center gap-3">
               <span className="tile grid size-12 shrink-0 place-items-center rounded-xl">
-                <ProductArt kind={line.art} className="size-[76%]" />
+                <ProductArt kind={line.art} image={line.image} className="size-[76%]" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="line-clamp-1 text-sm font-medium">{line.title}</span>

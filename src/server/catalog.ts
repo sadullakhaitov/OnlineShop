@@ -16,7 +16,7 @@ import { createCatalog, type Catalog } from "@/lib/catalog";
  * current: it compares a fingerprint of every product's id and version.
  */
 
-export function toProduct(row: ProductRow): Product {
+function toProduct(row: ProductRow): Product {
   return {
     id: row.id,
     slug: row.slug,
@@ -35,6 +35,7 @@ export function toProduct(row: ProductRow): Product {
     warranty: row.warranty,
     // The database does not keep the order of the keys, the shop does.
     specs: orderSpecs(row.specs),
+    image: row.image ?? undefined,
   };
 }
 

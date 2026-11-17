@@ -23,6 +23,8 @@ export type MobileProduct = {
   rating: number;
   reviews: number;
   inStock: boolean;
+  /** Product photo link, or null: the app then shows the drawing of `art`. */
+  image: string | null;
 };
 
 export function toMobileProduct(product: Product, locale: Locale): MobileProduct {
@@ -40,6 +42,7 @@ export function toMobileProduct(product: Product, locale: Locale): MobileProduct
     rating: product.rating,
     reviews: product.reviews,
     inStock: product.inStock,
+    image: product.image ?? null,
   };
 }
 

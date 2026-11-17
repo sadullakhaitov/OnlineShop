@@ -34,6 +34,7 @@ export type CartProduct = {
   price: number;
   oldPrice?: number;
   inStock: boolean;
+  image?: string;
 };
 
 export type SearchHit = {
@@ -42,6 +43,7 @@ export type SearchHit = {
   kind: string;
   art: Product["art"];
   price: number;
+  image?: string;
 };
 
 /** Lower-cases and unifies the apostrophe variants typed in Uzbek words (o‘, g‘). */
@@ -117,6 +119,7 @@ export function createCatalog(products: Product[]) {
             price: product.price,
             oldPrice: product.oldPrice,
             inStock: product.inStock,
+            image: product.image,
           },
         ];
       });
@@ -163,6 +166,7 @@ export function createCatalog(products: Product[]) {
           kind: kinds[product.art].name[locale],
           art: product.art,
           price: product.price,
+          image: product.image,
         }));
     },
   };

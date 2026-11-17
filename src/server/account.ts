@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import type { Db } from "@/db";
 import { customers } from "@/db/schema";
 
-export const NAME_LIMITS = { min: 2, max: 60 } as const;
+const NAME_LIMITS = { min: 2, max: 60 } as const;
 
 /** A name as the customer typed it, tidied; null when it cannot be used. */
 export function cleanName(value: unknown): string | null {

@@ -9,7 +9,7 @@ import { bot } from "./texts";
 
 /** Connecting the bot to the shop, and sending messages after a response. */
 
-export const webhookPath = "/api/telegram/webhook";
+const webhookPath = "/api/telegram/webhook";
 
 /** Sends the waiting order messages once the current response has gone out. */
 export function sendTelegramLater(headers: Headers): void {

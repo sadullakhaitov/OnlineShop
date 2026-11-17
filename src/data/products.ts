@@ -62,6 +62,8 @@ export type Product = {
   /** Warranty in years */
   warranty: number;
   specs: ProductSpecs;
+  /** Link to the product photo; without one the product kind is drawn. */
+  image?: string;
 };
 
 export const artKinds = [

@@ -144,7 +144,7 @@ export function SearchDialog() {
                             className="flex items-center gap-3 rounded-2xl p-2 transition-colors duration-200 hover:bg-hairline"
                           >
                             <span className="tile grid size-14 shrink-0 place-items-center rounded-xl">
-                              <ProductArt kind={hit.art} className="size-11" />
+                              <ProductArt kind={hit.art} image={hit.image} className="size-11" />
                             </span>
                             <span className="min-w-0 flex-1">
                               <span className="block text-xs text-muted">{hit.kind}</span>

@@ -11,6 +11,7 @@ import { formatDateTime, formatPrice, formatShortDateTime } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
 import { allowedPaymentActions, allowedStatuses, getAdminOrder } from "@/server/admin/orders";
 import { requireAdmin } from "@/server/admin/session";
+import { readCatalog } from "@/server/catalog";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import { OrderPaymentActions, OrderStatusActions } from "@/components/admin/OrderActions";
 import { PaymentNote } from "@/components/admin/OrderRow";
@@ -38,7 +39,7 @@ export default async function AdminOrderPage({ params }: Props) {
   setRequestLocale(locale);
   await requireAdmin();
 
-  const order = await getAdminOrder(await getDb(), id);
+  const [order, catalog] = await Promise.all([getAdminOrder(await getDb(), id), readCatalog()]);
   if (!order) notFound();
 
   const t = await getTranslations("admin");
@@ -140,7 +141,7 @@ export default async function AdminOrderPage({ params }: Props) {
               {order.items.map((item) => (
                 <li key={item.id} className="flex items-center gap-3.5 py-3.5">
                   <div className="tile grid size-14 shrink-0 place-items-center rounded-2xl">
-                    <ProductArt kind={item.art as ArtKind} className="size-11" />
+                    <ProductArt kind={item.art as ArtKind} image={catalog.byId(item.productId)?.image} className="size-11" />
                   </div>
                   <div className="min-w-0 flex-1">
                     {/* The product's own page in the panel: it is there even when the shop no longer shows it. */}

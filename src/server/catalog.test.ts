@@ -8,6 +8,7 @@ import { createOrder } from "./orders";
 import { orderInput, testDb } from "./testing";
 
 const kettle: ProductInput = {
+  image: null,
   category: "kitchen",
   art: "kettle",
   brand: "Tefal",

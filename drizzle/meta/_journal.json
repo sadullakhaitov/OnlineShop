@@ -36,6 +36,13 @@
       "when": 1794896844891,
       "tag": "0004_telegram",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794920131534,
+      "tag": "0005_product_image",
+      "breakpoints": true
     }
   ]
 }

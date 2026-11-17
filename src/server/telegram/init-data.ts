@@ -17,7 +17,7 @@ export type TelegramUser = {
 };
 
 /** Launch data stays valid for a day: long enough for a Mini App left open. */
-export const INIT_DATA_MAX_AGE = 24 * 60 * 60;
+const INIT_DATA_MAX_AGE = 24 * 60 * 60;
 
 function hmac(key: string | Buffer, data: string): Buffer {
   return createHmac("sha256", key).update(data).digest();

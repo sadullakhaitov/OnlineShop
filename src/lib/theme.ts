@@ -1,6 +1,6 @@
 /** Theme helpers shared by the toggle button and the inline script in the layout. */
 
-export const THEME_KEY = "theme";
+const THEME_KEY = "theme";
 
 /**
  * Runs in <head> before the first paint so the saved theme never flashes.

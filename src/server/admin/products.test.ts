@@ -16,6 +16,7 @@ import {
 } from "./products";
 
 const tv: ProductInput = {
+  image: null,
   category: "tv-audio",
   art: "tv",
   brand: "Samsung",
@@ -68,6 +69,14 @@ describe("parseProduct", () => {
     expect(fields({ ...tv, specs: { screen: { uz: "x".repeat(61), ru: "" } } })).toEqual(["specs"]);
     expect(fields({ ...tv, specs: { weight: { uz: "12 kg", ru: "12 кг" } } })).toEqual(["specs"]);
     expect(fields(null)).not.toEqual([]);
+  });
+
+  it("keeps a photo link only when it is https", () => {
+    const photo = "https://example.com/tv.jpg";
+    expect(parseProduct({ ...tv, image: ` ${photo} ` })).toMatchObject({ ok: true, values: { image: photo } });
+    expect(parseProduct({ ...tv, image: "http://example.com/tv.jpg" })).toEqual({ ok: false, fields: ["image"] });
+    expect(parseProduct({ ...tv, image: "javascript:alert(1)" })).toEqual({ ok: false, fields: ["image"] });
+    expect(parseProduct({ ...tv, image: null })).toMatchObject({ ok: true, values: { image: null } });
   });
 
   it("refuses a crossed-out price that is not higher than the price", () => {
