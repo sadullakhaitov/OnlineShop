@@ -1,4 +1,4 @@
-import { Text, TextInput, View, type TextInputProps } from "react-native";
+import { Platform, Text, TextInput, View, type TextInputProps } from "react-native";
 import { radius, usePalette } from "@/lib/theme";
 
 export function Field({ label, error, prefix, ...props }: TextInputProps & { label: string; error?: string; prefix?: string }) {
@@ -23,7 +23,7 @@ export function Field({ label, error, prefix, ...props }: TextInputProps & { lab
           placeholderTextColor={c.faint}
           accessibilityLabel={label}
           {...props}
-          style={[{ flex: 1, fontSize: 16, color: c.text, paddingVertical: 12 }, props.multiline && { minHeight: 80, textAlignVertical: "top" }]}
+          style={[{ flex: 1, fontSize: 16, color: c.text, paddingVertical: 12 }, Platform.OS === "web" && ({ outlineStyle: "none" } as object), props.multiline && { minHeight: 80, textAlignVertical: "top" }]}
         />
       </View>
       {error ? <Text style={{ color: c.danger, fontSize: 13, paddingLeft: 4 }}>{error}</Text> : null}
