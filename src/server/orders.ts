@@ -1,12 +1,14 @@
-import { and, desc, eq, inArray, ne, or } from "drizzle-orm";
+import { desc, eq, inArray, or } from "drizzle-orm";
 import { z } from "zod";
 import type { Db, Tx } from "@/db";
 import {
   customers,
+  orderEvents,
   orderItems,
   orders,
   type Customer,
   type Order,
+  type OrderActor,
   type OrderItem,
   type PaymentMethod,
 } from "@/db/schema";
@@ -216,20 +218,33 @@ export function isPayable(order: Pick<Order, "status" | "paymentStatus">): boole
  * Marks the order as paid, once. Returns false when it was already paid or
  * cancelled, in which case the caller must refuse the payment.
  */
-export async function markOrderPaid(tx: Tx, orderId: string, method: PaymentMethod, at: Date): Promise<boolean> {
+export async function markOrderPaid(
+  tx: Tx,
+  orderId: string,
+  method: Exclude<PaymentMethod, "cash">,
+  at: Date,
+): Promise<boolean> {
   const [current] = await tx.select().from(orders).where(eq(orders.id, orderId)).limit(1).for("update");
   if (!current || !isPayable(current)) return false;
 
+  // Paying online confirms the order by itself.
+  const confirmed = current.status === "new";
   await tx
     .update(orders)
     .set({
       paymentStatus: "paid",
       paymentMethod: method,
       paidAt: at,
-      // Paying online confirms the order by itself.
-      status: current.status === "new" ? "confirmed" : current.status,
+      status: confirmed ? "confirmed" : current.status,
     })
     .where(eq(orders.id, orderId));
+  await tx.insert(orderEvents).values({
+    orderId,
+    type: "paid",
+    actor: method,
+    fromStatus: confirmed ? "new" : null,
+    toStatus: confirmed ? "confirmed" : null,
+  });
   return true;
 }
 
@@ -237,11 +252,18 @@ export async function markOrderPaid(tx: Tx, orderId: string, method: PaymentMeth
  * Takes back a payment: the money returns to the customer and the order is
  * cancelled. Returns false when the goods were already handed over.
  */
-export async function markOrderRefunded(tx: Tx, orderId: string): Promise<boolean> {
-  const updated = await tx
-    .update(orders)
-    .set({ paymentStatus: "refunded", status: "cancelled" })
-    .where(and(eq(orders.id, orderId), ne(orders.status, "delivered")))
-    .returning({ id: orders.id });
-  return updated.length > 0;
+export async function markOrderRefunded(tx: Tx, orderId: string, actor: OrderActor): Promise<boolean> {
+  const [current] = await tx.select().from(orders).where(eq(orders.id, orderId)).limit(1).for("update");
+  if (!current || current.status === "delivered") return false;
+
+  const cancelled = current.status !== "cancelled";
+  await tx.update(orders).set({ paymentStatus: "refunded", status: "cancelled" }).where(eq(orders.id, orderId));
+  await tx.insert(orderEvents).values({
+    orderId,
+    type: "refunded",
+    actor,
+    fromStatus: cancelled ? current.status : null,
+    toStatus: cancelled ? "cancelled" : null,
+  });
+  return true;
 }

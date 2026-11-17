@@ -29,6 +29,10 @@ mobile app will talk to the same server routes.
 | `/uz/login` | Sign-in by phone number and a 6-digit code |
 | `/uz/account` | The customer's orders |
 | `/uz/pay/demo/[id]` | Test payment page, only in demo mode |
+| `/uz/admin` | Admin panel: today's numbers and the orders that need attention |
+| `/uz/admin/orders` | All orders: status tabs, search by number, phone or name |
+| `/uz/admin/orders/[id]` | One order: status, payment, customer, history |
+| `/uz/admin/login` | Admin sign-in |
 
 Server routes under `/api`:
 
@@ -48,16 +52,19 @@ Server routes under `/api`:
 messages/                 translations (uz.json, ru.json)
 drizzle/                  SQL migrations, generated from src/db/schema.ts
 scripts/migrate.mjs       applies the migrations to PostgreSQL
-src/app/[locale]/         pages and layout
+src/app/[locale]/         the frame every page shares (fonts, theme, texts)
+src/app/[locale]/(shop)/  the shop's pages with its header and footer
+src/app/[locale]/admin/   the admin panel with its own menu
 src/app/api/              server routes
 src/components/           layout, home, catalog, product, search, favorites,
-                          cart, checkout, order, account, ui
+                          cart, checkout, order, account, admin, ui
 src/data/                 sample categories and products, delivery zones and prices
 src/db/                   database tables and the connection
 src/i18n/                 locale routing
 src/lib/                  code shared with the browser: catalogue queries, cart,
                           favourites, phone numbers, formatting, theme, motion
 src/server/               server-only code: orders, sign-in, sessions, SMS, settings
+src/server/admin/         the admin panel: sign-in, order management, actions
 src/server/payments/      Payme and Click protocols, payment links, the simulator
 ```
 
@@ -70,7 +77,8 @@ settings at all the site still runs: see demo mode below.
 ## Database
 
 - Tables are described in `src/db/schema.ts`: customers, sessions, sign-in
-  codes, orders with their items, Payme and Click transactions.
+  codes, orders with their items and history, Payme and Click transactions,
+  admin sessions.
 - **On your computer** nothing has to be installed. Without `DATABASE_URL` the
   site keeps an embedded PostgreSQL (PGlite) in `.data/` and creates the tables
   itself. Delete the folder to start from an empty shop.
@@ -103,8 +111,39 @@ each product's name and price.
 - Delivery zones and prices are in `src/data/delivery.ts`: Bukhara city and
   the districts of the region. **The prices, the free-delivery threshold and
   the delivery days are placeholders** to be replaced with the shop's own.
-- Until the admin panel exists (step 4), new orders are visible only in the
-  database, and nothing moves an order past `confirmed`.
+- The shop moves an order along in the admin panel; every change is written to
+  the order's history with the time and who made it.
+
+## Admin panel
+
+The panel lives at `/uz/admin` and `/ru/admin`. Nothing in the shop links to
+it, and search engines are told not to index it.
+
+- **Password.** Set `ADMIN_PASSWORD` on the hosting. A public site keeps the
+  panel closed until the password is at least 10 characters long, also in demo
+  mode: the panel shows customers' names, phones and addresses. Only
+  `npm run dev` on your own computer accepts the default password `admin`.
+- **Protection.** Five wrong passwords lock an address for 15 minutes, sixty
+  from everywhere together lock the sign-in for everyone for the same time. A
+  session lasts a week, its cookie cannot be read by scripts, and changing the
+  password signs every browser out. Every admin page and every action checks
+  the session by itself.
+- **First page.** Orders and money received today (the day is counted on
+  Bukhara's clock), orders waiting for confirmation, money received per day
+  for the last two weeks, and the orders that need someone's hands: new ones,
+  cancelled ones whose money was not returned, delivered ones without a
+  payment. The page refreshes itself every half a minute.
+- **Orders.** `new` → `confirmed` → `delivering` (for pickup it reads "ready
+  for pickup") → `delivered`, with one step back at every stage, because
+  people press the wrong button. Cancelling asks first; a cancelled order can
+  be restored until its money has been returned. A page that shows an outdated
+  status refuses to change it and shows the fresh one instead.
+- **Payments.** "Payment received" writes down money taken by hand (cash or
+  the courier's terminal), also after the delivery, and can be taken back.
+  Payme and Click payments arrive by themselves. To return an online payment,
+  cancel the order, return the money in the Payme or Click cabinet and press
+  "Money returned"; a refund made in the Payme cabinet also reaches the site
+  by itself.
 
 ## Demo mode
 

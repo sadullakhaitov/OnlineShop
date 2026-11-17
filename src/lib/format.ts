@@ -23,3 +23,23 @@ export function formatDateTime(date: Date, locale: string): string {
     timeZone: "Asia/Tashkent",
   }).format(date);
 }
+
+/** The same moment in a list, where space is short: "17-noy, 00:07" */
+export function formatShortDateTime(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(dateLocales[locale] ?? locale, {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Tashkent",
+  }).format(date);
+}
+
+/** Only the day: "17-noyabr" */
+export function formatDay(date: Date, locale: string, month: "long" | "short" = "long"): string {
+  return new Intl.DateTimeFormat(dateLocales[locale] ?? locale, {
+    day: "numeric",
+    month,
+    timeZone: "Asia/Tashkent",
+  }).format(date);
+}

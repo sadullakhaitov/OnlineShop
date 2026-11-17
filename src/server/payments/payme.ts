@@ -335,7 +335,7 @@ async function cancelTransaction({ db, params, now }: Context) {
     let state: number = PaymeState.cancelled;
     if (transaction.state === PaymeState.performed) {
       // The money is returned; impossible once the goods are handed over.
-      const refunded = await markOrderRefunded(tx, transaction.orderId);
+      const refunded = await markOrderRefunded(tx, transaction.orderId, "payme");
       if (!refunded) throw new PaymeFailure(PaymeErrorCode.cannotCancel, messages.cannotCancel);
       state = PaymeState.cancelledAfterPerform;
     }

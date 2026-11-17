@@ -1,14 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import "@fontsource-variable/inter";
 import "../globals.css";
 import { routing } from "@/i18n/routing";
 import { themeScript } from "@/lib/theme";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { MobileTabBar } from "@/components/layout/MobileTabBar";
 
 type Props = {
   children: React.ReactNode;
@@ -40,10 +37,20 @@ export const viewport: Viewport = {
   ],
 };
 
+/**
+ * The frame every page shares: fonts, theme, the ambient background and the
+ * translations. The shop's header and footer live in `(shop)/layout.tsx`, the
+ * admin panel's menu in `admin/(panel)/layout.tsx`.
+ */
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+
+  // The admin panel's texts are not sent with the pages customers open;
+  // the admin layout adds them back for its own pages.
+  const messages = { ...(await getMessages()) };
+  delete messages.admin;
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -60,14 +67,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <span />
           <span />
         </div>
-        <NextIntlClientProvider>
-          <Header />
-          <main className="mx-auto w-full max-w-[1280px] px-3 pb-10 sm:px-6 sm:pb-14 lg:px-8">
-            {children}
-          </main>
-          <Footer />
-          <MobileTabBar />
-        </NextIntlClientProvider>
+        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

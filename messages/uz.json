@@ -437,5 +437,203 @@
     "back": "Buyurtmaga qaytish",
     "error": "Test to'lovni bajarib bo'lmadi. Buyurtma sahifasini yangilab, qayta urinib ko'ring.",
     "working": "Bajarilmoqda…"
+  },
+  "admin": {
+    "meta": {
+      "title": "Admin panel — Multimedia"
+    },
+    "nav": {
+      "label": "admin",
+      "menu": "Admin menyusi",
+      "dashboard": "Bosh sahifa",
+      "orders": "Buyurtmalar",
+      "products": "Mahsulotlar",
+      "shop": "Do'konni ochish",
+      "logout": "Chiqish",
+      "newOrders": "{count} ta yangi buyurtma"
+    },
+    "status": {
+      "new": "Yangi",
+      "confirmed": "Tasdiqlangan",
+      "delivering": "Yo'lda",
+      "readyForPickup": "Olib ketishga tayyor",
+      "delivered": "Topshirilgan",
+      "cancelled": "Bekor qilingan"
+    },
+    "login": {
+      "title": "Admin panel",
+      "text": "Do'konni boshqarish uchun parolni kiriting.",
+      "password": "Parol",
+      "submit": "Kirish",
+      "checking": "Tekshirilmoqda…",
+      "devHint": "Test rejimi: parol hali o'rnatilmagan, shuning uchun hozircha parol «{password}». Saytni internetga chiqarishda hosting sozlamalariga ADMIN_PASSWORD kiriting.",
+      "missing": "Admin panel yopiq, chunki parol o'rnatilmagan. Hosting sozlamalariga ADMIN_PASSWORD nomi bilan kamida {min} belgili parol kiriting va saytni qayta ishga tushiring.",
+      "weak": "Admin panel yopiq, chunki ADMIN_PASSWORD juda qisqa. Kamida {min} belgili parol kiriting va saytni qayta ishga tushiring.",
+      "toShop": "Do'konga qaytish",
+      "errors": {
+        "password": "Parol noto'g'ri.",
+        "locked": "Juda ko'p urinish bo'ldi. {minutes} daqiqadan so'ng qayta urinib ko'ring.",
+        "disabled": "Admin panel yopiq: parol o'rnatilmagan.",
+        "server": "Xatolik yuz berdi. Qayta urinib ko'ring."
+      }
+    },
+    "dashboard": {
+      "title": "Bosh sahifa",
+      "today": "Bugun, {date}",
+      "todayOrders": "Bugungi buyurtmalar",
+      "todayAmount": "{amount} so'mlik",
+      "todayRevenue": "Bugungi tushum",
+      "revenueHint": "to'langan buyurtmalar",
+      "waiting": "Tasdiq kutmoqda",
+      "waitingHint": "yangi buyurtmalar",
+      "delivering": "Yo'lda yoki tayyor",
+      "deliveringHint": "xaridorga topshirilmagan",
+      "sum": "{amount} so'm",
+      "chart": "Kunlik tushum",
+      "chartHint": "{from} – {to}, so'mda",
+      "chartDay": "{date}: {amount} so'm, {orders} ta buyurtma",
+      "chartEmpty": "Bu davrda to'lov bo'lmagan.",
+      "week": "7 kun",
+      "month": "30 kun",
+      "periodOrders": "{count} ta buyurtma",
+      "attention": "E'tibor talab qiladi",
+      "fresh": "Tasdiqlash kerak",
+      "toRefund": "Bekor qilingan, pul qaytarilmagan",
+      "unpaidDelivered": "Topshirilgan, to'lov belgilanmagan",
+      "allGood": "Hammasi joyida: e'tibor talab qiladigan buyurtma yo'q.",
+      "recent": "So'nggi buyurtmalar",
+      "allOrders": "Barcha buyurtmalar",
+      "empty": "Hali buyurtma yo'q. Birinchi buyurtma shu yerda ko'rinadi.",
+      "chartTable": "Jadval ko'rinishida",
+      "colDay": "Kun",
+      "colOrders": "Buyurtmalar",
+      "colRevenue": "Tushum, so'm",
+      "mln": "{value} mln",
+      "thousand": "{value} ming",
+      "open": "Ochish"
+    },
+    "orders": {
+      "title": "Buyurtmalar",
+      "search": "Raqam, telefon yoki ism",
+      "searchSubmit": "Qidirish",
+      "searchReset": "Qidiruvni tozalash",
+      "all": "Hammasi",
+      "found": "{count} ta buyurtma",
+      "emptyTitle": "Buyurtma topilmadi",
+      "emptyText": "Boshqa holatni tanlang yoki qidiruvni o'zgartiring.",
+      "noOrdersText": "Xaridor buyurtma berishi bilan u shu yerda paydo bo'ladi.",
+      "items": "{count} ta tovar",
+      "more": "va yana {count} ta",
+      "pagination": "Sahifalar",
+      "prev": "Oldingi",
+      "next": "Keyingi",
+      "page": "{page} / {pages}",
+      "pickup": "Olib ketish",
+      "payment": {
+        "onReceipt": "Qabul qilganda",
+        "unpaid": "To'lanmagan · {method}",
+        "paid": "To'langan · {method}",
+        "refunded": "Pul qaytarilgan"
+      },
+      "method": {
+        "payme": "Payme",
+        "click": "Click",
+        "cash": "naqd"
+      }
+    },
+    "order": {
+      "back": "Buyurtmalar",
+      "title": "Buyurtma №{number}",
+      "placed": "Berilgan: {date}",
+      "customerPage": "Xaridor ko'radigan sahifa",
+      "status": "Holat",
+      "actions": {
+        "confirm": "Tasdiqlash",
+        "handOver": "Kuryerga berildi",
+        "ready": "Olib ketishga tayyor",
+        "deliver": "Xaridorga topshirildi",
+        "restore": "Buyurtmani tiklash",
+        "stepBack": "Orqaga: «{status}»",
+        "cancel": "Bekor qilish",
+        "cancelQuestion": "Buyurtma bekor qilinsinmi?",
+        "cancelPaid": "Buyurtma to'langan. Bekor qilgach, pulni xaridorga qaytarish kerak bo'ladi.",
+        "cancelYes": "Ha, bekor qilish",
+        "cancelNo": "Yo'q",
+        "working": "Bajarilmoqda…"
+      },
+      "closed": "Pul qaytarilgan, buyurtma yopilgan.",
+      "errors": {
+        "stale": "Buyurtma boshqa joyda o'zgartirilgan. Sahifa yangilandi, qaytadan tekshiring.",
+        "forbidden": "Bu amalni hozir bajarib bo'lmaydi.",
+        "missing": "Buyurtma topilmadi.",
+        "server": "Xatolik yuz berdi. Qayta urinib ko'ring."
+      },
+      "payment": "To'lov",
+      "method": "Usul",
+      "paymentState": "Holat",
+      "paidAt": "To'langan vaqt",
+      "payActions": {
+        "cash": "To'lov qabul qilindi",
+        "undo": "To'lov belgisini olib tashlash",
+        "refund": "Pul qaytarildi"
+      },
+      "hints": {
+        "cash": "Xaridor naqd pul yoki karta bilan to'lagach bosing.",
+        "online": "Xaridor hali {method} orqali to'lamagan. Naqd to'lasa, yuqoridagi tugmani bosing.",
+        "refundOnline": "Buyurtma bekor qilingan, lekin pul do'konda turibdi. Pulni {method} kabinetida qaytaring, so'ng shu tugmani bosing.",
+        "refundCash": "Buyurtma bekor qilingan, lekin to'lov olingan. Pulni xaridorga qaytaring, so'ng shu tugmani bosing.",
+        "paidOnline": "{method} orqali to'langan. Pulni qaytarish kerak bo'lsa, avval buyurtmani bekor qiling."
+      },
+      "transactions": "{method} tranzaksiyalari",
+      "transactionState": {
+        "waiting": "kutilmoqda",
+        "paid": "to'langan",
+        "cancelled": "bekor qilingan",
+        "refunded": "qaytarilgan"
+      },
+      "customer": "Xaridor",
+      "hasAccount": "Kabineti bor",
+      "guest": "Kabinetsiz buyurtma bergan",
+      "otherOrders": "Yana {count} ta buyurtmasi bor",
+      "call": "Qo'ng'iroq qilish",
+      "receiving": "Qabul qilish",
+      "delivery": "Yetkazib berish",
+      "pickup": "Do'kondan olib ketish",
+      "address": "Manzil",
+      "comment": "Izoh",
+      "language": "Xaridor tili",
+      "languages": {
+        "uz": "o'zbekcha",
+        "ru": "ruscha"
+      },
+      "items": "Tovarlar",
+      "code": "Kod: {id}",
+      "quantity": "{count} dona × {price}",
+      "subtotal": "Tovarlar",
+      "deliveryFee": "Yetkazib berish",
+      "free": "Bepul",
+      "total": "Jami",
+      "history": "Tarix",
+      "events": {
+        "created": "Buyurtma berildi",
+        "status": "Holat o'zgardi: {status}",
+        "paidOnline": "{method} orqali to'landi",
+        "paidCash": "To'lov qabul qilindi",
+        "unpaid": "To'lov belgisi olib tashlandi",
+        "refunded": "Pul qaytarildi"
+      },
+      "actors": {
+        "customer": "xaridor",
+        "admin": "admin",
+        "payme": "Payme",
+        "click": "Click",
+        "system": "tizim"
+      }
+    },
+    "notFound": {
+      "title": "Sahifa topilmadi",
+      "text": "Havola noto'g'ri yoki bu yozuv o'chirilgan.",
+      "back": "Bosh sahifaga"
+    }
   }
 }

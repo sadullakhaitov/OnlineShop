@@ -160,8 +160,52 @@ export const clickTransactions = pgTable(
   (table) => [index("click_transactions_order_idx").on(table.orderId)],
 );
 
+/** What happened to an order and who did it; shown as the order's history in the admin panel. */
+export type OrderEventType = "status" | "paid" | "unpaid" | "refunded";
+export type OrderActor = "admin" | "payme" | "click" | "system";
+
+export const orderEvents = pgTable(
+  "order_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    type: text("type").$type<OrderEventType>().notNull(),
+    /** Set when the event also moved the order to another status. */
+    fromStatus: text("from_status").$type<OrderStatus>(),
+    toStatus: text("to_status").$type<OrderStatus>(),
+    actor: text("actor").$type<OrderActor>().notNull(),
+    createdAt: createdAt(),
+  },
+  (table) => [index("order_events_order_idx").on(table.orderId, table.createdAt)],
+);
+
+/** Browsers signed in to the admin panel. */
+export const adminSessions = pgTable("admin_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  /** SHA-256 of the cookie value; the value itself is never stored. */
+  tokenHash: text("token_hash").notNull().unique(),
+  /** Fingerprint of the password used to sign in: changing the password signs everyone out. */
+  passwordHash: text("password_hash").notNull(),
+  createdAt: createdAt(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+});
+
+/** Wrong admin passwords, kept for a day to slow down guessing. */
+export const adminLoginAttempts = pgTable(
+  "admin_login_attempts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ipHash: text("ip_hash").notNull(),
+    createdAt: createdAt(),
+  },
+  (table) => [index("admin_login_attempts_time_idx").on(table.createdAt)],
+);
+
 export type Customer = typeof customers.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderItem = typeof orderItems.$inferSelect;
 export type PaymeTransaction = typeof paymeTransactions.$inferSelect;
 export type ClickTransaction = typeof clickTransactions.$inferSelect;
+export type OrderEvent = typeof orderEvents.$inferSelect;

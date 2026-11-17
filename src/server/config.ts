@@ -109,6 +109,31 @@ export function getEskizConfig(): EskizConfig | null {
   return { email, password, from: process.env.ESKIZ_FROM || "4546" };
 }
 
+/** The shortest admin password a public site accepts. */
+export const MIN_ADMIN_PASSWORD = 10;
+/** Password of the admin panel on a developer's computer when none is set. */
+export const DEV_ADMIN_PASSWORD = "admin";
+
+export type AdminPassword =
+  | { state: "ready"; value: string; isDefault: boolean }
+  /** A public site without ADMIN_PASSWORD: the panel stays closed. */
+  | { state: "missing" }
+  /** A public site with a password that is too easy to guess. */
+  | { state: "weak" };
+
+/**
+ * The admin panel shows customers' names, phones and addresses, so a public
+ * site never opens it with a default or a short password, not even in demo
+ * mode. Only a developer's computer gets the default one.
+ */
+export function getAdminPassword(): AdminPassword {
+  const value = process.env.ADMIN_PASSWORD ?? "";
+  const production = process.env.NODE_ENV === "production";
+  if (!value) return production ? { state: "missing" } : { state: "ready", value: DEV_ADMIN_PASSWORD, isDefault: true };
+  if (production && value.length < MIN_ADMIN_PASSWORD) return { state: "weak" };
+  return { state: "ready", value, isDefault: false };
+}
+
 /** Public address of the site, without a trailing slash. */
 export function getSiteUrl(headers: Headers): string {
   const configured = process.env.SITE_URL;

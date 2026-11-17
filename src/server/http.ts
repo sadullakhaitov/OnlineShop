@@ -18,8 +18,13 @@ export function isSameOrigin(request: Request): boolean {
 
 /** Fingerprint of the caller's address for rate limits; null when it is unknown. */
 export function addressHash(request: Request): string | null {
-  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  const address = forwarded || request.headers.get("x-real-ip");
+  return addressHashOf(request.headers);
+}
+
+/** The same fingerprint where only the headers are at hand (server actions). */
+export function addressHashOf(headers: Headers): string | null {
+  const forwarded = headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const address = forwarded || headers.get("x-real-ip");
   return address ? hashAddress(address) : null;
 }
 
