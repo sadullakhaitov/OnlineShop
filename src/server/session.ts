@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import type { NextResponse } from "next/server";
 import { getDb } from "@/db";
 import type { Customer } from "@/db/schema";
@@ -15,8 +15,13 @@ const base = {
   maxAge: SESSION_LIFETIME / 1000,
 };
 
+/**
+ * The session token: from the cookie on the website, or from an
+ * "Authorization: Bearer" header sent by the mobile app.
+ */
 export async function getSessionToken(): Promise<string | null> {
-  return (await cookies()).get(SESSION_COOKIE)?.value ?? null;
+  const bearer = (await headers()).get("authorization")?.match(/^Bearer\s+([A-Za-z0-9_-]{16,200})$/)?.[1];
+  return bearer ?? (await cookies()).get(SESSION_COOKIE)?.value ?? null;
 }
 
 /** The signed-in customer, or null. Does not touch the database for guests. */

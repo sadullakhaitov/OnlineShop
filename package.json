@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "art": "ART_WRITE=1 vitest run src/components/product/art-files.test.ts",
     "db:generate": "npm install --no-save drizzle-kit@0.31.11 && drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs"
   },
