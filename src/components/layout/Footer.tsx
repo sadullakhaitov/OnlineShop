@@ -1,6 +1,7 @@
 import { Clock, Mail, MapPin, Phone, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { shopContacts } from "@/data/contacts";
 import { Logo } from "./Logo";
 
 type FooterLink = {
@@ -15,33 +16,34 @@ const columns: { key: "customers" | "company" | "support"; links: FooterLink[] }
     links: [
       { key: "catalog", href: "/catalog" },
       { key: "deals", href: { pathname: "/catalog", query: { sale: "1" } } },
-      { key: "delivery", href: "/#delivery" },
-      { key: "returns" },
-      { key: "faq" },
+      { key: "delivery", href: "/delivery" },
+      { key: "returns", href: "/warranty" },
+      { key: "faq", href: "/faq" },
     ],
   },
   {
     key: "company",
-    links: [{ key: "about" }, { key: "news" }, { key: "brands", href: "/catalog" }, { key: "careers" }, { key: "contacts" }],
+    links: [
+      { key: "about", href: "/about" },
+      { key: "news" },
+      { key: "brands", href: "/catalog" },
+      { key: "careers" },
+      { key: "contacts", href: "/contacts" },
+    ],
   },
   {
     key: "support",
     links: [
-      { key: "support247" },
-      { key: "feedback" },
-      { key: "service" },
+      { key: "support247", href: "/contacts" },
+      { key: "feedback", href: "/contacts" },
+      { key: "service", href: "/warranty" },
       { key: "manuals" },
       { key: "orderStatus", href: "/account" },
     ],
   },
 ];
 
-// Placeholder contacts until the shop's real details are provided.
-const contact = {
-  phone: "+998 65 000-00-00",
-  phoneHref: "tel:+998650000000",
-  email: "info@multimedia.uz",
-};
+const contact = shopContacts;
 
 export function Footer() {
   const t = useTranslations("footer");
@@ -55,7 +57,7 @@ export function Footer() {
             <Logo />
             <p className="mt-5 max-w-[16rem] text-sm leading-relaxed text-muted">{t("about")}</p>
             <a
-              href="https://t.me/"
+              href={contact.telegram}
               target="_blank"
               rel="noreferrer"
               aria-label="Telegram"

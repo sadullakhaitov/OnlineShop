@@ -30,6 +30,7 @@ The future mobile app will talk to the same server routes.
 | `/uz/login` | Sign-in by phone number and a 6-digit code |
 | `/uz/account` | The customer's orders |
 | `/uz/pay/demo/[id]` | Test payment page, only in demo mode |
+| `/uz/delivery`, `/warranty`, `/faq`, `/about`, `/contacts` | Information pages; texts in `src/data/pages.ts`, contacts in `src/data/contacts.ts` |
 | `/uz/admin` | Admin panel: today's numbers and the orders that need attention |
 | `/uz/admin/orders` | All orders: status tabs, search by number, phone or name |
 | `/uz/admin/orders/[id]` | One order: status, payment, customer, history |

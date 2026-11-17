@@ -12,7 +12,7 @@ import { LocaleSwitcher } from "./LocaleSwitcher";
 const links = [
   { key: "catalog", href: "/catalog", wide: false },
   { key: "deals", href: { pathname: "/catalog", query: { sale: "1" } }, wide: false },
-  { key: "delivery", href: "/#delivery", wide: true },
+  { key: "delivery", href: "/delivery", wide: true },
   { key: "support", href: "/#support", wide: true },
 ] as const;
 
