@@ -19,6 +19,8 @@ import { MAX_LINES, MAX_QUANTITY } from "@/lib/limits";
 import { normalizePhone } from "@/lib/phone";
 import { loadCatalog } from "./catalog";
 import { checkPromo, takePromo, type PromoProblem } from "./promo";
+import { listPlans } from "./installment";
+import { monthlyPayment } from "@/lib/installment";
 import { queueOrderMessages } from "./telegram/notify";
 
 /** What the checkout form sends. Prices are never part of it. */
@@ -41,6 +43,8 @@ export const orderInputSchema = z.object({
   paymentMethod: z.enum(["payme", "click", "cash"]),
   locale: z.enum(routing.locales),
   promoCode: z.string().max(40).optional(),
+  /** Paying in parts over so many months; settled on delivery or in the store, so only with "cash". */
+  installmentMonths: z.number().int().min(2).max(36).optional(),
   /** The total the customer saw; the order is refused when prices changed since. */
   expectedTotal: z.number().int().nonnegative().optional(),
 });
@@ -60,7 +64,9 @@ export type CreateOrderResult =
   /** The total differs from the one the customer saw. */
   | { ok: false; error: "changed"; total: number }
   /** The chosen payment method is switched off. */
-  | { ok: false; error: "payment" };
+  | { ok: false; error: "payment" }
+  /** The shop no longer offers paying in parts over these months. */
+  | { ok: false; error: "installment" };
 
 type CreateOrderOptions = {
   /** The signed-in customer, if any; guests can order too. */
@@ -142,6 +148,13 @@ export async function createOrder(
   if (input.expectedTotal !== undefined && input.expectedTotal !== total) {
     return { ok: false, error: "changed", total };
   }
+  let installment: { months: number; monthly: number } | null = null;
+  if (input.installmentMonths !== undefined) {
+    if (input.paymentMethod !== "cash") return { ok: false, error: "payment" };
+    const plan = (await listPlans(db)).find((terms) => terms.months === input.installmentMonths);
+    if (!plan) return { ok: false, error: "installment" };
+    installment = { months: plan.months, monthly: monthlyPayment(total, plan) };
+  }
   const customer = options.customer ?? null;
 
   try {
@@ -182,6 +195,8 @@ export async function createOrder(
           promoCode: promo?.code ?? null,
           discount,
           total,
+          installmentMonths: installment?.months ?? null,
+          installmentMonthly: installment?.monthly ?? null,
           telegramId: options.telegramId ?? null,
         })
         .returning();

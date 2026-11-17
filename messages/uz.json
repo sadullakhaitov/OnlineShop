@@ -194,7 +194,9 @@
     "fewLeft": "Faqat {count} ta qoldi",
     "reviewsTitle": "Xaridorlar sharhlari",
     "reviewsEmpty": "Hali sharh yo'q. Mahsulotni sotib olgan xaridorlar buyurtma sahifasidan baho qoldirishi mumkin.",
-    "reviewsBought": "Sotib olgan xaridor"
+    "reviewsBought": "Sotib olgan xaridor",
+    "installmentFrom": "Muddatli: oyiga {sum} so'mdan",
+    "installmentNote": "Muddatli to'lovni buyurtma berishda tanlaysiz. Operator shartlarni qo'ng'iroq qilib tasdiqlaydi."
   },
   "spec": {
     "power": "Quvvat",
@@ -315,7 +317,8 @@
       "unavailable": "Ba'zi tovarlar sotuvda qolmadi. Buyurtmani tekshirib, qayta yuboring.",
       "changed": "Narxlar yangilandi. Buyurtmani tekshirib, qayta yuboring.",
       "payment": "Bu to'lov usuli hozir ishlamayapti. Boshqasini tanlang.",
-      "generic": "Buyurtmani yuborib bo'lmadi. Birozdan so'ng qayta urinib ko'ring."
+      "generic": "Buyurtmani yuborib bo'lmadi. Birozdan so'ng qayta urinib ko'ring.",
+      "installment": "Bu muddatli to'lov sharti endi mavjud emas. Boshqasini tanlang."
     },
     "emptyTitle": "Savat bo'sh",
     "emptyText": "Buyurtma berish uchun avval savatga tovar qo'shing.",
@@ -331,6 +334,15 @@
       "limit": "Juda ko'p urinish. Birozdan so'ng qayta urinib ko'ring.",
       "minTotal": "{sum} so'mdan ortiq xaridga",
       "dropped": "Promokodni qo'llab bo'lmadi. Jamini tekshirib, qayta yuboring."
+    },
+    "installment": {
+      "label": "Muddatli to'lov",
+      "note": "Har oy teng qismlarda to'laysiz. Shartlarni operator qo'ng'iroq qilib tasdiqlaydi.",
+      "months": "Muddat",
+      "monthsShort": "{count} oy",
+      "perMonth": "oyiga {sum} so'm",
+      "summary": "{count} oy × {sum} so'm",
+      "markup": "Narxga {percent}% qo'shiladi"
     }
   },
   "order": {
@@ -498,8 +510,11 @@
         "products": "Tovarlar",
         "promo": "Promo",
         "reviews": "Sharhlar",
-        "telegram": "Telegram"
-      }
+        "telegram": "Telegram",
+        "installment": "Muddatli"
+      },
+      "installment": "Muddatli to'lov",
+      "settings": "Sozlamalar"
     },
     "status": {
       "new": "Yangi",
@@ -678,7 +693,9 @@
         "payme": "Payme",
         "click": "Click",
         "system": "tizim"
-      }
+      },
+      "installment": "Muddatli to'lov",
+      "installmentValue": "{months} oy, oyiga {sum}"
     },
     "products": {
       "title": "Mahsulotlar",
@@ -947,6 +964,27 @@
         "warranty": "yil hisobida, 1 dan 10 gacha",
         "image": "rasm havolasi (https://…)",
         "active": "ha yoki yo'q: saytda ko'rinadimi"
+      }
+    },
+    "installment": {
+      "title": "Muddatli to'lov",
+      "subtitle": "Xaridorga necha oyga bo'lib to'lashni taklif qilasiz va narxga necha foiz qo'shiladi. Shartlar bo'lsa, mahsulot sahifasida \"oyiga ... so'mdan\" chiqadi va buyurtmada tanlash mumkin bo'ladi. Shartlar yo'q bo'lsa, bu imkoniyat ko'rinmaydi.",
+      "cashOff": "\"Qabul qilganda to'lash\" usuli o'chirilgan: muddatli to'lov shu usul bilan ishlaydi, shuning uchun hozir xaridorlarga ko'rinmaydi.",
+      "new": "Shart qo'shish yoki o'zgartirish",
+      "months": "Necha oy (2–36)",
+      "markup": "Narxga qo'shimcha, %",
+      "save": "Saqlash",
+      "saved": "Saqlandi",
+      "list": "Joriy shartlar",
+      "empty": "Hali shart yo'q: muddatli to'lov saytda ko'rinmaydi.",
+      "monthsValue": "{count} oy",
+      "markupValue": "+{percent}%",
+      "noMarkup": "ustamasiz",
+      "example": "{price} so'mlik tovar: oyiga {sum} so'm",
+      "delete": "{count} oylik shartni o'chirish",
+      "errors": {
+        "invalid": "Oy 2 dan 36 gacha, qo'shimcha 0 dan 100 gacha butun son bo'lsin.",
+        "server": "Saqlab bo'lmadi. Qayta urinib ko'ring."
       }
     }
   },

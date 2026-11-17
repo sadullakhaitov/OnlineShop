@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CalendarClock, Send } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getDb } from "@/db";
 import { Link } from "@/i18n/navigation";
@@ -31,6 +31,7 @@ export default async function AdminDashboardPage({ params }: Props) {
   await requireAdmin();
 
   const t = await getTranslations("admin.dashboard");
+  const tNav = await getTranslations("admin.nav");
   const tProduct = await getTranslations("product");
   const now = new Date();
   const board = await getDashboard(await getDb(), now);
@@ -83,6 +84,17 @@ export default async function AdminDashboardPage({ params }: Props) {
       <header className="enter">
         <h1 className="text-[1.75rem] font-semibold sm:text-[2rem]">{t("title")}</h1>
         <p className="mt-1 text-sm text-muted">{t("today", { date: formatDay(now, locale) })}</p>
+        {/* On a phone these settings are not on the tab bar. */}
+        <nav className="mt-4 flex flex-wrap gap-2 lg:hidden" aria-label={tNav("settings")}>
+          <Link href="/admin/installment" className="btn btn-ghost h-9 px-3.5 text-[0.8125rem]">
+            <CalendarClock className="size-4" strokeWidth={1.8} />
+            {tNav("installment")}
+          </Link>
+          <Link href="/admin/telegram" className="btn btn-ghost h-9 px-3.5 text-[0.8125rem]">
+            <Send className="size-4" strokeWidth={1.8} />
+            {tNav("telegram")}
+          </Link>
+        </nav>
       </header>
 
       <ul className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">

@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { FREE_DELIVERY_FROM, deliveryZones } from "@/data/delivery";
 import type { Locale } from "@/i18n/routing";
 import { getPaymentMethods, getPaymentModes } from "@/server/config";
+import { readPlans } from "@/server/installment";
 import { getCurrentCustomer } from "@/server/session";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -26,6 +27,9 @@ export default async function CheckoutPage({ params }: Props) {
   // A signed-in customer gets the contact fields filled in. Guests order too,
   // so a database hiccup here must not take the page down.
   const customer = await getCurrentCustomer().catch(() => null);
+
+  // Paying in parts is settled on delivery or in the store, so it needs that method.
+  const plans = getPaymentMethods().includes("cash") ? await readPlans().catch(() => []) : [];
 
   const modes = getPaymentModes();
   const methods = getPaymentMethods().map((method) => ({
@@ -52,6 +56,7 @@ export default async function CheckoutPage({ params }: Props) {
         }))}
         freeFrom={FREE_DELIVERY_FROM}
         methods={methods}
+        plans={plans}
         customer={customer ? { name: customer.name ?? "", phone: customer.phone } : null}
         pickupAddress={t("footer.address")}
       />

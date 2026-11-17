@@ -279,6 +279,14 @@ export default async function OrderPage({ params }: Props) {
               <dt className="text-muted">{t("checkout.payment")}</dt>
               <dd className="text-right font-medium">{t(`order.method.${order.paymentMethod}`)}</dd>
             </div>
+            {order.installmentMonths && order.installmentMonthly && (
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">{t("checkout.installment.label")}</dt>
+                <dd className="text-right font-medium tabular-nums">
+                  {t("checkout.installment.summary", { count: order.installmentMonths, sum: formatPrice(order.installmentMonthly) })}
+                </dd>
+              </div>
+            )}
             <div className="flex justify-between gap-4">
               <dt className="text-muted">{t("order.paymentState")}</dt>
               <dd className={`text-right font-medium ${paymentTone}`}>{t(`order.paymentStatus.${order.paymentStatus}`)}</dd>

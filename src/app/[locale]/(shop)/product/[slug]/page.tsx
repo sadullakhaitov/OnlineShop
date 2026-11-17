@@ -1,6 +1,6 @@
 import { ViewTransition } from "react";
 import type { Metadata } from "next";
-import { CreditCard, RotateCcw, ShieldCheck, Star, Truck } from "lucide-react";
+import { CalendarClock, CreditCard, RotateCcw, ShieldCheck, Star, Truck } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { kinds, type SpecKey } from "@/data/products";
@@ -11,6 +11,8 @@ import { discountPercent, formatDay, formatPrice } from "@/lib/format";
 import { enterDelay, productArtName } from "@/lib/motion";
 import { getBuildSlugs, readCatalog } from "@/server/catalog";
 import { readProductReviews } from "@/server/reviews";
+import { readPlans } from "@/server/installment";
+import { lowestMonthly, monthlyPayment } from "@/lib/installment";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { ProductArt } from "@/components/product/ProductArt";
@@ -63,7 +65,11 @@ export default async function ProductPage({ params }: Props) {
   const category = getCategory(product.category);
   const discount = discountPercent(product.price, product.oldPrice);
   const related = catalog.related(product, 5);
-  const reviews = product.reviews > 0 ? await readProductReviews(product.id) : [];
+  const [reviews, plans] = await Promise.all([
+    product.reviews > 0 ? readProductReviews(product.id) : Promise.resolve([]),
+    readPlans().catch(() => []),
+  ]);
+  const installment = lowestMonthly(product.price, plans);
 
   const specs: [string, string][] = [
     [t("productPage.brand"), product.brand],
@@ -183,6 +189,26 @@ export default async function ProductPage({ params }: Props) {
                 <p className="mt-1 text-sm font-medium text-accent">
                   {t("productPage.economy", { amount: formatPrice(product.oldPrice - product.price) })}
                 </p>
+              )}
+              {installment && (
+                <details className="group mt-3 text-sm">
+                  <summary className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-accent-soft px-3 py-1.5 font-medium text-accent">
+                    <CalendarClock className="size-4" strokeWidth={1.8} />
+                    {t("productPage.installmentFrom", { sum: formatPrice(installment.monthly) })}
+                  </summary>
+                  <ul className="mt-2 grid gap-1 text-[0.8125rem] text-muted">
+                    {plans.map((plan) => (
+                      <li key={plan.months} className="flex justify-between gap-4 tabular-nums">
+                        <span>{t("checkout.installment.monthsShort", { count: plan.months })}</span>
+                        <span>
+                          {t("checkout.installment.perMonth", { sum: formatPrice(monthlyPayment(product.price, plan)) })}
+                          {plan.markup > 0 && <span className="ml-1.5 text-faint">(+{plan.markup}%)</span>}
+                        </span>
+                      </li>
+                    ))}
+                    <li className="mt-1 text-xs text-faint">{t("productPage.installmentNote")}</li>
+                  </ul>
+                </details>
               )}
             </div>
 

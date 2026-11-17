@@ -95,6 +95,7 @@ const shopTexts = {
     subtotal: "Tovarlar",
     fee: "Yetkazib berish",
     discount: "Promokod",
+    installment: "🗓 Muddatli to'lov: {months} oy, oyiga {sum}",
     free: "bepul",
     total: "JAMI",
     amount: "Summa",
@@ -118,6 +119,7 @@ const shopTexts = {
     subtotal: "Товары",
     fee: "Доставка",
     discount: "Промокод",
+    installment: "🗓 Рассрочка: {months} мес., {sum} в месяц",
     free: "бесплатно",
     total: "ИТОГО",
     amount: "Сумма",
@@ -163,7 +165,11 @@ export function shopMessage(order: OrderForMessage, event: TelegramEvent, locale
   }
 
   const state = order.paymentMethod === "cash" ? t.cashNote : order.paymentStatus === "paid" ? t.paidMark : t.unpaid;
-  lines.push(`<b>💳 ${t.payment}</b>`, `${method} · ${state}`, "");
+  lines.push(`<b>💳 ${t.payment}</b>`, `${method} · ${state}`);
+  if (order.installmentMonths && order.installmentMonthly) {
+    lines.push(t.installment.replace("{months}", String(order.installmentMonths)).replace("{sum}", money(order.installmentMonthly, locale)));
+  }
+  lines.push("");
 
   if (order.comment) lines.push(`<b>💬 ${t.comment}</b>`, `<i>${h(order.comment)}</i>`, "");
 

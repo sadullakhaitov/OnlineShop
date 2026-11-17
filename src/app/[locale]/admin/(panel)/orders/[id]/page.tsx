@@ -241,6 +241,14 @@ export default async function AdminOrderPage({ params }: Props) {
                 <dt className="text-muted">{t("order.total")}</dt>
                 <dd className="text-right font-semibold tabular-nums">{money(order.total)}</dd>
               </div>
+              {order.installmentMonths && order.installmentMonthly && (
+                <div className="flex justify-between gap-4">
+                  <dt className="text-muted">{t("order.installment")}</dt>
+                  <dd className="text-right font-medium tabular-nums">
+                    {t("order.installmentValue", { months: order.installmentMonths, sum: money(order.installmentMonthly) })}
+                  </dd>
+                </div>
+              )}
             </dl>
 
             {(payActions.length > 0 || paymentHint) && (

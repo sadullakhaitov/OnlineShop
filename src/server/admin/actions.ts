@@ -15,6 +15,7 @@ import { exportProducts, importProducts, type ImportReport } from "./import";
 import { createPromo, deletePromo, setPromoActive, type PromoField } from "./promo";
 import { CATALOG_TAG } from "@/server/catalog";
 import { moderateReview } from "@/server/reviews";
+import { deletePlan, savePlan } from "@/server/installment";
 import { getSiteUrl, getTelegramConfig } from "@/server/config";
 import { isPublicUrl } from "@/server/telegram/api";
 import { connectBot, sendTelegramLater, sendTestMessage } from "@/server/telegram/setup";
@@ -266,4 +267,27 @@ export async function importProductsAction(sheet: unknown, apply: boolean): Prom
 export async function exportProductsAction(): Promise<string> {
   await requireAdmin();
   return exportProducts(await getDb(), (await getLocale()) === "ru" ? "ru" : "uz");
+}
+
+export type PlanActionState = { ok: true } | { ok: false; error: "invalid" | "server" } | null;
+
+/** Adds the terms for so many months, or changes their markup. */
+export async function savePlanAction(_previous: PlanActionState, form: FormData): Promise<PlanActionState> {
+  await requireAdmin();
+  try {
+    const result = await savePlan(await getDb(), { months: form.get("months"), markup: form.get("markup") || "0" });
+    if (result.ok) refreshShop();
+    return result;
+  } catch (error) {
+    console.error("Installment terms were not saved", error);
+    return { ok: false, error: "server" };
+  }
+}
+
+export async function deletePlanAction(form: FormData): Promise<void> {
+  await requireAdmin();
+  const months = Number(form.get("months"));
+  if (!Number.isInteger(months)) return;
+  await deletePlan(await getDb(), months);
+  refreshShop();
 }

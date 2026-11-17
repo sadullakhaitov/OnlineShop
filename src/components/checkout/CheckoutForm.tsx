@@ -2,8 +2,9 @@
 
 import { Select } from "@/components/ui/Select";
 import { useState } from "react";
-import { Banknote, CreditCard, Store, TicketPercent, Truck, X } from "lucide-react";
+import { Banknote, CalendarClock, CreditCard, Store, TicketPercent, Truck, X } from "lucide-react";
 import { promoDiscount, type PromoTerms } from "@/lib/promo";
+import { monthlyPayment, type InstallmentTerms } from "@/lib/installment";
 import { useLocale, useTranslations } from "next-intl";
 import type { DeliveryType, PaymentMethod } from "@/db/schema";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -25,6 +26,8 @@ type Props = {
   /** Orders from this amount are delivered free of charge */
   freeFrom: number;
   methods: CheckoutMethod[];
+  /** The shop's terms for paying in parts; empty when it does not offer it */
+  plans: InstallmentTerms[];
   /** The signed-in customer, to fill in the contact fields */
   customer: { name: string; phone: string } | null;
   pickupAddress: string;
@@ -93,7 +96,7 @@ type FieldsProps = Props & {
 
 type FieldName = "name" | "phone" | "zone" | "address";
 
-function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, cart, onPlaced }: FieldsProps) {
+function CheckoutFields({ zones, freeFrom, methods, plans, customer, pickupAddress, cart, onPlaced }: FieldsProps) {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
@@ -108,6 +111,8 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
   const [zoneSlug, setZoneSlug] = useState(zones.some((zone) => zone.slug === saved.zone) ? text(saved.zone) : "");
   const [address, setAddress] = useState(text(saved.address));
   const [method, setMethod] = useState<PaymentMethod>(methods[0].method);
+  /** Months to pay over, or null to pay at once */
+  const [months, setMonths] = useState<number | null>(null);
   const [comment, setComment] = useState("");
   const [errors, setErrors] = useState<FieldName[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
@@ -123,6 +128,7 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
   // The discount follows the cart; a code that no longer fits is dropped from the total.
   const discount = promo && cart.subtotal >= promo.minTotal ? promoDiscount(promo, cart.subtotal) : 0;
   const total = cart.subtotal - discount + fee;
+  const plan = months === null ? undefined : plans.find((terms) => terms.months === months);
 
   const promoMessage = (reason?: string, minTotal?: number) =>
     reason === "minTotal" && minTotal
@@ -197,6 +203,7 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
           paymentMethod: method,
           locale,
           promoCode: discount > 0 ? promo?.code : undefined,
+          installmentMonths: plan?.months,
           expectedTotal: total,
         }),
       });
@@ -238,6 +245,9 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
         setFormError(t("checkout.promo.dropped"));
       } else if (data?.error === "payment") {
         setFormError(t("checkout.errors.payment"));
+      } else if (data?.error === "installment") {
+        setMonths(null);
+        setFormError(t("checkout.errors.installment"));
       } else {
         setFormError(t("checkout.errors.generic"));
       }
@@ -432,8 +442,11 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
                     type="radio"
                     name="paymentMethod"
                     className="radio"
-                    checked={method === value}
-                    onChange={() => setMethod(value)}
+                    checked={method === value && plan === undefined}
+                    onChange={() => {
+                      setMethod(value);
+                      setMonths(null);
+                    }}
                   />
                   <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-center gap-2 text-sm font-medium">
@@ -450,6 +463,48 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
                 </label>
               );
             })}
+            {plans.length > 0 && (
+              <div className="choice flex-col items-stretch">
+                <label className="flex cursor-pointer items-center gap-3">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    className="radio"
+                    checked={plan !== undefined}
+                    onChange={() => {
+                      setMethod("cash");
+                      setMonths(plans[plans.length - 1]!.months);
+                    }}
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-medium">{t("checkout.installment.label")}</span>
+                    <span className="block text-xs text-muted">{t("checkout.installment.note")}</span>
+                  </span>
+                  <CalendarClock className="size-5 shrink-0 text-muted" strokeWidth={1.6} />
+                </label>
+                {plan !== undefined && (
+                  <div className="mt-3 flex flex-wrap gap-2 pl-8" role="radiogroup" aria-label={t("checkout.installment.months")}>
+                    {plans.map((terms) => (
+                      <button
+                        key={terms.months}
+                        type="button"
+                        role="radio"
+                        aria-checked={terms.months === plan.months}
+                        onClick={() => setMonths(terms.months)}
+                        className={`rounded-2xl px-3.5 py-2 text-left text-xs transition-colors duration-300 ${
+                          terms.months === plan.months ? "bg-btn text-btn-text" : "border border-hairline text-muted hover:text-ink"
+                        }`}
+                      >
+                        <span className="block font-semibold">{t("checkout.installment.monthsShort", { count: terms.months })}</span>
+                        <span className="block tabular-nums">
+                          {t("checkout.installment.perMonth", { sum: formatPrice(monthlyPayment(total, terms)) })}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </section>
 
@@ -577,6 +632,12 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
             {formatPrice(total)} <span className="text-sm font-medium text-muted">{t("product.currency")}</span>
           </span>
         </div>
+        {plan && (
+          <p className="mt-2 text-right text-sm text-muted">
+            {t("checkout.installment.summary", { count: plan.months, sum: formatPrice(monthlyPayment(total, plan)) })}
+            {plan.markup > 0 && <span className="block text-xs text-faint">{t("checkout.installment.markup", { percent: plan.markup })}</span>}
+          </p>
+        )}
 
         {formError && (
           <p role="alert" className="mt-4 rounded-xl bg-[color-mix(in_srgb,var(--danger)_12%,transparent)] px-3.5 py-2.5 text-[0.8125rem] leading-snug text-danger">

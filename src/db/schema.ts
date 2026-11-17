@@ -147,6 +147,9 @@ export const orders = pgTable(
     discount: bigint("discount", { mode: "number" }).notNull().default(0),
     /** Goods minus the discount, plus delivery. */
     total: bigint("total", { mode: "number" }).notNull(),
+    /** Paid in parts: the months and the monthly sum agreed when the order was placed. */
+    installmentMonths: integer("installment_months"),
+    installmentMonthly: bigint("installment_monthly", { mode: "number" }),
     /** The Telegram user who placed the order in the Mini App; told about its progress there. */
     telegramId: bigint("telegram_id", { mode: "number" }),
     createdAt: createdAt(),
@@ -389,3 +392,16 @@ export const reviews = pgTable(
 );
 
 export type Review = typeof reviews.$inferSelect;
+
+/**
+ * The shop's terms for paying in parts: for so many months, the price grows
+ * by so many percent. With no terms the shop does not offer it.
+ */
+export const installmentPlans = pgTable("installment_plans", {
+  months: integer("months").primaryKey(),
+  /** Added to the price, in percent (0 for none) */
+  markup: integer("markup").notNull().default(0),
+  createdAt: createdAt(),
+});
+
+export type InstallmentPlan = typeof installmentPlans.$inferSelect;

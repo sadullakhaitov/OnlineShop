@@ -1,10 +1,16 @@
 "use client";
 
-import { ClipboardList, LayoutDashboard, MessageSquareText, Package, Send, type LucideIcon, TicketPercent } from "lucide-react";
+import { CalendarClock, ClipboardList, LayoutDashboard, MessageSquareText, Package, Send, type LucideIcon, TicketPercent } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 
-type Item = { key: "dashboard" | "orders" | "products" | "promo" | "reviews" | "telegram"; href: string; icon: LucideIcon };
+type Item = {
+  key: "dashboard" | "orders" | "products" | "promo" | "reviews" | "installment" | "telegram";
+  href: string;
+  icon: LucideIcon;
+  /** Settings made once in a while stay off the phone's tab bar; the dashboard links them. */
+  bar?: false;
+};
 
 const items: Item[] = [
   { key: "dashboard", href: "/admin", icon: LayoutDashboard },
@@ -12,7 +18,8 @@ const items: Item[] = [
   { key: "products", href: "/admin/products", icon: Package },
   { key: "promo", href: "/admin/promo", icon: TicketPercent },
   { key: "reviews", href: "/admin/reviews", icon: MessageSquareText },
-  { key: "telegram", href: "/admin/telegram", icon: Send },
+  { key: "installment", href: "/admin/installment", icon: CalendarClock, bar: false },
+  { key: "telegram", href: "/admin/telegram", icon: Send, bar: false },
 ];
 
 type Props = {
@@ -45,7 +52,7 @@ export function AdminNav({ fresh, waiting, variant }: Props) {
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <ul className="glass glass-strong mx-auto grid max-w-md auto-cols-fr grid-flow-col rounded-[1.5rem] p-1.5">
-          {items.map(({ key, href, icon: Icon }) => {
+          {items.filter((item) => item.bar !== false).map(({ key, href, icon: Icon }) => {
             const current = isCurrent(href);
             const mark = badge(key);
             return (
