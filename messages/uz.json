@@ -190,7 +190,8 @@
       "warranty": "Rasmiy kafolat: {years} yil",
       "payment": "Click, Payme yoki qabul qilganda to'lov",
       "returns": "14 kun ichida qaytarish"
-    }
+    },
+    "fewLeft": "Faqat {count} ta qoldi"
   },
   "spec": {
     "power": "Quvvat",
@@ -740,8 +741,12 @@
         },
         "photo": "Rasm",
         "image": "Rasm havolasi",
-        "imageHint": "Rasmning to'g'ridan-to'g'ri havolasini qo'ying (https:// bilan boshlanadi, oxiri odatda .jpg, .png yoki .webp). Oq fondagi rasm eng chiroyli chiqadi. Bo'sh qolsa, tur bo'yicha chizma ko'rsatiladi."
-      }
+        "imageHint": "Rasmning to'g'ridan-to'g'ri havolasini qo'ying (https:// bilan boshlanadi, oxiri odatda .jpg, .png yoki .webp). Oq fondagi rasm eng chiroyli chiqadi. Bo'sh qolsa, tur bo'yicha chizma ko'rsatiladi.",
+        "stock": "Omborda, dona",
+        "stockPlaceholder": "Sanalmaydi",
+        "stockHint": "Sonini yozsangiz, har buyurtmada o'zi kamayadi, tugaganda \"Sotuvda yo'q\" bo'ladi, bekor qilingan buyurtmada qaytadi. Bo'sh qolsa, son hisoblanmaydi."
+      },
+      "pieces": "{count} dona"
     },
     "notFound": {
       "title": "Sahifa topilmadi",

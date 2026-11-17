@@ -36,6 +36,7 @@ function toProduct(row: ProductRow): Product {
     // The database does not keep the order of the keys, the shop does.
     specs: orderSpecs(row.specs),
     image: row.image ?? undefined,
+    stock: row.stock ?? undefined,
   };
 }
 

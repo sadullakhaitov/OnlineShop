@@ -1,5 +1,7 @@
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { getDb } from "@/db";
+import { CATALOG_TAG } from "@/server/catalog";
 import { getPaymentMethods, getSiteUrl, getTelegramConfig } from "@/server/config";
 import { isSameOrigin, readJson } from "@/server/http";
 import { createOrder } from "@/server/orders";
@@ -27,6 +29,11 @@ export async function POST(request: Request) {
     const result = await createOrder(db, body, { customer, methods: getPaymentMethods(), telegramId: telegramUser?.id });
     if (!result.ok) return NextResponse.json(result, { status: 422 });
     sendTelegramLater(request.headers);
+    if (result.stockChanged) {
+      // Pieces left (or "sold out") show on the shop's pages at once.
+      revalidateTag(CATALOG_TAG, { expire: 0 });
+      revalidatePath("/[locale]", "layout");
+    }
 
     const { order } = result;
     return NextResponse.json({

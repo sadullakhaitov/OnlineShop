@@ -146,3 +146,48 @@ describe("reading and paying orders", () => {
     expect(isPayable(paid)).toBe(false);
   });
 });
+
+describe("counted pieces", () => {
+  it("takes pieces with each order, sells out at zero and puts them back on cancellation", async () => {
+    const { products } = await import("@/db/schema");
+    const { eq, sql } = await import("drizzle-orm");
+    // The shop notices product changes by their version, as after an admin edit.
+    const bump = { version: sql`${products.version} + 1` };
+    const { changeOrderStatus } = await import("./admin/orders");
+    const product = seedProducts.filter((item) => item.inStock)[3];
+    const stockOf = async () =>
+      (await db.select({ stock: products.stock, inStock: products.inStock }).from(products).where(eq(products.id, product.id)))[0];
+    await db.update(products).set({ stock: 2, ...bump }).where(eq(products.id, product.id));
+
+    const order = await createOrder(db, { ...orderInput, items: [{ id: product.id, quantity: 2 }] }, options);
+    expect(order).toMatchObject({ ok: true, stockChanged: true });
+    expect(await stockOf()).toEqual({ stock: 0, inStock: false });
+
+    // Nothing left: the next order is refused and takes nothing.
+    const late = await createOrder(db, { ...orderInput, items: [{ id: product.id, quantity: 1 }] }, options);
+    expect(late).toEqual({ ok: false, error: "unavailable", ids: [product.id] });
+    expect(await stockOf()).toEqual({ stock: 0, inStock: false });
+
+    if (!order.ok) throw new Error("order failed");
+    expect(await changeOrderStatus(db, order.order.id, "new", "cancelled")).toEqual({ ok: true });
+    expect(await stockOf()).toEqual({ stock: 2, inStock: true });
+  });
+
+  it("asks for more pieces than are left: the whole order is undone", async () => {
+    const { products } = await import("@/db/schema");
+    const { eq, sql } = await import("drizzle-orm");
+    // The shop notices product changes by their version, as after an admin edit.
+    const bump = { version: sql`${products.version} + 1` };
+    const [a, b] = seedProducts.filter((item) => item.inStock).slice(4, 6);
+    await db.update(products).set({ stock: 5, ...bump }).where(eq(products.id, a.id));
+    await db.update(products).set({ stock: 1, ...bump }).where(eq(products.id, b.id));
+    const result = await createOrder(
+      db,
+      { ...orderInput, items: [{ id: a.id, quantity: 2 }, { id: b.id, quantity: 3 }] },
+      options,
+    );
+    expect(result).toEqual({ ok: false, error: "unavailable", ids: [b.id] });
+    const [row] = await db.select({ stock: products.stock }).from(products).where(eq(products.id, a.id));
+    expect(row.stock).toBe(5);
+  });
+});

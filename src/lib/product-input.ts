@@ -14,6 +14,7 @@ export const PRODUCT_LIMITS = {
   model: 60,
   spec: 60,
   image: 500,
+  maxStock: 100_000,
 } as const;
 
 /** What the product form sends. Text may be untidy; the server cleans it. */
@@ -35,6 +36,8 @@ export type ProductInput = {
   specs: Partial<Record<SpecKey, { uz: string; ru: string }>>;
   /** Link to the product photo (https), or null for the drawing */
   image: string | null;
+  /** Pieces in the warehouse, or null when they are not counted */
+  stock: number | null;
 };
 
 export type ProductField = keyof ProductInput;

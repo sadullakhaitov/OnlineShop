@@ -73,7 +73,9 @@ export async function orderStatusAction(_previous: AdminActionState, form: FormD
 
   try {
     const result = await changeOrderStatus(await getDb(), id, from, to);
-    refresh();
+    // A cancelled order puts its pieces back on sale.
+    if (result.ok && to === "cancelled") refreshShop();
+    else refresh();
     sendTelegramLater(await headers());
     return result.ok ? null : { error: result.error };
   } catch (error) {

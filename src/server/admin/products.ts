@@ -48,6 +48,7 @@ const inputSchema = z.object({
       }
     })
     .nullable(),
+  stock: z.number().int().min(0).max(PRODUCT_LIMITS.maxStock).nullable(),
   // Only the specifications the shop knows how to name.
   specs: z.strictObject(
     Object.fromEntries(specKeys.map((key) => [key, specPair.optional()])) as Record<SpecKey, z.ZodOptional<typeof specPair>>,
@@ -75,7 +76,9 @@ export function parseProduct(raw: unknown): { ok: true; values: ProductValues } 
     if (!value || (!value.uz && !value.ru)) continue;
     specs[key] = { uz: value.uz || value.ru, ru: value.ru || value.uz };
   }
-  return { ok: true, values: { ...input, specs } };
+  // A counted product is on sale exactly while pieces are left.
+  const inStock = input.stock === null ? input.inStock : input.stock > 0;
+  return { ok: true, values: { ...input, inStock, specs } };
 }
 
 export type ProductResult =

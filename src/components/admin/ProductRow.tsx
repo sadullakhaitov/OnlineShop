@@ -55,6 +55,7 @@ function ProductRow({ product }: { product: Product }) {
           <p className="mt-0.5 truncate text-xs text-muted">
             {kinds[product.art].name[locale]}
             {category && ` · ${category}`} · {t("code", { id: product.id.toUpperCase() })}
+            {product.stock !== null && ` · ${t("pieces", { count: product.stock })}`}
           </p>
           {/* Phones and tablets show the price under the name */}
           <p className="mt-1.5 text-sm font-semibold tabular-nums lg:hidden">

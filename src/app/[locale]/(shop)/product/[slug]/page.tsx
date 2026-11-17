@@ -155,7 +155,11 @@ export default async function ProductPage({ params }: Props) {
               )}
               <span className="flex items-center gap-1.5">
                 <span className={`size-2 rounded-full ${product.inStock ? "bg-emerald-500" : "bg-faint"}`} />
-                {product.inStock ? t("productPage.inStock") : t("productPage.outOfStock")}
+                {!product.inStock
+                  ? t("productPage.outOfStock")
+                  : product.stock !== undefined && product.stock <= 5
+                    ? t("productPage.fewLeft", { count: product.stock })
+                    : t("productPage.inStock")}
               </span>
               <span className="text-faint">{t("productPage.sku", { id: product.id.toUpperCase() })}</span>
             </div>

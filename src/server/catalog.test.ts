@@ -9,6 +9,7 @@ import { orderInput, testDb } from "./testing";
 
 const kettle: ProductInput = {
   image: null,
+  stock: null,
   category: "kitchen",
   art: "kettle",
   brand: "Tefal",

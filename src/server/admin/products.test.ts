@@ -17,6 +17,7 @@ import {
 
 const tv: ProductInput = {
   image: null,
+  stock: null,
   category: "tv-audio",
   art: "tv",
   brand: "Samsung",

@@ -40,6 +40,8 @@ type Values = {
   active: boolean;
   specs: SpecValues;
   image: string;
+  /** Digits, or empty when pieces are not counted */
+  stock: string;
 };
 
 const blank: Values = {
@@ -56,6 +58,7 @@ const blank: Values = {
   active: true,
   specs: {},
   image: "",
+  stock: "",
 };
 
 function fromRow(product: ProductRow): Values {
@@ -73,6 +76,7 @@ function fromRow(product: ProductRow): Values {
     active: product.active,
     specs: product.specs,
     image: product.image ?? "",
+    stock: product.stock === null ? "" : String(product.stock),
   };
 }
 
@@ -192,6 +196,8 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
       oldPrice: values.oldPrice ? oldPrice : null,
       badge: values.badge || null,
       image: values.image.trim() || null,
+      stock: values.stock === "" ? null : Number(values.stock),
+      inStock: values.stock === "" ? values.inStock : Number(values.stock) > 0,
       specs: Object.fromEntries(rows.flatMap((key) => (filled(values.specs[key]) ? [[key, values.specs[key]]] : []))),
     };
 
@@ -374,7 +380,9 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                   type="checkbox"
                   role="switch"
                   className="switch mt-0.5"
-                  checked={values[flag]}
+                  checked={flag === "inStock" && values.stock !== "" ? Number(values.stock) > 0 : values[flag]}
+                  // Counted pieces decide by themselves whether the product is on sale.
+                  disabled={flag === "inStock" && values.stock !== ""}
                   onChange={(event) => set(flag, event.target.checked)}
                   aria-describedby={`product-${flag}-hint`}
                 />
@@ -386,6 +394,24 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
                 </span>
               </label>
             ))}
+          </div>
+          <div className="mt-5 border-t border-hairline pt-5">
+            <label htmlFor="product-stock" className={labelClass}>
+              {t("stock")}
+            </label>
+            <input
+              id="product-stock"
+              inputMode="numeric"
+              className="field sm:max-w-[calc(50%-0.5rem)]"
+              placeholder={t("stockPlaceholder")}
+              value={values.stock}
+              onChange={(event) => set("stock", event.target.value.replace(/\D/g, "").slice(0, 6))}
+              aria-invalid={errors.includes("stock") || undefined}
+              aria-describedby="product-stock-hint"
+            />
+            <p id="product-stock-hint" className={hintClass}>
+              {t("stockHint")}
+            </p>
           </div>
           <div className="mt-5 border-t border-hairline pt-5">
             <label htmlFor="product-badge" className={labelClass}>

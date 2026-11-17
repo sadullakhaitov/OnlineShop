@@ -60,6 +60,11 @@ export const products = pgTable(
     /** Link to the product photo (https). Without one the shop draws the product kind. */
     image: text("image"),
     /**
+     * Pieces in the warehouse, or null when the shop does not count them. A
+     * counted product goes out of stock by itself when the last one is sold.
+     */
+    stock: integer("stock"),
+    /**
      * Grows with every change. The server keeps the catalogue in memory and
      * compares these numbers to notice that its copy is outdated.
      */

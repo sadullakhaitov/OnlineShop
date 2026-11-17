@@ -64,6 +64,8 @@ export type Product = {
   specs: ProductSpecs;
   /** Link to the product photo; without one the product kind is drawn. */
   image?: string;
+  /** Pieces left when the shop counts them */
+  stock?: number;
 };
 
 export const artKinds = [
