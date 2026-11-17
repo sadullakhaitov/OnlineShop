@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { logoutAction } from "@/server/admin/actions";
 import { countNewOrders } from "@/server/admin/orders";
 import { requireAdmin } from "@/server/admin/session";
+import { countPendingReviews } from "@/server/reviews";
 import { AdminLogo } from "@/components/admin/AdminLogo";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { LocaleSwitcher } from "@/components/layout/LocaleSwitcher";
@@ -25,7 +26,8 @@ export default async function PanelLayout({ children, params }: Props) {
   await requireAdmin();
 
   const t = await getTranslations("admin.nav");
-  const fresh = await countNewOrders(await getDb());
+  const db = await getDb();
+  const [fresh, waiting] = await Promise.all([countNewOrders(db), countPendingReviews(db)]);
 
   return (
     <div className="mx-auto flex w-full max-w-[1480px] gap-6 px-3 sm:px-6">
@@ -34,7 +36,7 @@ export default async function PanelLayout({ children, params }: Props) {
           <div className="px-3 pb-6 pt-3">
             <AdminLogo />
           </div>
-          <AdminNav fresh={fresh} variant="side" />
+          <AdminNav fresh={fresh} waiting={waiting} variant="side" />
 
           <div className="mt-auto flex flex-col gap-1 border-t border-hairline pt-3">
             <Link href="/" target="_blank" className={sideLink}>
@@ -74,7 +76,7 @@ export default async function PanelLayout({ children, params }: Props) {
         <main className="pt-5 lg:pt-8">{children}</main>
       </div>
 
-      <AdminNav fresh={fresh} variant="bar" />
+      <AdminNav fresh={fresh} waiting={waiting} variant="bar" />
     </div>
   );
 }

@@ -57,6 +57,13 @@
       "when": 1794928281641,
       "tag": "0007_promo_codes",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794928808427,
+      "tag": "0008_reviews",
+      "breakpoints": true
     }
   ]
 }

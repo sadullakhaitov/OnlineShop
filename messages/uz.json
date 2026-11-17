@@ -191,7 +191,10 @@
       "payment": "Click, Payme yoki qabul qilganda to'lov",
       "returns": "14 kun ichida qaytarish"
     },
-    "fewLeft": "Faqat {count} ta qoldi"
+    "fewLeft": "Faqat {count} ta qoldi",
+    "reviewsTitle": "Xaridorlar sharhlari",
+    "reviewsEmpty": "Hali sharh yo'q. Mahsulotni sotib olgan xaridorlar buyurtma sahifasidan baho qoldirishi mumkin.",
+    "reviewsBought": "Sotib olgan xaridor"
   },
   "spec": {
     "power": "Quvvat",
@@ -486,7 +489,17 @@
       "logout": "Chiqish",
       "newOrders": "{count} ta yangi buyurtma",
       "telegram": "Telegram",
-      "promo": "Promokodlar"
+      "promo": "Promokodlar",
+      "reviews": "Sharhlar",
+      "waitingReviews": "{count} ta sharh tasdiqlashni kutmoqda",
+      "short": {
+        "dashboard": "Bosh",
+        "orders": "Buyurtma",
+        "products": "Tovarlar",
+        "promo": "Promo",
+        "reviews": "Sharhlar",
+        "telegram": "Telegram"
+      }
     },
     "status": {
       "new": "Yangi",
@@ -849,6 +862,39 @@
         "taken": "Bunday kod allaqachon bor.",
         "server": "Saqlab bo'lmadi. Qayta urinib ko'ring."
       }
+    },
+    "reviews": {
+      "title": "Sharhlar",
+      "subtitle": "Xaridorlar yetkazilgan buyurtmalardagi mahsulotlar haqida yozadi. Siz tasdiqlaganingizdan so'ng saytda chiqadi va mahsulot reytingiga qo'shiladi.",
+      "tabs": {
+        "pending": "Kutilmoqda",
+        "approved": "Chop etilgan",
+        "rejected": "Rad etilgan"
+      },
+      "empty": "Bu yerda hali sharh yo'q.",
+      "approve": "Tasdiqlash",
+      "reject": "Rad etish",
+      "delete": "O'chirish",
+      "product": "Mahsulot: {title}",
+      "gone": "Mahsulot o'chirilgan"
     }
+  },
+  "review": {
+    "write": "Baho berish",
+    "sent": "Sharhingiz yuborildi, tekshiruvdan so'ng chiqadi",
+    "published": "Sharhingiz chop etildi",
+    "stars": "{title} uchun baho",
+    "starLabel": "{count} yulduz",
+    "placeholder": "Mahsulot qanday? Nimasi yoqdi, nimasi yoqmadi?",
+    "textLabel": "{title} haqida sharh",
+    "send": "Yuborish",
+    "cancel": "Bekor qilish",
+    "needStars": "Yulduzlardan birini tanlang",
+    "needText": "Bir-ikki so'z yozing",
+    "signIn": "Sharh yozish uchun kabinetga kiring",
+    "limit": "Juda ko'p urinish. Keyinroq qayta urinib ko'ring.",
+    "error": "Yuborib bo'lmadi. Qayta urinib ko'ring.",
+    "moderated": "Sharh do'kon tekshiruvidan so'ng saytda chiqadi.",
+    "hint": "Mahsulotlar yetib keldi. Ular haqida fikringizni yozing, boshqalarga tanlashda yordam beradi."
   }
 }

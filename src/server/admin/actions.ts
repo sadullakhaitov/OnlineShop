@@ -13,6 +13,7 @@ import { ORDER_STATUSES, changeOrderPayment, changeOrderStatus, type PaymentActi
 import { createProduct, setProductFlag, updateProduct, type ProductFlag } from "./products";
 import { createPromo, deletePromo, setPromoActive, type PromoField } from "./promo";
 import { CATALOG_TAG } from "@/server/catalog";
+import { moderateReview } from "@/server/reviews";
 import { getSiteUrl, getTelegramConfig } from "@/server/config";
 import { isPublicUrl } from "@/server/telegram/api";
 import { connectBot, sendTelegramLater, sendTestMessage } from "@/server/telegram/setup";
@@ -232,4 +233,17 @@ export async function deletePromoAction(form: FormData): Promise<void> {
   if (typeof code !== "string") return;
   await deletePromo(await getDb(), code);
   refreshPromos();
+}
+
+const reviewActions = ["approve", "reject", "delete"] as const;
+
+/** Approves, rejects or deletes a review; the product's stars follow at once. */
+export async function moderateReviewAction(form: FormData): Promise<void> {
+  await requireAdmin();
+  const id = form.get("id");
+  const action = form.get("action") as (typeof reviewActions)[number];
+  if (typeof id !== "string" || !reviewActions.includes(action)) return;
+  const productId = await moderateReview(await getDb(), id, action);
+  if (productId) refreshShop();
+  else refresh();
 }

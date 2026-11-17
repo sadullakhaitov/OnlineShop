@@ -7,9 +7,10 @@ import { kinds, type SpecKey } from "@/data/products";
 import { routing, type Locale } from "@/i18n/routing";
 import { getCategory } from "@/lib/catalog";
 import { publicSiteUrl } from "@/lib/site";
-import { discountPercent, formatPrice } from "@/lib/format";
+import { discountPercent, formatDay, formatPrice } from "@/lib/format";
 import { enterDelay, productArtName } from "@/lib/motion";
 import { getBuildSlugs, readCatalog } from "@/server/catalog";
+import { readProductReviews } from "@/server/reviews";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { ProductArt } from "@/components/product/ProductArt";
@@ -62,6 +63,7 @@ export default async function ProductPage({ params }: Props) {
   const category = getCategory(product.category);
   const discount = discountPercent(product.price, product.oldPrice);
   const related = catalog.related(product, 5);
+  const reviews = product.reviews > 0 ? await readProductReviews(product.id) : [];
 
   const specs: [string, string][] = [
     [t("productPage.brand"), product.brand],
@@ -88,6 +90,9 @@ export default async function ProductPage({ params }: Props) {
     category: kind.name[locale],
     description: kind.about[locale],
     ...(product.image ? { image: product.image } : {}),
+    ...(reviews.length > 0
+      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: product.rating, reviewCount: product.reviews } }
+      : {}),
     offers: {
       "@type": "Offer",
       priceCurrency: "UZS",
@@ -214,6 +219,45 @@ export default async function ProductPage({ params }: Props) {
               ))}
             </dl>
           </section>
+
+          {reviews.length > 0 && (
+            <section id="reviews" style={enterDelay(320)} className="glass enter rounded-[1.75rem] p-6 sm:p-8">
+              <h2 className="flex items-baseline justify-between gap-4 text-lg font-semibold">
+                {t("productPage.reviewsTitle")}
+                <span className="flex items-center gap-1.5 text-sm font-medium text-muted">
+                  <Star className="size-4 fill-accent text-accent" strokeWidth={0} />
+                  <span className="font-semibold text-ink">{product.rating.toFixed(1)}</span>
+                  {t("product.reviews", { count: product.reviews })}
+                </span>
+              </h2>
+              <ul className="mt-3 divide-y divide-hairline">
+                {reviews.map((review) => (
+                  <li key={review.id} className="py-4">
+                    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+                      <p className="text-sm font-semibold">
+                        {review.name}
+                        <span className="ml-2 text-xs font-normal text-muted">{t("productPage.reviewsBought")}</span>
+                      </p>
+                      <time dateTime={review.date} className="text-xs tabular-nums text-faint">
+                        {formatDay(new Date(review.date), locale)}
+                      </time>
+                    </div>
+                    <p className="mt-1 flex gap-0.5" aria-label={t("review.starLabel", { count: review.rating })}>
+                      {[1, 2, 3, 4, 5].map((value) => (
+                        <Star
+                          key={value}
+                          aria-hidden="true"
+                          className={`size-3.5 ${value <= review.rating ? "fill-accent text-accent" : "fill-hairline text-hairline"}`}
+                          strokeWidth={0}
+                        />
+                      ))}
+                    </p>
+                    <p className="mt-2 whitespace-pre-line break-words text-[0.9375rem] leading-relaxed text-muted">{review.text}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </div>
       </div>
 

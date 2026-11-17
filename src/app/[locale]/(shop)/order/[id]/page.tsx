@@ -17,7 +17,9 @@ import { getCatalog } from "@/server/catalog";
 import { getSiteUrl } from "@/server/config";
 import { getOrder, isPayable } from "@/server/orders";
 import { getPaymentUrl } from "@/server/payments/urls";
-import { getSessionToken } from "@/server/session";
+import { reviewChances } from "@/server/reviews";
+import { getCurrentCustomer, getSessionToken } from "@/server/session";
+import { ReviewButton } from "@/components/order/ReviewButton";
 import { PaymentWatcher } from "@/components/order/PaymentWatcher";
 import { ProductArt } from "@/components/product/ProductArt";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -61,6 +63,10 @@ export default async function OrderPage({ params }: Props) {
   const payUrl = getPaymentUrl(order, getSiteUrl(await headers()), locale);
   const awaitingPayment = online && isPayable(order);
   const signedIn = Boolean(await getSessionToken());
+  // Its buyer, signed in, can say what they think of what was delivered.
+  const customer = order.status === "delivered" && order.customerId && signedIn ? await getCurrentCustomer() : null;
+  const reviewable =
+    customer && customer.id === order.customerId ? await reviewChances(await getDb(), customer.id, order.id) : new Map<string, null>();
 
   // One line on what is happening with the order right now.
   const state =
@@ -153,6 +159,7 @@ export default async function OrderPage({ params }: Props) {
               </span>
               {t("order.items")}
             </h2>
+            {[...reviewable.values()].includes(null) && <p className="mt-2 text-sm text-muted">{t("review.hint")}</p>}
             <ul className="mt-3 divide-y divide-hairline">
               {order.items.map((item) => {
                 // The order keeps what was bought; the product itself may have left the shop since.
@@ -162,34 +169,46 @@ export default async function OrderPage({ params }: Props) {
                 );
                 const tile = "tile grid size-16 shrink-0 place-items-center rounded-2xl";
                 return (
-                  <li key={item.id} className="flex items-center gap-3.5 py-3.5">
-                    {listed ? (
-                      <Link href={`/product/${item.slug}`} tabIndex={-1} aria-hidden="true" className={tile}>
-                        {picture}
-                      </Link>
-                    ) : (
-                      <div className={tile}>{picture}</div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs text-muted">{kinds[item.art as ArtKind]?.name[locale]}</p>
+                  <li key={item.id} className="py-3.5">
+                    <div className="flex items-center gap-3.5">
                       {listed ? (
-                        <Link
-                          href={`/product/${item.slug}`}
-                          className="line-clamp-2 text-[0.9375rem] font-medium leading-snug transition-colors duration-300 hover:text-accent"
-                        >
-                          {item.title}
+                        <Link href={`/product/${item.slug}`} tabIndex={-1} aria-hidden="true" className={tile}>
+                          {picture}
                         </Link>
                       ) : (
-                        <p className="line-clamp-2 text-[0.9375rem] font-medium leading-snug">{item.title}</p>
+                        <div className={tile}>{picture}</div>
                       )}
-                      <p className="mt-0.5 text-xs tabular-nums text-muted">
-                        {t("order.quantity", { count: item.quantity })} × {formatPrice(item.price)}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-muted">{kinds[item.art as ArtKind]?.name[locale]}</p>
+                        {listed ? (
+                          <Link
+                            href={`/product/${item.slug}`}
+                            className="line-clamp-2 text-[0.9375rem] font-medium leading-snug transition-colors duration-300 hover:text-accent"
+                          >
+                            {item.title}
+                          </Link>
+                        ) : (
+                          <p className="line-clamp-2 text-[0.9375rem] font-medium leading-snug">{item.title}</p>
+                        )}
+                        <p className="mt-0.5 text-xs tabular-nums text-muted">
+                          {t("order.quantity", { count: item.quantity })} × {formatPrice(item.price)}
+                        </p>
+                      </div>
+                      <p className="whitespace-nowrap text-sm font-semibold tabular-nums sm:text-base">
+                        {formatPrice(item.price * item.quantity)}{" "}
+                        <span className="text-xs font-medium text-muted">{t("product.currency")}</span>
                       </p>
                     </div>
-                    <p className="whitespace-nowrap text-sm font-semibold tabular-nums sm:text-base">
-                      {formatPrice(item.price * item.quantity)}{" "}
-                      <span className="text-xs font-medium text-muted">{t("product.currency")}</span>
-                    </p>
+                    {reviewable.has(item.productId) && (
+                      <div className="pl-[4.875rem]">
+                        <ReviewButton
+                          orderId={order.id}
+                          productId={item.productId}
+                          title={item.title}
+                          status={reviewable.get(item.productId) ?? null}
+                        />
+                      </div>
+                    )}
                   </li>
                 );
               })}

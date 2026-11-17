@@ -357,3 +357,35 @@ export const promoCodes = pgTable("promo_codes", {
 });
 
 export type PromoCode = typeof promoCodes.$inferSelect;
+
+export type ReviewStatus = "pending" | "approved" | "rejected";
+
+/**
+ * What customers say about products they bought. Only a customer whose order
+ * with the product was delivered can write one, once per product, and it
+ * shows in the shop after the admin approves it.
+ */
+export const reviews = pgTable(
+  "reviews",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    productId: text("product_id").notNull(),
+    customerId: uuid("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "cascade" }),
+    orderId: uuid("order_id").references(() => orders.id, { onDelete: "set null" }),
+    /** The name shown under the review */
+    name: text("name").notNull(),
+    /** 1–5 stars */
+    rating: integer("rating").notNull(),
+    text: text("text").notNull(),
+    status: text("status").$type<ReviewStatus>().notNull().default("pending"),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    uniqueIndex("reviews_product_customer_idx").on(table.productId, table.customerId),
+    index("reviews_status_idx").on(table.status, table.createdAt),
+  ],
+);
+
+export type Review = typeof reviews.$inferSelect;
