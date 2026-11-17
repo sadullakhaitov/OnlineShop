@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "@/i18n/navigation";
 import { sortOptions } from "@/lib/catalog";
 import { enterDelay } from "@/lib/motion";
 
@@ -16,17 +14,25 @@ type Props = {
   total: number;
   categories: Option[];
   brands: Option[];
+  /** The filters in the address; empty in the copy of the page made in advance. */
+  searchParams: URLSearchParams;
   children: React.ReactNode;
 };
+
+/**
+ * Filters change the address in place. The results are worked out in the
+ * browser from the address (see CatalogView), so nothing waits for a server.
+ */
+function setQuery(query: string) {
+  const path = window.location.pathname;
+  window.history.replaceState(null, "", query ? `${path}?${query}` : path);
+}
 
 /** Brands shown before "show all" is pressed. */
 const BRAND_LIMIT = 6;
 
-export function CatalogShell({ title, total, categories, brands, children }: Props) {
+export function CatalogShell({ title, total, categories, brands, searchParams, children }: Props) {
   const t = useTranslations("catalog");
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [pending, startTransition] = useTransition();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [allBrands, setAllBrands] = useState(false);
 
@@ -53,10 +59,7 @@ export function CatalogShell({ title, total, categories, brands, children }: Pro
       if (value) params.set(key, value);
       else params.delete(key);
     }
-    const query = params.toString();
-    startTransition(() => {
-      router.replace(query ? `/catalog?${query}` : "/catalog", { scroll: false });
-    });
+    setQuery(params.toString());
   }
 
   function toggleBrand(name: string) {
@@ -68,9 +71,7 @@ export function CatalogShell({ title, total, categories, brands, children }: Pro
 
   function reset() {
     const q = searchParams.get("q");
-    startTransition(() => {
-      router.replace(q ? `/catalog?q=${encodeURIComponent(q)}` : "/catalog", { scroll: false });
-    });
+    setQuery(q ? `q=${encodeURIComponent(q)}` : "");
   }
 
   useEffect(() => {
@@ -238,10 +239,7 @@ export function CatalogShell({ title, total, categories, brands, children }: Pro
           {panel}
         </aside>
 
-        {/* While new results load, the cards themselves dim (see .is-pending). */}
-        <div aria-busy={pending} className={pending ? "is-pending" : undefined}>
-          {children}
-        </div>
+        <div>{children}</div>
       </div>
 
       {sheetOpen &&
