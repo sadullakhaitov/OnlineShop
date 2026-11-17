@@ -46,7 +46,7 @@
     ],
     "scheme": "multimedia",
     "extra": {
-      "apiUrl": "https://multimedia.uz"
+      "apiUrl": "https://online-shop-omega-ruby.vercel.app"
     },
     "experiments": {
       "typedRoutes": false

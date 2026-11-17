@@ -31,7 +31,7 @@ Scan the QR code with Expo Go on the phone. The website must be running
 itself, so give the computer's address on the local network.
 
 The release build talks to the address in `app.json` → `expo.extra.apiUrl`
-(now `https://multimedia.uz`; change it to the shop's real domain).
+(now the temporary Vercel address; change it to the shop's domain later).
 
 ## Building for the stores
 
