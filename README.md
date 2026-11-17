@@ -14,7 +14,8 @@ Buxoro shahri va tumanlari uchun maishiy texnika internet-do'koni.
 - Telegram: the same web app runs as the bot's Mini App, signs customers in
   with their Telegram number and sends order messages
 
-The future mobile app will talk to the same server routes.
+The mobile app in `mobile/` (Expo, Android and iPhone) uses the same server;
+see `mobile/README.md`.
 
 ## Pages
 
@@ -357,8 +358,8 @@ npm run db:migrate   # apply migrations to DATABASE_URL by hand
 3. Cart, checkout, delivery, Click and Payme, customer account (done; the
    payment and SMS services wait for the shop's own keys)
 4. Admin panel and Telegram Mini App (done; the bot waits for its token)
-5. Mobile app
+5. Mobile app (done; store builds wait for the shop's developer accounts)
 
 Still placeholders: delivery prices and days, the shop's phone, e-mail,
-address and working hours, and the information pages listed in the footer
-without links.
+address and working hours (`src/data/delivery.ts`, `src/data/contacts.ts`),
+and the footer items "news", "careers" and "manuals", which have no page.
