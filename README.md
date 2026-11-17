@@ -11,9 +11,10 @@ Buxoro shahri va tumanlari uchun maishiy texnika internet-do'koni.
 - Light and dark themes (saved in the browser, follow the system by default)
 - PostgreSQL through Drizzle ORM for products, orders, customers and payments
 - Payme (Merchant API) and Click (SHOP API), sign-in by phone number and SMS code
+- Telegram: the same web app runs as the bot's Mini App, signs customers in
+  with their Telegram number and sends order messages
 
-The same web app is meant to run as the Telegram Mini App, and the future
-mobile app will talk to the same server routes.
+The future mobile app will talk to the same server routes.
 
 ## Pages
 
@@ -34,6 +35,7 @@ mobile app will talk to the same server routes.
 | `/uz/admin/orders/[id]` | One order: status, payment, customer, history |
 | `/uz/admin/products` | All products: search, sections, "in stock" and "shown in the shop" switches |
 | `/uz/admin/products/new`, `/[id]` | Adding and editing a product |
+| `/uz/admin/telegram` | The bot: connecting it, its state, a test message |
 | `/uz/admin/login` | Admin sign-in |
 
 Server routes under `/api`:
@@ -47,6 +49,8 @@ Server routes under `/api`:
 | `POST /api/payments/payme` | Payme calls this address |
 | `POST /api/payments/click/prepare`, `/complete` | Click calls these two addresses |
 | `POST /api/payments/demo` | Confirms or declines a test payment, only in demo mode |
+| `POST /api/auth/telegram` | Signs in inside the Telegram Mini App |
+| `POST /api/telegram/webhook` | Telegram sends the bot's updates here |
 
 ## Structure
 
@@ -186,6 +190,51 @@ it, and search engines are told not to index it.
   two people edit the same product, the second save is refused instead of
   silently undoing the first.
 
+## Telegram
+
+The bot is the shop's second door. A customer opens it, presses **Start** and
+gets a button that opens the whole shop inside Telegram (the Mini App): the
+same pages, in Telegram's light or dark colours, with Telegram's back button.
+Sharing the phone number once (a button in the bot, or on the sign-in page
+inside the app) signs them in without an SMS code, and from then on the bot
+tells them about every step of their orders.
+
+What the bot sends:
+
+| To | When |
+| --- | --- |
+| The shop's chat (`TELEGRAM_ADMIN_CHAT_ID`) | A new order (everything in it, with a button to the admin page), an online payment, a refund by Payme |
+| The customer | Order accepted, payment received, confirmed, on the way or ready for pickup, delivered, cancelled, money returned |
+
+The customer is found by the Telegram account the order was placed from, or
+by the phone number they shared. A step the admin takes back (a mistake) is
+not reported, and nothing is reported twice. Messages are written down
+together with the change and sent right after the response; one that fails
+(Telegram unreachable) is tried again with the next activity, for a day. A
+customer who blocked the bot is not written to until they write again.
+
+Setting it up:
+
+1. In Telegram, ask @BotFather for a new bot (`/newbot`) and put its token in
+   `TELEGRAM_BOT_TOKEN` on hosting; restart the site.
+2. Make sure `SITE_URL` is the public https address of the shop.
+3. In the admin panel open **Telegram** and press **Connect the bot**. This
+   registers the webhook (with a secret only Telegram knows), the menu button
+   that opens the shop, the commands and the bot's descriptions in both
+   languages.
+4. Add the bot to the staff group (or write `/id` to it): it answers with the
+   chat's id. Put it in `TELEGRAM_ADMIN_CHAT_ID`, restart, and press **Send a
+   test message** on the same page. Use a private group: the messages contain
+   customers' names, phones and addresses.
+
+Bot commands: `/start`, `/lang` (Uzbek or Russian), `/id`.
+
+Inside the Mini App the page checks the data Telegram signs with the bot's
+token (never trusting what the browser says), payment pages of Payme and Click
+open in the browser while the app shows the order, and the theme switch is
+hidden because Telegram decides the colours. Only Uzbek numbers (+998) can
+sign in, as on the website.
+
 ## Demo mode
 
 Demo mode stands in for the outside services that are not connected yet:
@@ -254,7 +303,8 @@ stored only as hashes; the session cookie cannot be read by scripts.
 - `npm test` runs the automatic tests on an in-memory database: the Payme and
   Click protocols (including repeated and simultaneous requests, refunds and
   wrong signatures), orders, sign-in, phone numbers, the admin sign-in, order
-  management, product management and the catalogue.
+  management, product management, the catalogue, Telegram's signatures, the
+  bot and the order messages.
 - The whole path (cart, checkout, test payment, order page, sign-in, account)
   was walked through in a browser in demo mode, on desktop and phone sizes, in
   both languages and both themes; the payment routes were also called over
@@ -264,10 +314,14 @@ stored only as hashes; the session cookie cannot be read by scripts.
   change, two people saving the same product), each time checking what the
   shop shows afterwards. This was done on the embedded database and on a real
   PostgreSQL server with the pages prepared ahead of time.
+- Telegram was walked through with a stand-in for Telegram's servers and for
+  its Mini App script: opening the app, theme, back button, sign-in with the
+  shared number, an order with its messages to the shop and the customer, the
+  bot's answers and the admin page, on the embedded database and on PostgreSQL.
 - **Not tested against the real services:** Payme and Click have only seen
-  requests built from their documentation, never their own sandboxes, and the
-  Eskiz sender has never sent a real SMS. Expect small adjustments when the
-  real keys are connected.
+  requests built from their documentation, never their own sandboxes, the
+  Eskiz sender has never sent a real SMS, and the bot has never talked to the
+  real Telegram. Expect small adjustments when the real keys are connected.
 
 ## Design rules worth knowing
 
@@ -301,7 +355,8 @@ npm run db:migrate   # apply migrations to DATABASE_URL by hand
 2. Catalogue, filters, search, product page, favourites (done)
 3. Cart, checkout, delivery, Click and Payme, customer account (done; the
    payment and SMS services wait for the shop's own keys)
-4. Admin panel (done) and Telegram Mini App, then the mobile app
+4. Admin panel and Telegram Mini App (done; the bot waits for its token)
+5. Mobile app
 
 Still placeholders: delivery prices and days, the shop's phone, e-mail,
 address and working hours, and the information pages listed in the footer

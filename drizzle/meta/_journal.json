@@ -29,6 +29,13 @@
       "when": 1794875988801,
       "tag": "0003_seed_products",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794896844891,
+      "tag": "0004_telegram",
+      "breakpoints": true
     }
   ]
 }

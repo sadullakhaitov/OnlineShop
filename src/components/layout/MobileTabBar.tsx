@@ -49,7 +49,7 @@ export function MobileTabBar() {
     <nav
       aria-label={t("menu")}
       className="fixed inset-x-3 bottom-3 z-40 md:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      style={{ paddingBottom: "max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom, 0px))" }}
     >
       <ul className="glass glass-strong grid grid-cols-5 rounded-[1.5rem] p-1.5">
         {tabs.map(({ key, href, icon: Icon, active }) => {

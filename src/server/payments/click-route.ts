@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { getClickConfig } from "@/server/config";
-import { ClickError, handleClickRequest, type ClickActionValue, type ClickParams } from "./click";
+import { sendTelegramLater } from "@/server/telegram/setup";
+import { ClickAction, ClickError, handleClickRequest, type ClickActionValue, type ClickParams } from "./click";
 
 /** Click sends its fields as a form; a JSON body is accepted as well. */
 async function readParams(request: Request): Promise<ClickParams> {
@@ -35,7 +36,10 @@ export async function answerClick(request: Request, action: ClickActionValue) {
   }
 
   try {
-    return NextResponse.json(await handleClickRequest(await getDb(), config, action, params));
+    const answer = await handleClickRequest(await getDb(), config, action, params);
+    // A completed payment may have messages to send.
+    if (action === ClickAction.complete) sendTelegramLater(request.headers);
+    return NextResponse.json(answer);
   } catch (error) {
     console.error("Click endpoint failed", error);
     return NextResponse.json({ error: ClickError.updateFailed, error_note: "Failed to update user" });

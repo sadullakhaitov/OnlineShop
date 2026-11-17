@@ -1,6 +1,6 @@
 import { createHash, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import { and, count, desc, eq, gt, isNull, lt, sql } from "drizzle-orm";
-import type { Db } from "@/db";
+import type { Db, Tx } from "@/db";
 import { customers, orders, otpCodes, sessions, type Customer } from "@/db/schema";
 
 /**
@@ -110,40 +110,50 @@ export async function verifyCode(
 
   return db.transaction(async (tx) => {
     await tx.update(otpCodes).set({ usedAt: now }).where(eq(otpCodes.id, latest.id));
-
-    // The first sign-in creates the customer.
-    let [customer] = await tx
-      .insert(customers)
-      .values({ phone })
-      .onConflictDoUpdate({ target: customers.phone, set: { phone } })
-      .returning();
-
-    // Orders placed with this phone before signing in now belong to the account,
-    // and the newest of them tells us how to address the customer.
-    const adopted = await tx
-      .update(orders)
-      .set({ customerId: customer.id })
-      .where(and(eq(orders.phone, phone), isNull(orders.customerId)))
-      .returning({ name: orders.name, createdAt: orders.createdAt });
-    if (!customer.name && adopted.length > 0) {
-      const newest = adopted.reduce((a, b) => (a.createdAt > b.createdAt ? a : b));
-      [customer] = await tx
-        .update(customers)
-        .set({ name: newest.name })
-        .where(eq(customers.id, customer.id))
-        .returning();
-    }
-
-    await tx.delete(sessions).where(and(eq(sessions.customerId, customer.id), lt(sessions.expiresAt, now)));
-
-    const token = randomBytes(32).toString("base64url");
-    await tx.insert(sessions).values({
-      tokenHash: sha256(token),
-      customerId: customer.id,
-      expiresAt: new Date(now.getTime() + SESSION_LIFETIME),
-    });
-    return { ok: true as const, token, customer };
+    return { ok: true as const, ...(await startSession(tx, phone, now)) };
   });
+}
+
+/**
+ * Signs in the customer with this phone number, which has just been proven to
+ * be theirs: creates the customer on the first sign-in, gives them the orders
+ * placed with the number as a guest, and starts a session. `name` is used when
+ * nothing better is known.
+ */
+export async function startSession(
+  tx: Tx,
+  phone: string,
+  now: Date,
+  name?: string,
+): Promise<{ token: string; customer: Customer }> {
+  // The first sign-in creates the customer.
+  let [customer] = await tx
+    .insert(customers)
+    .values({ phone })
+    .onConflictDoUpdate({ target: customers.phone, set: { phone } })
+    .returning();
+
+  // Orders placed with this phone before signing in now belong to the account,
+  // and the newest of them tells us how to address the customer.
+  const adopted = await tx
+    .update(orders)
+    .set({ customerId: customer.id })
+    .where(and(eq(orders.phone, phone), isNull(orders.customerId)))
+    .returning({ name: orders.name, createdAt: orders.createdAt });
+  const known = adopted.length > 0 ? adopted.reduce((a, b) => (a.createdAt > b.createdAt ? a : b)).name : name;
+  if (!customer.name && known) {
+    [customer] = await tx.update(customers).set({ name: known }).where(eq(customers.id, customer.id)).returning();
+  }
+
+  await tx.delete(sessions).where(and(eq(sessions.customerId, customer.id), lt(sessions.expiresAt, now)));
+
+  const token = randomBytes(32).toString("base64url");
+  await tx.insert(sessions).values({
+    tokenHash: sha256(token),
+    customerId: customer.id,
+    expiresAt: new Date(now.getTime() + SESSION_LIFETIME),
+  });
+  return { token, customer };
 }
 
 /** The customer this cookie token belongs to, if the session is still alive. */

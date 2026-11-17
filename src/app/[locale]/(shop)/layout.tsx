@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
+import { TelegramBridge } from "@/components/telegram/TelegramBridge";
 
 type Props = {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ export default async function ShopLayout({ children, params }: Props) {
       </main>
       <Footer />
       <MobileTabBar />
+      <TelegramBridge />
     </>
   );
 }

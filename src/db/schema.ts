@@ -8,8 +8,10 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import type { ArtKind, ColorKey, ProductBadge, ProductSpecs } from "@/data/products";
 
 /**
@@ -134,6 +136,8 @@ export const orders = pgTable(
     subtotal: bigint("subtotal", { mode: "number" }).notNull(),
     deliveryFee: bigint("delivery_fee", { mode: "number" }).notNull(),
     total: bigint("total", { mode: "number" }).notNull(),
+    /** The Telegram user who placed the order in the Mini App; told about its progress there. */
+    telegramId: bigint("telegram_id", { mode: "number" }),
     createdAt: createdAt(),
     paidAt: timestamp("paid_at", { withTimezone: true }),
   },
@@ -255,6 +259,62 @@ export const adminLoginAttempts = pgTable(
   (table) => [index("admin_login_attempts_time_idx").on(table.createdAt)],
 );
 
+/**
+ * People who wrote to the shop's Telegram bot or opened the Mini App.
+ * Sharing a phone number links them to the customer with that number.
+ */
+export const telegramAccounts = pgTable("telegram_accounts", {
+  /** Telegram's user id; in a private chat it is also the chat id. */
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  customerId: uuid("customer_id")
+    .unique()
+    .references(() => customers.id, { onDelete: "set null" }),
+  firstName: text("first_name"),
+  username: text("username"),
+  /** Language of the bot's messages */
+  locale: text("locale").notNull().default("uz"),
+  /** False after Telegram refused a message (the user blocked the bot or never started it). */
+  reachable: boolean("reachable").notNull().default(true),
+  createdAt: createdAt(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type TelegramAudience = "shop" | "customer";
+export type TelegramEvent = "placed" | "paid" | "confirmed" | "delivering" | "delivered" | "cancelled" | "refunded";
+
+/**
+ * Telegram messages about orders. A message is written down in the same
+ * transaction as the change it reports and sent right after, so none is lost
+ * when Telegram is briefly unreachable, and none is sent twice.
+ */
+export const telegramMessages = pgTable(
+  "telegram_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    audience: text("audience").$type<TelegramAudience>().notNull(),
+    event: text("event").$type<TelegramEvent>().notNull(),
+    chatId: text("chat_id").notNull(),
+    attempts: integer("attempts").notNull().default(0),
+    /** A sender is busy with the message until this moment. */
+    lockedUntil: timestamp("locked_until", { withTimezone: true }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    /** Given up: Telegram refused the message for good, or it kept failing. */
+    failedAt: timestamp("failed_at", { withTimezone: true }),
+    error: text("error"),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    // Each event is reported to each side once.
+    uniqueIndex("telegram_messages_once_idx").on(table.orderId, table.audience, table.event),
+    index("telegram_messages_pending_idx")
+      .on(table.createdAt)
+      .where(sql`${table.sentAt} is null and ${table.failedAt} is null`),
+  ],
+);
+
 export type ProductRow = typeof products.$inferSelect;
 export type Customer = typeof customers.$inferSelect;
 export type Order = typeof orders.$inferSelect;
@@ -262,3 +322,5 @@ export type OrderItem = typeof orderItems.$inferSelect;
 export type PaymeTransaction = typeof paymeTransactions.$inferSelect;
 export type ClickTransaction = typeof clickTransactions.$inferSelect;
 export type OrderEvent = typeof orderEvents.$inferSelect;
+export type TelegramAccount = typeof telegramAccounts.$inferSelect;
+export type TelegramMessage = typeof telegramMessages.$inferSelect;

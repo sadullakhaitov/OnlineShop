@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import "@fontsource-variable/inter";
 import "../globals.css";
 import { routing } from "@/i18n/routing";
+import { telegramScript } from "@/lib/telegram";
 import { themeScript } from "@/lib/theme";
 
 type Props = {
@@ -56,6 +57,8 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* Inside Telegram: Telegram's script and theme (after the saved theme, so it wins). */}
+        <script dangerouslySetInnerHTML={{ __html: telegramScript }} />
         {/* Scroll reveals need JavaScript; without it everything is simply visible. */}
         <noscript>
           <style>{`[data-reveal]{opacity:1!important}`}</style>

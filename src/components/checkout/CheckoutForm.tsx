@@ -9,6 +9,7 @@ import { removeFromCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { enterDelay } from "@/lib/motion";
 import { localPhoneDigits } from "@/lib/phone";
+import { getWebApp, openExternal } from "@/lib/telegram";
 import { CartEmpty, CartSkeleton } from "@/components/cart/CartView";
 import { useCartLines } from "@/components/cart/useCartLines";
 import { ProductArt } from "@/components/product/ProductArt";
@@ -142,9 +143,11 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
 
     setSending(true);
     try {
+      const telegram = getWebApp();
       const response = await fetch("/api/orders", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        // Inside Telegram the order is tied to the Telegram user, who then hears about it in the bot.
+        headers: { "Content-Type": "application/json", ...(telegram ? { "X-Telegram-Init-Data": telegram.initData } : {}) },
         body: JSON.stringify({
           items: cart.available.map((line) => ({ id: line.id, quantity: line.quantity })),
           name: name.trim(),
@@ -171,8 +174,12 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
         onPlaced();
         removeFromCart(cart.available.map((line) => line.id));
         // Online payment continues at Payme or Click (or on the test page).
-        if (data.payUrl) window.location.assign(data.payUrl);
-        else router.push(`/order/${data.id}`);
+        // Inside Telegram the payment opens in the browser and the app shows the order meanwhile.
+        if (data.payUrl && !(telegram && /^https?:/.test(data.payUrl))) window.location.assign(data.payUrl);
+        else {
+          if (data.payUrl) openExternal(data.payUrl);
+          router.push(`/order/${data.id}`);
+        }
         return;
       }
 

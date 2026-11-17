@@ -11,6 +11,9 @@ export const themeScript = `(function(){try{var t=localStorage.getItem("${THEME_
 /** The visitor's saved choice, or the system setting when nothing is saved. */
 export function prefersDark(): boolean {
   try {
+    // Inside Telegram the theme follows Telegram's (see lib/telegram.ts).
+    const telegram = document.documentElement.dataset.tg === "1" ? sessionStorage.getItem("mm_tg_dark") : null;
+    if (telegram) return telegram === "1";
     const saved = localStorage.getItem(THEME_KEY);
     if (saved) return saved === "dark";
   } catch {

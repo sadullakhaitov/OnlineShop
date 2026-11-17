@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import type { PaymentMethod } from "@/db/schema";
 
 /**
@@ -142,4 +142,40 @@ export function getSiteUrl(headers: Headers): string {
   const local = host.startsWith("localhost") || host.startsWith("127.0.0.1");
   const protocol = headers.get("x-forwarded-proto") ?? (local ? "http" : "https");
   return `${protocol}://${host}`;
+}
+
+export type TelegramConfig = {
+  token: string;
+  /** Chat the shop is told about orders in: a person, a group or a channel. */
+  adminChatId: string | null;
+  /** Language of the messages in that chat */
+  adminLocale: "uz" | "ru";
+  /** Telegram sends it with every update, so nobody else can post to the webhook. */
+  webhookSecret: string;
+};
+
+const TELEGRAM_TOKEN = /^\d{5,15}:[A-Za-z0-9_-]{30,64}$/;
+
+/** "missing", "invalid" (does not look like a token from @BotFather) or "ready". */
+export function telegramTokenState(): "missing" | "invalid" | "ready" {
+  const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
+  if (!token) return "missing";
+  return TELEGRAM_TOKEN.test(token) ? "ready" : "invalid";
+}
+
+export function getTelegramConfig(): TelegramConfig | null {
+  if (telegramTokenState() !== "ready") return null;
+  const token = process.env.TELEGRAM_BOT_TOKEN!.trim();
+  const chat = process.env.TELEGRAM_ADMIN_CHAT_ID?.trim();
+  const secret = process.env.TELEGRAM_WEBHOOK_SECRET?.trim();
+  return {
+    token,
+    adminChatId: chat && /^-?\d{1,20}$|^@\w{5,32}$/.test(chat) ? chat : null,
+    adminLocale: process.env.TELEGRAM_ADMIN_LOCALE === "ru" ? "ru" : "uz",
+    // Without a value of its own the secret is derived from the token.
+    webhookSecret:
+      secret && /^[A-Za-z0-9_-]{1,256}$/.test(secret)
+        ? secret
+        : createHash("sha256").update(`webhook:${token}`).digest("hex").slice(0, 48),
+  };
 }

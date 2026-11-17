@@ -1,15 +1,16 @@
 "use client";
 
-import { ClipboardList, LayoutDashboard, Package, type LucideIcon } from "lucide-react";
+import { ClipboardList, LayoutDashboard, Package, Send, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 
-type Item = { key: "dashboard" | "orders" | "products"; href: string; icon: LucideIcon };
+type Item = { key: "dashboard" | "orders" | "products" | "telegram"; href: string; icon: LucideIcon };
 
 const items: Item[] = [
   { key: "dashboard", href: "/admin", icon: LayoutDashboard },
   { key: "orders", href: "/admin/orders", icon: ClipboardList },
   { key: "products", href: "/admin/products", icon: Package },
+  { key: "telegram", href: "/admin/telegram", icon: Send },
 ];
 
 type Props = {

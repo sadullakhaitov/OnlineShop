@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { getCurrentCustomer } from "@/server/session";
 import { LoginForm } from "@/components/account/LoginForm";
+import { TelegramLogin } from "@/components/telegram/TelegramLogin";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -25,6 +26,7 @@ export default async function LoginPage({ params }: Props) {
   return (
     <div className="mx-auto w-full max-w-md pt-8 sm:pt-14">
       <div className="glass glass-sheen enter rounded-[1.75rem] p-6 sm:p-8">
+        <TelegramLogin />
         <LoginForm />
       </div>
     </div>

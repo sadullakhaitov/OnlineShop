@@ -21,6 +21,7 @@ import { getSessionToken } from "@/server/session";
 import { PaymentWatcher } from "@/components/order/PaymentWatcher";
 import { ProductArt } from "@/components/product/ProductArt";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { PayLink } from "@/components/order/PayLink";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -257,9 +258,9 @@ export default async function OrderPage({ params }: Props) {
 
           {payUrl ? (
             <>
-              <a href={payUrl} className="btn btn-primary mt-5 h-12 w-full text-[0.9375rem]">
+              <PayLink href={payUrl} className="btn btn-primary mt-5 h-12 w-full text-[0.9375rem]">
                 {t("order.pay", { method: t(`order.method.${order.paymentMethod}`) })}
-              </a>
+              </PayLink>
               <p className="mt-3 text-center text-xs leading-relaxed text-muted">{t("order.payHint")}</p>
             </>
           ) : (

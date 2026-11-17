@@ -26,11 +26,19 @@ export async function getCurrentCustomer(): Promise<Customer | null> {
   return getCustomerByToken(await getDb(), token);
 }
 
-export function setSessionCookies(response: NextResponse, token: string) {
-  response.cookies.set(SESSION_COOKIE, token, { ...base, httpOnly: true });
+/**
+ * Inside Telegram the shop may run in a frame of web.telegram.org, where a
+ * browser only keeps cookies marked for that: sent from any site, but stored
+ * separately for the page around the frame ("partitioned").
+ */
+const embedded = { sameSite: "none" as const, secure: true, partitioned: true };
+
+export function setSessionCookies(response: NextResponse, token: string, options: { telegram?: boolean } = {}) {
+  const attributes = options.telegram && process.env.NODE_ENV === "production" ? { ...base, ...embedded } : base;
+  response.cookies.set(SESSION_COOKIE, token, { ...attributes, httpOnly: true });
   // A readable marker with no secret in it, so the header can say "Kabinet"
   // on pages that are served from the cache.
-  response.cookies.set(AUTH_HINT_COOKIE, "1", base);
+  response.cookies.set(AUTH_HINT_COOKIE, "1", attributes);
 }
 
 export function clearSessionCookies(response: NextResponse) {

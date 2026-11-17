@@ -1,0 +1,91 @@
+/**
+ * The shop running as a Telegram Mini App. Telegram opens the site with its
+ * launch data in the address after "#"; the page then loads Telegram's script,
+ * which gives `window.Telegram.WebApp`.
+ * https://core.telegram.org/bots/webapps
+ */
+
+export const TELEGRAM_SCRIPT = "https://telegram.org/js/telegram-web-app.js";
+/** Set for the whole visit once the page was opened inside Telegram. */
+export const TELEGRAM_FLAG = "mm_tg";
+/** Telegram's colour scheme, remembered for pages loaded later in the visit. */
+export const TELEGRAM_DARK = "mm_tg_dark";
+
+type Callback = () => void;
+
+/** The part of Telegram's API the shop uses. */
+export type WebApp = {
+  initData: string;
+  version: string;
+  colorScheme: "light" | "dark";
+  isVersionAtLeast(version: string): boolean;
+  ready(): void;
+  expand(): void;
+  disableVerticalSwipes?(): void;
+  setHeaderColor(color: string): void;
+  setBackgroundColor(color: string): void;
+  setBottomBarColor?(color: string): void;
+  onEvent(event: string, callback: Callback): void;
+  offEvent(event: string, callback: Callback): void;
+  openLink(url: string): void;
+  requestContact(callback: (shared: boolean, result?: { response?: string }) => void): void;
+  BackButton: { show(): void; hide(): void; onClick(callback: Callback): void; offClick(callback: Callback): void };
+  HapticFeedback?: { notificationOccurred(type: "error" | "success" | "warning"): void };
+};
+
+declare global {
+  interface Window {
+    Telegram?: { WebApp?: WebApp };
+  }
+}
+
+/** True inside the Telegram Mini App. Known before the first paint (see the layout's script). */
+export function inTelegram(): boolean {
+  return typeof document !== "undefined" && document.documentElement.dataset.tg === "1";
+}
+
+/** Telegram's API once its script has loaded; null outside Telegram. */
+export function getWebApp(): WebApp | null {
+  if (!inTelegram()) return null;
+  const app = window.Telegram?.WebApp;
+  return app && app.initData ? app : null;
+}
+
+/** Waits for Telegram's script, a few seconds at most. */
+export function whenWebApp(timeout = 8000): Promise<WebApp | null> {
+  return new Promise((resolve) => {
+    if (!inTelegram()) return resolve(null);
+    const started = Date.now();
+    const check = () => {
+      const app = getWebApp();
+      if (app || Date.now() - started > timeout) resolve(app);
+      else setTimeout(check, 50);
+    };
+    check();
+  });
+}
+
+/**
+ * Opens a page of another site (Payme, Click). Inside Telegram it opens in
+ * the browser, so the Mini App stays where it is; elsewhere the tab moves on.
+ */
+export function openExternal(url: string): void {
+  const app = getWebApp();
+  const external = /^https?:\/\//.test(url) && new URL(url).origin !== window.location.origin;
+  if (app && external) app.openLink(url);
+  else window.location.assign(url);
+}
+
+/**
+ * Runs in <head> before the first paint, as a string for the inline script.
+ * Inside Telegram it marks the page, loads Telegram's script and picks the
+ * colour scheme Telegram uses, so nothing flashes in the wrong theme.
+ */
+export const telegramScript = `(function(){try{var s=sessionStorage,h=location.hash,p=new URLSearchParams(h.slice(1));
+if(!p.get("tgWebAppData")&&!s.getItem("${TELEGRAM_FLAG}"))return;
+s.setItem("${TELEGRAM_FLAG}","1");var d=document.documentElement;d.dataset.tg="1";
+var t=p.get("tgWebAppThemeParams");if(t){var c=(JSON.parse(t).bg_color||"#ffffff").replace("#","");
+var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);
+s.setItem("${TELEGRAM_DARK}",Math.sqrt(.299*r*r+.587*g*g+.114*b*b)<120?"1":"0")}
+d.classList.toggle("dark",s.getItem("${TELEGRAM_DARK}")==="1");
+var e=document.createElement("script");e.src="${TELEGRAM_SCRIPT}";document.head.appendChild(e)}catch(x){}})()`;

@@ -17,6 +17,7 @@ import { routing } from "@/i18n/routing";
 import { MAX_LINES, MAX_QUANTITY } from "@/lib/limits";
 import { normalizePhone } from "@/lib/phone";
 import { loadCatalog } from "./catalog";
+import { queueOrderMessages } from "./telegram/notify";
 
 /** What the checkout form sends. Prices are never part of it. */
 export const orderInputSchema = z.object({
@@ -60,6 +61,8 @@ type CreateOrderOptions = {
   customer?: Customer | null;
   /** Payment methods that are available right now. */
   methods: PaymentMethod[];
+  /** The Telegram user placing the order in the Mini App (checked by the caller). */
+  telegramId?: number | null;
 };
 
 export async function createOrder(db: Db, raw: unknown, options: CreateOrderOptions): Promise<CreateOrderResult> {
@@ -126,6 +129,7 @@ export async function createOrder(db: Db, raw: unknown, options: CreateOrderOpti
         subtotal,
         deliveryFee: fee,
         total,
+        telegramId: options.telegramId ?? null,
       })
       .returning();
 
@@ -148,6 +152,7 @@ export async function createOrder(db: Db, raw: unknown, options: CreateOrderOpti
       await tx.update(customers).set({ name: input.name }).where(eq(customers.id, customer.id));
     }
 
+    await queueOrderMessages(tx, order, "placed");
     return { ok: true as const, order: { ...order, items } };
   });
 }
@@ -246,6 +251,7 @@ export async function markOrderPaid(
     fromStatus: confirmed ? "new" : null,
     toStatus: confirmed ? "confirmed" : null,
   });
+  await queueOrderMessages(tx, current, "paid");
   return true;
 }
 
@@ -266,5 +272,6 @@ export async function markOrderRefunded(tx: Tx, orderId: string, actor: OrderAct
     fromStatus: cancelled ? current.status : null,
     toStatus: cancelled ? "cancelled" : null,
   });
+  await queueOrderMessages(tx, current, "refunded");
   return true;
 }

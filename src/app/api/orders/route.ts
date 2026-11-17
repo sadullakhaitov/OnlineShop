@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/db";
-import { getPaymentMethods, getSiteUrl } from "@/server/config";
+import { getPaymentMethods, getSiteUrl, getTelegramConfig } from "@/server/config";
 import { isSameOrigin, readJson } from "@/server/http";
 import { createOrder } from "@/server/orders";
 import { getPaymentUrl } from "@/server/payments/urls";
 import { getCurrentCustomer } from "@/server/session";
+import { saveTelegramUser } from "@/server/telegram/accounts";
+import { parseInitData } from "@/server/telegram/init-data";
+import { sendTelegramLater } from "@/server/telegram/setup";
 
 /** Places an order from the checkout form. */
 export async function POST(request: Request) {
@@ -14,8 +17,16 @@ export async function POST(request: Request) {
   try {
     const db = await getDb();
     const customer = await getCurrentCustomer();
-    const result = await createOrder(db, body, { customer, methods: getPaymentMethods() });
+
+    // Placed in the Telegram Mini App: the customer hears about the order there.
+    const config = getTelegramConfig();
+    const initData = request.headers.get("x-telegram-init-data");
+    const telegramUser = config && initData ? parseInitData(initData, config.token) : null;
+    if (telegramUser) await saveTelegramUser(db, telegramUser);
+
+    const result = await createOrder(db, body, { customer, methods: getPaymentMethods(), telegramId: telegramUser?.id });
     if (!result.ok) return NextResponse.json(result, { status: 422 });
+    sendTelegramLater(request.headers);
 
     const { order } = result;
     return NextResponse.json({

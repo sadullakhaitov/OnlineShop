@@ -261,7 +261,7 @@ export function CatalogShell({ title, total, categories, brands, children }: Pro
                 </button>
               </div>
               <div className="overflow-y-auto px-5 pb-4 pt-2">{panel}</div>
-              <div className="border-t border-hairline p-4" style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}>
+              <div className="border-t border-hairline p-4" style={{ paddingBottom: "calc(1rem + max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom, 0px)))" }}>
                 <button type="button" onClick={() => setSheetOpen(false)} className="btn btn-primary h-12 w-full">
                   {t("show", { count: total })}
                 </button>

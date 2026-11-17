@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { getPaymeConfig } from "@/server/config";
+import { sendTelegramLater } from "@/server/telegram/setup";
 import { PaymeErrorCode, handlePaymeRequest, paymeNotPostResponse } from "@/server/payments/payme";
 
 /**
@@ -33,7 +34,9 @@ export async function POST(request: Request) {
 
   try {
     const db = await getDb();
-    return NextResponse.json(await handlePaymeRequest(db, config, request.headers.get("authorization"), body));
+    const answer = await handlePaymeRequest(db, config, request.headers.get("authorization"), body);
+    sendTelegramLater(request.headers);
+    return NextResponse.json(answer);
   } catch (error) {
     console.error("Payme endpoint failed", error);
     return NextResponse.json({

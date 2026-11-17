@@ -11,6 +11,9 @@ import { addressHashOf } from "@/server/http";
 import { adminLogin, adminLogout } from "./auth";
 import { ORDER_STATUSES, changeOrderPayment, changeOrderStatus, type PaymentAction } from "./orders";
 import { createProduct, setProductFlag, updateProduct, type ProductFlag } from "./products";
+import { getSiteUrl, getTelegramConfig } from "@/server/config";
+import { isPublicUrl } from "@/server/telegram/api";
+import { connectBot, sendTelegramLater, sendTestMessage } from "@/server/telegram/setup";
 import { clearAdminCookie, getAdminToken, requireAdmin, setAdminCookie } from "./session";
 
 /**
@@ -70,6 +73,7 @@ export async function orderStatusAction(_previous: AdminActionState, form: FormD
   try {
     const result = await changeOrderStatus(await getDb(), id, from, to);
     refresh();
+    sendTelegramLater(await headers());
     return result.ok ? null : { error: result.error };
   } catch (error) {
     console.error("Order status was not changed", error);
@@ -87,6 +91,7 @@ export async function orderPaymentAction(_previous: AdminActionState, form: Form
   try {
     const result = await changeOrderPayment(await getDb(), id, action);
     refresh();
+    sendTelegramLater(await headers());
     return result.ok ? null : { error: result.error };
   } catch (error) {
     console.error("Order payment was not changed", error);
@@ -145,4 +150,36 @@ export async function productFlagAction(id: string, flag: ProductFlag, value: bo
     console.error("Product was not changed", error);
     return { ok: false, error: "server" };
   }
+}
+
+export type TelegramActionState = { ok: true; done: "connected" | "tested" } | { ok: false; error: string } | null;
+
+/** Registers the webhook, the menu button, the commands and the descriptions with Telegram. */
+export async function connectTelegramAction(): Promise<TelegramActionState> {
+  await requireAdmin();
+  const config = getTelegramConfig();
+  if (!config) return { ok: false, error: "token" };
+  const siteUrl = getSiteUrl(await headers());
+  if (!isPublicUrl(siteUrl)) return { ok: false, error: "site" };
+  try {
+    await connectBot(config, siteUrl);
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : "server" };
+  }
+  revalidatePath("/[locale]/admin/telegram", "page");
+  return { ok: true, done: "connected" };
+}
+
+/** Sends a short message to the shop's chat, to see that orders will arrive there. */
+export async function testTelegramAction(): Promise<TelegramActionState> {
+  await requireAdmin();
+  const config = getTelegramConfig();
+  if (!config) return { ok: false, error: "token" };
+  if (!config.adminChatId) return { ok: false, error: "chat" };
+  try {
+    await sendTestMessage(config);
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : "server" };
+  }
+  return { ok: true, done: "tested" };
 }

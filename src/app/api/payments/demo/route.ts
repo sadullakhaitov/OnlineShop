@@ -4,6 +4,7 @@ import { getPaymentModes } from "@/server/config";
 import { isSameOrigin, readJson } from "@/server/http";
 import { getOrder, isPayable } from "@/server/orders";
 import { simulatePayment } from "@/server/payments/demo";
+import { sendTelegramLater } from "@/server/telegram/setup";
 
 /**
  * The test payment page calls this. It only exists while a payment method
@@ -24,6 +25,7 @@ export async function POST(request: Request) {
     if (!isPayable(order)) return NextResponse.json({ ok: false, error: "state" }, { status: 409 });
 
     const ok = await simulatePayment(db, order, action);
+    sendTelegramLater(request.headers);
     return NextResponse.json({ ok }, { status: ok ? 200 : 409 });
   } catch (error) {
     console.error("Test payment failed", error);

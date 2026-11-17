@@ -42,7 +42,10 @@ export function Header() {
           <SearchDialog />
           <FavoritesLink />
           <CartLink />
-          <ThemeToggle />
+          {/* Inside Telegram the theme follows Telegram's. */}
+          <span className="tg-hide contents">
+            <ThemeToggle />
+          </span>
           <span className="mx-1 hidden h-5 w-px bg-hairline sm:block" />
           <LocaleSwitcher />
           <AccountLink />

@@ -412,6 +412,16 @@
       "expired": "Kodning muddati tugagan. Yangi kod oling.",
       "attempts": "Urinishlar tugadi. Yangi kod oling.",
       "generic": "Xatolik yuz berdi. Qayta urinib ko'ring."
+    },
+    "telegram": {
+      "title": "Telegram orqali kirish",
+      "text": "Raqamingizni Telegram'dan bir tugma bilan yuboring: SMS kod kerak emas. Buyurtmalaringiz holati ham shu botga keladi.",
+      "button": "Raqamni yuborish",
+      "waiting": "Tasdiqlanmoqda…",
+      "cancelled": "Raqam yuborilmadi. Qayta urinib ko'ring.",
+      "phone": "Faqat O'zbekiston raqamlari (+998) bilan kirish mumkin.",
+      "failed": "Kirib bo'lmadi. Birozdan so'ng qayta urinib ko'ring yoki SMS orqali kiring.",
+      "orSms": "yoki SMS kod orqali"
     }
   },
   "account": {
@@ -450,7 +460,8 @@
       "products": "Mahsulotlar",
       "shop": "Do'konni ochish",
       "logout": "Chiqish",
-      "newOrders": "{count} ta yangi buyurtma"
+      "newOrders": "{count} ta yangi buyurtma",
+      "telegram": "Telegram"
     },
     "status": {
       "new": "Yangi",
@@ -722,6 +733,53 @@
       "title": "Sahifa topilmadi",
       "text": "Havola noto'g'ri yoki bu yozuv o'chirilgan.",
       "back": "Bosh sahifaga"
+    },
+    "telegram": {
+      "nav": "Telegram",
+      "title": "Telegram",
+      "subtitle": "Bot, Telegram ichidagi do'kon va buyurtmalar haqidagi xabarlar.",
+      "setupTitle": "Botni ulash",
+      "steps": {
+        "token": "Telegram'da @BotFather ga yozing, /newbot buyrug'i bilan bot yarating va bergan tokenini hostingdagi TELEGRAM_BOT_TOKEN sozlamasiga yozing.",
+        "deploy": "Saytni qayta ishga tushiring: shundan so'ng shu sahifada bot holati ko'rinadi.",
+        "connect": "\"Botni ulash\" tugmasini bosing: bot va Telegram ichidagi do'kon ishga tushadi.",
+        "chat": "Buyurtmalar keladigan guruhga botni qo'shing: bot guruhning ID raqamini yozadi. Uni TELEGRAM_ADMIN_CHAT_ID sozlamasiga yozing."
+      },
+      "tokenMissing": "Bot tokeni hali kiritilmagan.",
+      "tokenInvalid": "TELEGRAM_BOT_TOKEN noto'g'ri ko'rinadi. @BotFather bergan tokenni to'liq nusxalang, masalan 123456789:AAE…",
+      "bot": "Bot",
+      "botError": "Telegram tokenni qabul qilmadi yoki javob bermadi: {error}",
+      "webhook": "Ulanish",
+      "connected": "Ulangan",
+      "notConnected": "Ulanmagan",
+      "elsewhere": "Boshqa manzilga ulangan: {url}",
+      "pending": "Kutilayotgan yangilanishlar: {count}",
+      "lastError": "Oxirgi xato ({date}): {error}",
+      "site": "Sayt manzili",
+      "siteBad": "Telegram faqat https bilan boshlanadigan ochiq manzilni qabul qiladi. Hostingda SITE_URL ni to'g'ri kiriting.",
+      "chat": "Buyurtmalar chati",
+      "chatMissing": "Kiritilmagan: yangi buyurtmalar haqida xabar faqat xaridorlarga boradi.",
+      "chatHint": "Botni guruhga qo'shing yoki botga /id deb yozing: u chat ID raqamini aytadi.",
+      "language": "Xabarlar tili: {language}",
+      "messages": "So'nggi 24 soat",
+      "sent": "Yuborildi: {count}",
+      "waiting": "Navbatda: {count}",
+      "failed": "Yuborilmadi: {count}",
+      "connect": "Botni ulash",
+      "reconnect": "Qayta ulash",
+      "test": "Sinov xabari yuborish",
+      "working": "Bajarilmoqda…",
+      "done": {
+        "connected": "Bot ulandi. Telegram'da botni ochib /start bosing.",
+        "tested": "Sinov xabari yuborildi."
+      },
+      "errors": {
+        "token": "Bot tokeni kiritilmagan.",
+        "site": "Sayt manzili https bilan boshlanishi kerak.",
+        "chat": "TELEGRAM_ADMIN_CHAT_ID kiritilmagan.",
+        "other": "Telegram xatosi: {error}"
+      },
+      "about": "Xaridorlar bot orqali do'konni Telegram ichida ochadi, raqamini yuborib SMS kodsiz kiradi va buyurtmasi holatini botdan oladi. Do'kon chatiga yangi buyurtmalar va to'lovlar haqida xabar keladi."
     }
   }
 }

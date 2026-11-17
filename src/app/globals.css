@@ -726,3 +726,15 @@
     animation-delay: 0s !important;
   }
 }
+
+/* ───────────── Telegram Mini App ───────────── */
+/* `data-tg` is set on <html> before the first paint inside Telegram. */
+.tg-only {
+  display: none;
+}
+[data-tg] .tg-only {
+  display: block;
+}
+[data-tg] .tg-hide {
+  display: none;
+}
