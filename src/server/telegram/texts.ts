@@ -94,6 +94,7 @@ const shopTexts = {
     pieces: "dona",
     subtotal: "Tovarlar",
     fee: "Yetkazib berish",
+    discount: "Promokod",
     free: "bepul",
     total: "JAMI",
     amount: "Summa",
@@ -116,6 +117,7 @@ const shopTexts = {
     pieces: "шт.",
     subtotal: "Товары",
     fee: "Доставка",
+    discount: "Промокод",
     free: "бесплатно",
     total: "ИТОГО",
     amount: "Сумма",
@@ -172,8 +174,9 @@ export function shopMessage(order: OrderForMessage, event: TelegramEvent, locale
   });
 
   lines.push(LINE);
+  if (order.deliveryType === "delivery" || order.discount > 0) lines.push(`${t.subtotal}: ${money(order.subtotal, locale)}`);
+  if (order.discount > 0) lines.push(`🎟 ${t.discount} ${h(order.promoCode ?? "")}: −${money(order.discount, locale)}`);
   if (order.deliveryType === "delivery") {
-    lines.push(`${t.subtotal}: ${money(order.subtotal, locale)}`);
     lines.push(`${t.fee}: ${order.deliveryFee > 0 ? money(order.deliveryFee, locale) : t.free}`);
   }
   lines.push(`💰 <b>${t.total}: ${money(order.total, locale)}</b>`);

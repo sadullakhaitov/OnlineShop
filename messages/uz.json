@@ -316,7 +316,19 @@
     },
     "emptyTitle": "Savat bo'sh",
     "emptyText": "Buyurtma berish uchun avval savatga tovar qo'shing.",
-    "consent": "Buyurtma berish orqali siz <offer>ommaviy oferta</offer> shartlariga va <privacy>maxfiylik siyosati</privacy>ga rozilik bildirasiz."
+    "consent": "Buyurtma berish orqali siz <offer>ommaviy oferta</offer> shartlariga va <privacy>maxfiylik siyosati</privacy>ga rozilik bildirasiz.",
+    "promo": {
+      "label": "Promokod",
+      "apply": "Qo'llash",
+      "remove": "Promokodni olib tashlash",
+      "discount": "Promokod {code}",
+      "unknown": "Bunday promokod yo'q",
+      "expired": "Promokod muddati tugagan",
+      "used": "Promokod ishlatib bo'lingan",
+      "limit": "Juda ko'p urinish. Birozdan so'ng qayta urinib ko'ring.",
+      "minTotal": "{sum} so'mdan ortiq xaridga",
+      "dropped": "Promokodni qo'llab bo'lmadi. Jamini tekshirib, qayta yuboring."
+    }
   },
   "order": {
     "title": "Buyurtma №{number}",
@@ -386,7 +398,8 @@
     "continue": "Xaridni davom ettirish",
     "loginHint": "Barcha buyurtmalaringizni bir joyda ko'rish uchun telefon raqamingiz bilan kiring.",
     "login": "Kabinetga kirish",
-    "toAccount": "Buyurtmalarim"
+    "toAccount": "Buyurtmalarim",
+    "discount": "Promokod {code}"
   },
   "auth": {
     "title": "Kabinetga kirish",
@@ -472,7 +485,8 @@
       "shop": "Do'konni ochish",
       "logout": "Chiqish",
       "newOrders": "{count} ta yangi buyurtma",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "promo": "Promokodlar"
     },
     "status": {
       "new": "Yangi",
@@ -799,6 +813,42 @@
         "other": "Telegram xatosi: {error}"
       },
       "about": "Xaridorlar bot orqali do'konni Telegram ichida ochadi, raqamini yuborib SMS kodsiz kiradi va buyurtmasi holatini botdan oladi. Do'kon chatiga yangi buyurtmalar va to'lovlar haqida xabar keladi."
+    },
+    "promo": {
+      "title": "Promokodlar",
+      "subtitle": "Chegirma kodlari: foiz yoki aniq summa. Xaridor buyurtmada kiritadi.",
+      "new": "Yangi promokod",
+      "list": "Barcha promokodlar",
+      "empty": "Hali promokod yo'q.",
+      "code": "Kod",
+      "kind": "Turi",
+      "percent": "Foiz",
+      "amount": "Summa",
+      "valuePercent": "Chegirma, %",
+      "valueAmount": "Chegirma, so'm",
+      "minTotal": "Eng kam xarid, so'm",
+      "maxUses": "Necha marta ishlatiladi",
+      "unlimited": "Cheksiz",
+      "expiresAt": "Amal qilish muddati (shu kun oxirigacha)",
+      "add": "Qo'shish",
+      "added": "Promokod qo'shildi",
+      "turnOn": "Yoqish",
+      "turnOff": "O'chirish",
+      "delete": "{code} ni o'chirish",
+      "from": "{sum} so'mdan",
+      "uses": "ishlatildi {uses}/{max}",
+      "until": "{date} gacha",
+      "state": {
+        "on": "Ishlaydi",
+        "off": "O'chirilgan",
+        "expired": "Muddati o'tgan",
+        "usedUp": "Tugagan"
+      },
+      "errors": {
+        "invalid": "Maydonlarni tekshiring: kod 3–30 harf/raqam, foiz 1–90, muddat bugundan keyin.",
+        "taken": "Bunday kod allaqachon bor.",
+        "server": "Saqlab bo'lmadi. Qayta urinib ko'ring."
+      }
     }
   }
 }

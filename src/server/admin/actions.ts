@@ -11,6 +11,7 @@ import { addressHashOf } from "@/server/http";
 import { adminLogin, adminLogout } from "./auth";
 import { ORDER_STATUSES, changeOrderPayment, changeOrderStatus, type PaymentAction } from "./orders";
 import { createProduct, setProductFlag, updateProduct, type ProductFlag } from "./products";
+import { createPromo, deletePromo, setPromoActive, type PromoField } from "./promo";
 import { CATALOG_TAG } from "@/server/catalog";
 import { getSiteUrl, getTelegramConfig } from "@/server/config";
 import { isPublicUrl } from "@/server/telegram/api";
@@ -188,4 +189,47 @@ export async function testTelegramAction(): Promise<TelegramActionState> {
     return { ok: false, error: error instanceof Error ? error.message : "server" };
   }
   return { ok: true, done: "tested" };
+}
+
+export type PromoActionState = { ok: true } | { ok: false; error: "invalid"; fields: PromoField[] } | { ok: false; error: "taken" | "server" } | null;
+
+const refreshPromos = () => revalidatePath("/[locale]/admin/promo", "page");
+
+export async function createPromoAction(_previous: PromoActionState, form: FormData): Promise<PromoActionState> {
+  await requireAdmin();
+  const field = (name: string) => {
+    const value = form.get(name);
+    return typeof value === "string" ? value.slice(0, 100) : "";
+  };
+  try {
+    const result = await createPromo(await getDb(), {
+      code: field("code"),
+      kind: field("kind"),
+      value: field("value").replace(/\D/g, ""),
+      minTotal: field("minTotal").replace(/\D/g, "") || "0",
+      maxUses: field("maxUses").replace(/\D/g, ""),
+      expiresAt: field("expiresAt"),
+    });
+    if (result.ok) refreshPromos();
+    return result;
+  } catch (error) {
+    console.error("Promo code was not created", error);
+    return { ok: false, error: "server" };
+  }
+}
+
+export async function togglePromoAction(form: FormData): Promise<void> {
+  await requireAdmin();
+  const code = form.get("code");
+  if (typeof code !== "string") return;
+  await setPromoActive(await getDb(), code, form.get("active") === "1");
+  refreshPromos();
+}
+
+export async function deletePromoAction(form: FormData): Promise<void> {
+  await requireAdmin();
+  const code = form.get("code");
+  if (typeof code !== "string") return;
+  await deletePromo(await getDb(), code);
+  refreshPromos();
 }

@@ -2,7 +2,8 @@
 
 import { Select } from "@/components/ui/Select";
 import { useState } from "react";
-import { Banknote, CreditCard, Store, Truck } from "lucide-react";
+import { Banknote, CreditCard, Store, TicketPercent, Truck, X } from "lucide-react";
+import { promoDiscount, type PromoTerms } from "@/lib/promo";
 import { useLocale, useTranslations } from "next-intl";
 import type { DeliveryType, PaymentMethod } from "@/db/schema";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -115,7 +116,43 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
   const delivery = deliveryType === "delivery";
   const zone = delivery ? zones.find((item) => item.slug === zoneSlug) : undefined;
   const fee = zone && cart.subtotal < freeFrom ? zone.fee : 0;
-  const total = cart.subtotal + fee;
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<PromoTerms | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoBusy, setPromoBusy] = useState(false);
+  // The discount follows the cart; a code that no longer fits is dropped from the total.
+  const discount = promo && cart.subtotal >= promo.minTotal ? promoDiscount(promo, cart.subtotal) : 0;
+  const total = cart.subtotal - discount + fee;
+
+  const promoMessage = (reason?: string, minTotal?: number) =>
+    reason === "minTotal" && minTotal
+      ? t("checkout.promo.minTotal", { sum: formatPrice(minTotal) })
+      : t(`checkout.promo.${reason === "expired" || reason === "used" || reason === "limit" ? reason : "unknown"}`);
+
+  async function applyPromo() {
+    const code = promoInput.trim();
+    if (!code || promoBusy) return;
+    setPromoBusy(true);
+    setPromoError(null);
+    try {
+      const response = await fetch("/api/promo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, subtotal: cart.subtotal }),
+      });
+      const data = (await response.json().catch(() => null)) as
+        | { ok: true; terms: PromoTerms }
+        | { ok: false; error?: string; minTotal?: number }
+        | null;
+      if (data?.ok) {
+        setPromo(data.terms);
+        setPromoInput("");
+      } else setPromoError(promoMessage(data?.error, data?.minTotal));
+    } catch {
+      setPromoError(t("checkout.errors.generic"));
+    }
+    setPromoBusy(false);
+  }
 
   const clear = (field: FieldName) => setErrors((current) => current.filter((item) => item !== field));
   const errorOf = (field: FieldName) => (errors.includes(field) ? t(`checkout.errors.${field}`) : null);
@@ -159,6 +196,7 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
           comment: comment.trim() || undefined,
           paymentMethod: method,
           locale,
+          promoCode: discount > 0 ? promo?.code : undefined,
           expectedTotal: total,
         }),
       });
@@ -168,6 +206,8 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
         payUrl?: string | null;
         error?: string;
         fields?: string[];
+        reason?: string;
+        minTotal?: number;
       } | null;
 
       if (response.ok && data?.ok && data.id) {
@@ -192,6 +232,10 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
       } else if (data?.error === "unavailable" || data?.error === "changed") {
         setFormError(t(`checkout.errors.${data.error}`));
         cart.reload();
+      } else if (data?.error === "promo") {
+        setPromo(null);
+        setPromoError(promoMessage(data.reason, data.minTotal));
+        setFormError(t("checkout.promo.dropped"));
       } else if (data?.error === "payment") {
         setFormError(t("checkout.errors.payment"));
       } else {
@@ -453,13 +497,68 @@ function CheckoutFields({ zones, freeFrom, methods, customer, pickupAddress, car
           ))}
         </ul>
 
-        <dl className="mt-5 space-y-2.5 border-t border-hairline pt-4 text-sm">
+        <div className="mt-5 border-t border-hairline pt-4">
+          {promo ? (
+            <div className="flex items-center gap-2.5 rounded-xl bg-accent-soft px-3 py-2.5 text-sm">
+              <TicketPercent className="size-4 shrink-0 text-accent" strokeWidth={1.8} />
+              <span className="flex-1 font-semibold tracking-wide">{promo.code}</span>
+              {discount === 0 && <span className="text-xs text-muted">{promoMessage("minTotal", promo.minTotal)}</span>}
+              <button type="button" onClick={() => setPromo(null)} aria-label={t("checkout.promo.remove")} className="text-muted hover:text-ink">
+                <X className="size-4" strokeWidth={1.8} />
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <label htmlFor="checkout-promo" className="sr-only">
+                {t("checkout.promo.label")}
+              </label>
+              <input
+                id="checkout-promo"
+                value={promoInput}
+                onChange={(event) => {
+                  setPromoInput(event.target.value.toUpperCase());
+                  setPromoError(null);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    applyPromo();
+                  }
+                }}
+                placeholder={t("checkout.promo.label")}
+                autoCapitalize="characters"
+                maxLength={30}
+                aria-invalid={Boolean(promoError) || undefined}
+                aria-describedby={promoError ? "checkout-promo-error" : undefined}
+                className="field h-11 min-w-0 flex-1 uppercase tracking-wide placeholder:normal-case placeholder:tracking-normal"
+              />
+              <button type="button" onClick={applyPromo} disabled={!promoInput.trim() || promoBusy} className="btn btn-ghost h-11 px-4 disabled:opacity-50">
+                {t("checkout.promo.apply")}
+              </button>
+            </div>
+          )}
+          {promoError && (
+            <p id="checkout-promo-error" className="mt-2 text-xs text-danger">
+              {promoError}
+            </p>
+          )}
+        </div>
+
+        <dl className="mt-4 space-y-2.5 border-t border-hairline pt-4 text-sm">
           <div className="flex justify-between gap-4">
             <dt className="text-muted">{t("checkout.subtotal", { count: cart.count })}</dt>
             <dd className="tabular-nums">
               {formatPrice(cart.subtotal)} {t("product.currency")}
             </dd>
           </div>
+          {discount > 0 && promo && (
+            <div className="flex justify-between gap-4 text-success">
+              <dt>{t("checkout.promo.discount", { code: promo.code })}</dt>
+              <dd className="tabular-nums">
+                −{formatPrice(discount)} {t("product.currency")}
+              </dd>
+            </div>
+          )}
           <div className="flex justify-between gap-4">
             <dt className="text-muted">{delivery ? t("checkout.deliveryFee") : t("checkout.pickup")}</dt>
             <dd className={delivery && !zone ? "text-muted" : "tabular-nums"}>

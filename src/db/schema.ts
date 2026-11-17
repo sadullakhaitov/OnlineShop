@@ -142,6 +142,10 @@ export const orders = pgTable(
     paymentStatus: text("payment_status").$type<PaymentStatus>().notNull().default("unpaid"),
     subtotal: bigint("subtotal", { mode: "number" }).notNull(),
     deliveryFee: bigint("delivery_fee", { mode: "number" }).notNull(),
+    /** The promo code used, as typed by the admin, and what it took off the goods. */
+    promoCode: text("promo_code"),
+    discount: bigint("discount", { mode: "number" }).notNull().default(0),
+    /** Goods minus the discount, plus delivery. */
     total: bigint("total", { mode: "number" }).notNull(),
     /** The Telegram user who placed the order in the Mini App; told about its progress there. */
     telegramId: bigint("telegram_id", { mode: "number" }),
@@ -331,3 +335,25 @@ export type ClickTransaction = typeof clickTransactions.$inferSelect;
 export type OrderEvent = typeof orderEvents.$inferSelect;
 export type TelegramAccount = typeof telegramAccounts.$inferSelect;
 export type TelegramMessage = typeof telegramMessages.$inferSelect;
+
+export type PromoKind = "percent" | "amount";
+
+/** Discount codes the admin hands out: a percentage or a fixed sum off the goods. */
+export const promoCodes = pgTable("promo_codes", {
+  /** Upper case, as customers type it in any case */
+  code: text("code").primaryKey(),
+  kind: text("kind").$type<PromoKind>().notNull(),
+  /** Percent (1–90) or so'm */
+  value: bigint("value", { mode: "number" }).notNull(),
+  /** Goods worth at least this much (so'm) */
+  minTotal: bigint("min_total", { mode: "number" }).notNull().default(0),
+  /** How many orders may use it; null for no limit */
+  maxUses: integer("max_uses"),
+  uses: integer("uses").notNull().default(0),
+  /** Works until the end of this moment; null for no end */
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  active: boolean("active").notNull().default(true),
+  createdAt: createdAt(),
+});
+
+export type PromoCode = typeof promoCodes.$inferSelect;

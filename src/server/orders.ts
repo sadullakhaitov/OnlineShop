@@ -18,6 +18,7 @@ import { routing } from "@/i18n/routing";
 import { MAX_LINES, MAX_QUANTITY } from "@/lib/limits";
 import { normalizePhone } from "@/lib/phone";
 import { loadCatalog } from "./catalog";
+import { checkPromo, takePromo, type PromoProblem } from "./promo";
 import { queueOrderMessages } from "./telegram/notify";
 
 /** What the checkout form sends. Prices are never part of it. */
@@ -39,6 +40,7 @@ export const orderInputSchema = z.object({
   comment: z.string().trim().max(500).optional(),
   paymentMethod: z.enum(["payme", "click", "cash"]),
   locale: z.enum(routing.locales),
+  promoCode: z.string().max(40).optional(),
   /** The total the customer saw; the order is refused when prices changed since. */
   expectedTotal: z.number().int().nonnegative().optional(),
 });
@@ -53,6 +55,8 @@ export type CreateOrderResult =
   | { ok: false; error: "invalid"; fields: string[] }
   /** Some products are gone or out of stock. */
   | { ok: false; error: "unavailable"; ids: string[] }
+  /** The promo code cannot be used (unknown, expired, used up, goods too cheap). */
+  | { ok: false; error: "promo"; reason: PromoProblem; minTotal?: number }
   /** The total differs from the one the customer saw. */
   | { ok: false; error: "changed"; total: number }
   /** The chosen payment method is switched off. */
@@ -127,7 +131,14 @@ export async function createOrder(
     0,
   );
   const fee = zone ? deliveryFee(zone, subtotal) : 0;
-  const total = subtotal + fee;
+  let promo: { code: string; discount: number } | null = null;
+  if (input.promoCode?.trim()) {
+    const checked = await checkPromo(db, input.promoCode, subtotal);
+    if (!checked.ok) return { ok: false, error: "promo", reason: checked.error, minTotal: checked.minTotal };
+    promo = { code: checked.code, discount: checked.discount };
+  }
+  const discount = promo?.discount ?? 0;
+  const total = subtotal - discount + fee;
   if (input.expectedTotal !== undefined && input.expectedTotal !== total) {
     return { ok: false, error: "changed", total };
   }
@@ -151,6 +162,8 @@ export async function createOrder(
           .returning({ stock: products.stock });
         if (!left) throw new SoldOut(product.id);
       }
+      // The last use of the code may have been taken a moment ago.
+      if (promo && !(await takePromo(tx, promo.code))) throw new PromoGone();
 
       const [order] = await tx
         .insert(orders)
@@ -166,6 +179,8 @@ export async function createOrder(
           paymentMethod: input.paymentMethod,
           subtotal,
           deliveryFee: fee,
+          promoCode: promo?.code ?? null,
+          discount,
           total,
           telegramId: options.telegramId ?? null,
         })
@@ -199,9 +214,13 @@ export async function createOrder(
   } catch (error) {
     if (error instanceof SoldOut)
       return { ok: false, error: "unavailable", ids: [error.productId] };
+    if (error instanceof PromoGone) return { ok: false, error: "promo", reason: "used" };
     throw error;
   }
 }
+
+/** The promo code's last use went to another order: this one is undone. */
+class PromoGone extends Error {}
 
 /** Fewer pieces left than ordered: the whole order is undone. */
 class SoldOut extends Error {

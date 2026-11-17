@@ -232,6 +232,14 @@ export default async function OrderPage({ params }: Props) {
                 {formatPrice(order.subtotal)} {t("product.currency")}
               </dd>
             </div>
+            {order.discount > 0 && (
+              <div className="flex justify-between gap-4 text-success">
+                <dt>{t("order.discount", { code: order.promoCode ?? "" })}</dt>
+                <dd className="tabular-nums">
+                  −{formatPrice(order.discount)} {t("product.currency")}
+                </dd>
+              </div>
+            )}
             <div className="flex justify-between gap-4">
               <dt className="text-muted">{pickup ? t("order.pickup") : t("order.deliveryFee")}</dt>
               <dd className="tabular-nums">

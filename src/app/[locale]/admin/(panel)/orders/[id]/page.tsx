@@ -167,6 +167,12 @@ export default async function AdminOrderPage({ params }: Props) {
                 <dt className="text-muted">{t("order.subtotal")}</dt>
                 <dd className="tabular-nums">{money(order.subtotal)}</dd>
               </div>
+              {order.discount > 0 && (
+                <div className="flex justify-between gap-4 text-success">
+                  <dt>{t("order.discount", { code: order.promoCode ?? "" })}</dt>
+                  <dd className="tabular-nums">−{money(order.discount)}</dd>
+                </div>
+              )}
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">{pickup ? t("order.pickup") : t("order.deliveryFee")}</dt>
                 <dd className="tabular-nums">{order.deliveryFee > 0 ? money(order.deliveryFee) : t("order.free")}</dd>

@@ -71,6 +71,7 @@ export function mobileOrder(order: OrderWithItems, payUrl: string | null) {
     phone: order.phone,
     subtotal: order.subtotal,
     deliveryFee: order.deliveryFee,
+    discount: order.discount,
     total: order.total,
     createdAt: order.createdAt.toISOString(),
     payUrl,

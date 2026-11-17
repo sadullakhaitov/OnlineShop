@@ -14,6 +14,7 @@ import {
   type PaymeTransaction,
 } from "@/db/schema";
 import { isOrderId, returnStock, type OrderWithItems } from "@/server/orders";
+import { returnPromo } from "@/server/promo";
 import { queueOrderMessages } from "@/server/telegram/notify";
 
 /** What the admin panel reads and changes in orders. */
@@ -87,6 +88,7 @@ export async function changeOrderStatus(db: Db, orderId: string, from: OrderStat
     await tx.insert(orderEvents).values({ orderId, type: "status", fromStatus: from, toStatus: to, actor: "admin" });
     if (to === "cancelled") {
       await returnStock(tx, await tx.select().from(orderItems).where(eq(orderItems.orderId, orderId)));
+      await returnPromo(tx, order.promoCode);
     }
     // The customer hears about steps forward; a step back fixes a mistake and is not news.
     if (to === "cancelled" || ORDER_STATUSES.indexOf(to) > ORDER_STATUSES.indexOf(from)) {

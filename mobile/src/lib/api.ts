@@ -71,6 +71,7 @@ export type Order = {
   phone: string;
   subtotal: number;
   deliveryFee: number;
+  discount?: number;
   total: number;
   createdAt: string;
   payUrl: string | null;
