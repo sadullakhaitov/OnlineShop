@@ -97,6 +97,11 @@ settings at all the site still runs: see demo mode below.
   like) has no disk for the embedded database, so there `DATABASE_URL` is
   required: without it the shop shows the built-in sample products, but
   ordering, sign-in and the admin panel do not work.
+- **Vercel + Neon (the free start):** `vercel.json` runs the site in Frankfurt
+  (`fra1`), next to a Neon database created in AWS Europe Central (Frankfurt).
+  Use Neon's pooled connection string as `DATABASE_URL`. Vercel's free Hobby
+  plan is meant for non-commercial use, so the live shop moves to a paid plan
+  or a server of its own later; only `DATABASE_URL` and the domain change.
 - After changing `src/db/schema.ts` run `npm run db:generate` and commit the
   new file in `drizzle/`.
 
