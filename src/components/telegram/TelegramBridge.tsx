@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useRouter as useNextRouter } from "next/navigation";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { AUTH_EVENT, AUTH_HINT_COOKIE } from "@/lib/auth-hint";
-import { TELEGRAM_DARK, whenWebApp, type WebApp } from "@/lib/telegram";
+import { TELEGRAM_DARK, restoreTelegramMarks, whenWebApp, type WebApp } from "@/lib/telegram";
 import { applyTheme } from "@/lib/theme";
 
 /** The page backgrounds of the two themes (`--bg` in globals.css). */
@@ -58,6 +58,11 @@ export function TelegramBridge() {
   const depth = useRef(0);
   const popping = useRef(false);
   const pathnameRef = useRef(pathname);
+
+  // Before the page shows: a language switch may have dropped Telegram's marks.
+  useLayoutEffect(() => {
+    restoreTelegramMarks();
+  }, [pathname]);
 
   useEffect(() => {
     let cancelled = false;

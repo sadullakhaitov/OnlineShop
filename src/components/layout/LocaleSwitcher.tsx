@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { rememberLanguage } from "@/lib/language";
 
 const labels: Record<string, string> = { uz: "O'z", ru: "Ру" };
 
@@ -26,7 +27,10 @@ export function LocaleSwitcher() {
             type="button"
             lang={item}
             aria-pressed={active}
-            onClick={() => router.replace(pathname, { locale: item, scroll: false })}
+            onClick={() => {
+              rememberLanguage(item);
+              router.replace(pathname, { locale: item, scroll: false });
+            }}
             className={`h-full rounded-full px-2.5 transition-colors duration-300 ease-smooth ${
               active ? "bg-btn text-btn-text" : "text-muted hover:text-ink"
             }`}

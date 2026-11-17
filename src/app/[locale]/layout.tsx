@@ -6,6 +6,7 @@ import "@fontsource-variable/inter";
 import "../globals.css";
 import { routing } from "@/i18n/routing";
 import { telegramScript } from "@/lib/telegram";
+import { languageScript } from "@/lib/language";
 import { themeScript } from "@/lib/theme";
 
 type Props = {
@@ -56,6 +57,8 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
+        {/* First visit: open in the visitor's language (lib/language.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: languageScript }} />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {/* Inside Telegram: Telegram's script and theme (after the saved theme, so it wins). */}
         <script dangerouslySetInnerHTML={{ __html: telegramScript }} />

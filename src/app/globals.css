@@ -861,10 +861,10 @@
   display: none;
 }
 /* Full screen in Telegram: the header moves below the phone's status bar and
-   Telegram's floating Close and menu buttons. Telegram sets these sizes; they
-   are 0 when the app is not full screen. */
+   Telegram's floating Close and menu buttons. The size comes from Telegram
+   (see lib/telegram.ts); it is 0 when the app is not full screen. */
 [data-tg] .tg-top {
-  padding-top: calc(0.75rem + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+  padding-top: calc(0.75rem + var(--mm-tg-top, 0px));
 }
 /* Phones and the Mini App only: where the footer is left out. */
 @media (min-width: 768px) {
