@@ -7,6 +7,11 @@ import { Collections } from "@/components/home/Collections";
 import { Benefits } from "@/components/home/Benefits";
 import { ExtendedWarranty } from "@/components/home/ExtendedWarranty";
 
+// With PostgreSQL this page is prepared ahead of time. The admin panel
+// refreshes it when a product changes; this is the fallback for changes made
+// elsewhere, in seconds.
+export const revalidate = 300;
+
 type Props = {
   params: Promise<{ locale: string }>;
 };

@@ -40,6 +40,8 @@ export type SpecKey =
   | "camera"
   | "feature";
 
+export type ProductSpecs = Partial<Record<SpecKey, Localized>>;
+
 export type Product = {
   id: string;
   slug: string;
@@ -59,8 +61,59 @@ export type Product = {
   color: ColorKey;
   /** Warranty in years */
   warranty: number;
-  specs: Partial<Record<SpecKey, Localized>>;
+  specs: ProductSpecs;
 };
+
+export const artKinds = [
+  "fridge",
+  "washer",
+  "oven",
+  "microwave",
+  "coffee",
+  "kettle",
+  "blender",
+  "airfryer",
+  "vacuum",
+  "robot",
+  "iron",
+  "ac",
+  "purifier",
+  "tv",
+  "speaker",
+  "headphones",
+  "hairdryer",
+  "phone",
+] as const satisfies readonly ArtKind[];
+
+export const colorKeys = ["black", "white", "silver", "beige", "graphite", "blue"] as const satisfies readonly ColorKey[];
+
+/** Specifications, in the order they are shown on a product page and in the admin panel. */
+export const specKeys = [
+  "type",
+  "screen",
+  "resolution",
+  "area",
+  "power",
+  "volume",
+  "capacity",
+  "memory",
+  "camera",
+  "battery",
+  "spin",
+  "energy",
+  "noise",
+  "feature",
+] as const satisfies readonly SpecKey[];
+
+/** The same specifications in the shop's order, without anything the shop does not know. */
+export function orderSpecs(specs: ProductSpecs): ProductSpecs {
+  const ordered: ProductSpecs = {};
+  for (const key of specKeys) {
+    const value = specs[key];
+    if (value) ordered[key] = value;
+  }
+  return ordered;
+}
 
 /** Product type names and short descriptions, shared by every product of a kind. */
 export const kinds: Record<ArtKind, { name: Localized; about: Localized }> = {
@@ -293,7 +346,7 @@ const seeds: Seed[] = [
     specs: { battery: l("70 soatgacha", "до 70 часов"), type: l("Simsiz, to'liq o'lchamli", "Беспроводные, полноразмерные"), feature: l("Shovqinni so'ndirish", "Шумоподавление") } },
 ];
 
-function slugify(value: string): string {
+export function slugify(value: string): string {
   return value
     .toLowerCase()
     .replace(/["'&.]/g, "")
@@ -308,4 +361,5 @@ export const products: Product[] = seeds.map((seed, index) => ({
   title: `${seed.brand} ${seed.model}`,
   inStock: seed.inStock ?? true,
   warranty: seed.warranty ?? 1,
+  specs: orderSpecs(seed.specs),
 }));

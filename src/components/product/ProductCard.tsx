@@ -58,12 +58,15 @@ export function ProductCard({ product, reveal, enter }: Props) {
             {product.title}
           </Link>
         </h3>
-        <p className="mt-1.5 flex items-center gap-1 text-xs text-muted">
-          <Star className="size-3.5 fill-accent text-accent" strokeWidth={0} />
-          <span className="font-medium text-ink">{product.rating.toFixed(1)}</span>
-          <span aria-hidden="true">·</span>
-          {t("reviews", { count: product.reviews })}
-        </p>
+        {/* A product nobody has rated yet shows no stars rather than "0.0". */}
+        {product.reviews > 0 && (
+          <p className="mt-1.5 flex items-center gap-1 text-xs text-muted">
+            <Star className="size-3.5 fill-accent text-accent" strokeWidth={0} />
+            <span className="font-medium text-ink">{product.rating.toFixed(1)}</span>
+            <span aria-hidden="true">·</span>
+            {t("reviews", { count: product.reviews })}
+          </p>
+        )}
 
         <div className="mt-auto flex items-end justify-between gap-1.5 pt-4">
           <div className="min-w-0">

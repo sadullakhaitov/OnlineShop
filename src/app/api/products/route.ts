@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { hasLocale } from "next-intl";
 import { routing } from "@/i18n/routing";
-import { getCartProducts } from "@/lib/catalog";
 import { MAX_LINES } from "@/lib/limits";
+import { getCatalog } from "@/server/catalog";
 
 /** Current names, prices and availability of the products in a cart. */
-export function GET(request: NextRequest) {
+export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const requested = params.get("locale");
   const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
@@ -15,5 +15,11 @@ export function GET(request: NextRequest) {
     .filter(Boolean)
     .slice(0, MAX_LINES * 2);
 
-  return NextResponse.json({ products: getCartProducts(ids, locale) });
+  try {
+    return NextResponse.json({ products: (await getCatalog()).cartProducts(ids, locale) });
+  } catch (error) {
+    // The cart shows "could not load" with a retry button.
+    console.error("Cart products were not loaded", error);
+    return NextResponse.json({ products: [] }, { status: 500 });
+  }
 }

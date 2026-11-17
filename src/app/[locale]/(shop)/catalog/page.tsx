@@ -4,16 +4,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { categories } from "@/data/categories";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import {
-  PAGE_SIZE,
-  findProducts,
-  getBrands,
-  getCategory,
-  getCategoryCounts,
-  sortOptions,
-  type SortOption,
-} from "@/lib/catalog";
+import { PAGE_SIZE, getCategory, sortOptions, type SortOption } from "@/lib/catalog";
 import { gridDelay } from "@/lib/motion";
+import { getCatalog } from "@/server/catalog";
 import { CatalogShell } from "@/components/catalog/CatalogShell";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Breadcrumbs, type Crumb } from "@/components/ui/Breadcrumbs";
@@ -52,7 +45,8 @@ export default async function CatalogPage({ params, searchParams }: Props) {
   const sortParam = one(sp.sort);
   const sort = (sortOptions as readonly string[]).includes(sortParam) ? (sortParam as SortOption) : "popular";
 
-  const items = findProducts({
+  const catalog = await getCatalog();
+  const items = catalog.find({
     q: q || undefined,
     category: category?.slug,
     brands: one(sp.brand).split(",").filter(Boolean),
@@ -67,7 +61,7 @@ export default async function CatalogPage({ params, searchParams }: Props) {
   const page = Math.min(pages, Math.max(1, Number(one(sp.page)) || 1));
   const visible = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const counts = getCategoryCounts();
+  const counts = catalog.categoryCounts();
   const title = q ? t("searchTitle", { q }) : category ? category.name[locale] : t("allProducts");
 
   const crumbs: Crumb[] = [{ label: tp("home"), href: "/" }];
@@ -101,7 +95,7 @@ export default async function CatalogPage({ params, searchParams }: Props) {
           label: item.name[locale],
           count: counts[item.slug] ?? 0,
         }))}
-        brands={getBrands(category?.slug).map((brand) => ({
+        brands={catalog.brands(category?.slug).map((brand) => ({
           value: brand.name,
           label: brand.name,
           count: brand.count,

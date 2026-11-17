@@ -1,8 +1,19 @@
-import { bigint, index, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  bigint,
+  boolean,
+  doublePrecision,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
+import type { ArtKind, ColorKey, ProductBadge, ProductSpecs } from "@/data/products";
 
 /**
- * Database tables. Products are not here yet: they stay in `src/data` until
- * the admin panel step. Money is stored in whole so'm; Payme amounts in tiyin.
+ * Database tables. Money is stored in whole so'm; Payme amounts in tiyin.
  *
  * After changing this file run `npm run db:generate` to create a migration.
  */
@@ -13,6 +24,47 @@ export type OrderStatus = "new" | "confirmed" | "delivering" | "delivered" | "ca
 export type PaymentStatus = "unpaid" | "paid" | "refunded";
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
+
+/**
+ * The catalogue. Categories and product kinds (with their pictures, names and
+ * descriptions) are part of the site itself and live in `src/data`.
+ */
+export const products = pgTable(
+  "products",
+  {
+    /** Short code shown to customers and kept in carts and orders: "p-001" */
+    id: text("id").primaryKey(),
+    /** The product's page address; never changes once the product exists. */
+    slug: text("slug").notNull().unique(),
+    /** Category slug from `src/data/categories.ts` */
+    category: text("category").notNull(),
+    /** Product kind: picks the picture, the type name and the description. */
+    art: text("art").$type<ArtKind>().notNull(),
+    brand: text("brand").notNull(),
+    model: text("model").notNull(),
+    price: bigint("price", { mode: "number" }).notNull(),
+    /** Price before the discount, when there is one */
+    oldPrice: bigint("old_price", { mode: "number" }),
+    rating: doublePrecision("rating").notNull().default(0),
+    reviews: integer("reviews").notNull().default(0),
+    badge: text("badge").$type<ProductBadge>(),
+    inStock: boolean("in_stock").notNull().default(true),
+    /** A hidden product leaves the shop but stays in old orders. */
+    active: boolean("active").notNull().default(true),
+    color: text("color").$type<ColorKey>().notNull(),
+    /** Warranty in years */
+    warranty: integer("warranty").notNull().default(1),
+    specs: jsonb("specs").$type<ProductSpecs>().notNull().default({}),
+    /**
+     * Grows with every change. The server keeps the catalogue in memory and
+     * compares these numbers to notice that its copy is outdated.
+     */
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("products_category_idx").on(table.category)],
+);
 
 export const customers = pgTable("customers", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -203,6 +255,7 @@ export const adminLoginAttempts = pgTable(
   (table) => [index("admin_login_attempts_time_idx").on(table.createdAt)],
 );
 
+export type ProductRow = typeof products.$inferSelect;
 export type Customer = typeof customers.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderItem = typeof orderItems.$inferSelect;

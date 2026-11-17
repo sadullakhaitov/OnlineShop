@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Db } from "@/db";
 import { FREE_DELIVERY_FROM, getDeliveryZone } from "@/data/delivery";
-import { getAllProducts } from "@/lib/catalog";
+import { products as seedProducts } from "@/data/products";
 import { MAX_QUANTITY } from "@/lib/limits";
 import { createOrder, getOrder, isPayable, markOrderPaid } from "./orders";
 import { inStockProduct, orderInput, placeOrder, reloadOrder, soldOutProduct, testDb } from "./testing";
@@ -48,7 +48,7 @@ describe("createOrder", () => {
 
   it("adds the delivery fee of the zone, and none above the free-delivery amount", async () => {
     const zone = getDeliveryZone("gijduvon")!;
-    const cheap = [...getAllProducts()]
+    const cheap = [...seedProducts]
       .filter((product) => product.inStock)
       .sort((a, b) => a.price - b.price)[0];
     expect(cheap.price).toBeLessThan(FREE_DELIVERY_FROM);

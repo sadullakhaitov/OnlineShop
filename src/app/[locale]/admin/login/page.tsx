@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { databaseKind } from "@/db";
 import { Link, redirect } from "@/i18n/navigation";
 import { DEV_ADMIN_PASSWORD, MIN_ADMIN_PASSWORD, getAdminPassword } from "@/server/config";
 import { isAdmin } from "@/server/admin/session";
@@ -33,7 +34,10 @@ export default async function AdminLoginPage({ params }: Props) {
         </div>
         <h1 className="mt-7 text-2xl font-semibold sm:text-[1.75rem]">{t("title")}</h1>
 
-        {password.state === "ready" ? (
+        {databaseKind() === "none" ? (
+          // Sessions live in the database; without one nobody can sign in.
+          <p className="mt-3 text-sm leading-relaxed text-muted">{t("noDatabase")}</p>
+        ) : password.state === "ready" ? (
           <>
             <p className="mt-2 text-sm leading-relaxed text-muted">{t("text")}</p>
             {password.isDefault && (

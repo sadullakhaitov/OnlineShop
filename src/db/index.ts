@@ -29,18 +29,27 @@ export function getDb(): Promise<Db> {
   return store.__multimediaDb;
 }
 
+export type DatabaseKind = "postgres" | "embedded" | "none";
+
+/** Where the data lives on this host. */
+export function databaseKind(): DatabaseKind {
+  if (process.env.DATABASE_URL) return "postgres";
+  // Serverless hosts have no disk to keep the embedded database on.
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) return "none";
+  return "embedded";
+}
+
 async function connect(): Promise<Db> {
-  const url = process.env.DATABASE_URL;
-  if (url) {
+  const kind = databaseKind();
+  if (kind === "postgres") {
     const { Pool } = await import("pg");
     const { drizzle } = await import("drizzle-orm/node-postgres");
-    const pool = new Pool({ connectionString: url, max: 5 });
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 5 });
     return drizzle(pool, { schema }) as unknown as Db;
   }
 
-  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    // Serverless hosts have no disk to keep the embedded database on.
-    throw new Error("DATABASE_URL is not set: orders and accounts need a PostgreSQL database on this host.");
+  if (kind === "none") {
+    throw new Error("DATABASE_URL is not set: orders, accounts and the admin panel need a PostgreSQL database on this host.");
   }
 
   return createLocalDb(path.join(process.cwd(), ".data", "pglite"));

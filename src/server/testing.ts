@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { createLocalDb, type Db } from "@/db";
 import { orders, type OrderStatus } from "@/db/schema";
-import { getAllProducts } from "@/lib/catalog";
+import { products as seedProducts } from "@/data/products";
 import { createOrder, type OrderInput, type OrderWithItems } from "./orders";
 
 /** Helpers for the automated tests: a throwaway database and ready-made orders. */
@@ -10,8 +10,9 @@ export function testDb(): Promise<Db> {
   return createLocalDb();
 }
 
-export const inStockProduct = getAllProducts().find((product) => product.inStock)!;
-export const soldOutProduct = getAllProducts().find((product) => !product.inStock)!;
+// A new database starts with the sample catalogue, so its products are known here.
+export const inStockProduct = seedProducts.find((product) => product.inStock)!;
+export const soldOutProduct = seedProducts.find((product) => !product.inStock)!;
 
 export const orderInput: OrderInput = {
   items: [{ id: inStockProduct.id, quantity: 1 }],

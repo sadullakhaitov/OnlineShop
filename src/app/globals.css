@@ -521,6 +521,48 @@
     transform: rotate(45deg) scale(1);
   }
 
+  /* An on/off switch: a checkbox with role="switch" */
+  .switch {
+    appearance: none;
+    position: relative;
+    display: inline-block;
+    width: 2.625rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    background: var(--faint);
+    cursor: pointer;
+    transition:
+      background-color 0.3s var(--ease),
+      opacity 0.3s var(--ease);
+  }
+
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 0.125rem;
+    left: 0.125rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+    transition: transform 0.3s var(--ease);
+  }
+
+  .switch:checked {
+    background: var(--success);
+  }
+
+  .switch:checked::after {
+    transform: translateX(1.125rem);
+  }
+
+  .switch:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
   /* ───────────── Motion ───────────── */
 
   /* Entrance on page load and on navigation; stagger with --enter-delay. */

@@ -14,9 +14,9 @@ import {
 } from "@/db/schema";
 import { deliveryFee, getDeliveryZone } from "@/data/delivery";
 import { routing } from "@/i18n/routing";
-import { getProductById } from "@/lib/catalog";
 import { MAX_LINES, MAX_QUANTITY } from "@/lib/limits";
 import { normalizePhone } from "@/lib/phone";
+import { loadCatalog } from "./catalog";
 
 /** What the checkout form sends. Prices are never part of it. */
 export const orderInputSchema = z.object({
@@ -90,9 +90,10 @@ export async function createOrder(db: Db, raw: unknown, options: CreateOrderOpti
   }
 
   // Prices and availability come from the catalogue, never from the browser.
+  const catalog = await loadCatalog(db);
   const unavailable: string[] = [];
   const lines = [...quantities].flatMap(([id, quantity]) => {
-    const product = getProductById(id);
+    const product = catalog.byId(id);
     if (!product || !product.inStock) {
       unavailable.push(id);
       return [];

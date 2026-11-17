@@ -13,6 +13,7 @@ import type { Locale } from "@/i18n/routing";
 import { formatDateTime, formatPrice } from "@/lib/format";
 import { enterDelay } from "@/lib/motion";
 import { formatPhone } from "@/lib/phone";
+import { getCatalog } from "@/server/catalog";
 import { getSiteUrl } from "@/server/config";
 import { getOrder, isPayable } from "@/server/orders";
 import { getPaymentUrl } from "@/server/payments/urls";
@@ -52,6 +53,7 @@ export default async function OrderPage({ params }: Props) {
   if (!order) notFound();
 
   const t = await getTranslations();
+  const catalog = await getCatalog();
   const pickup = order.deliveryType === "pickup";
   const zone = getDeliveryZone(order.zone);
   const online = order.paymentMethod !== "cash";
@@ -151,34 +153,43 @@ export default async function OrderPage({ params }: Props) {
               {t("order.items")}
             </h2>
             <ul className="mt-3 divide-y divide-hairline">
-              {order.items.map((item) => (
-                <li key={item.id} className="flex items-center gap-3.5 py-3.5">
-                  <Link
-                    href={`/product/${item.slug}`}
-                    tabIndex={-1}
-                    aria-hidden="true"
-                    className="tile grid size-16 shrink-0 place-items-center rounded-2xl"
-                  >
-                    <ProductArt kind={item.art as ArtKind} className="size-[74%] drop-shadow-md" />
-                  </Link>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-muted">{kinds[item.art as ArtKind]?.name[locale]}</p>
-                    <Link
-                      href={`/product/${item.slug}`}
-                      className="line-clamp-2 text-[0.9375rem] font-medium leading-snug transition-colors duration-300 hover:text-accent"
-                    >
-                      {item.title}
-                    </Link>
-                    <p className="mt-0.5 text-xs tabular-nums text-muted">
-                      {t("order.quantity", { count: item.quantity })} × {formatPrice(item.price)}
+              {order.items.map((item) => {
+                // The order keeps what was bought; the product itself may have left the shop since.
+                const listed = catalog.bySlug(item.slug) !== undefined;
+                const picture = <ProductArt kind={item.art as ArtKind} className="size-[74%] drop-shadow-md" />;
+                const tile = "tile grid size-16 shrink-0 place-items-center rounded-2xl";
+                return (
+                  <li key={item.id} className="flex items-center gap-3.5 py-3.5">
+                    {listed ? (
+                      <Link href={`/product/${item.slug}`} tabIndex={-1} aria-hidden="true" className={tile}>
+                        {picture}
+                      </Link>
+                    ) : (
+                      <div className={tile}>{picture}</div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-muted">{kinds[item.art as ArtKind]?.name[locale]}</p>
+                      {listed ? (
+                        <Link
+                          href={`/product/${item.slug}`}
+                          className="line-clamp-2 text-[0.9375rem] font-medium leading-snug transition-colors duration-300 hover:text-accent"
+                        >
+                          {item.title}
+                        </Link>
+                      ) : (
+                        <p className="line-clamp-2 text-[0.9375rem] font-medium leading-snug">{item.title}</p>
+                      )}
+                      <p className="mt-0.5 text-xs tabular-nums text-muted">
+                        {t("order.quantity", { count: item.quantity })} × {formatPrice(item.price)}
+                      </p>
+                    </div>
+                    <p className="whitespace-nowrap text-sm font-semibold tabular-nums sm:text-base">
+                      {formatPrice(item.price * item.quantity)}{" "}
+                      <span className="text-xs font-medium text-muted">{t("product.currency")}</span>
                     </p>
-                  </div>
-                  <p className="whitespace-nowrap text-sm font-semibold tabular-nums sm:text-base">
-                    {formatPrice(item.price * item.quantity)}{" "}
-                    <span className="text-xs font-medium text-muted">{t("product.currency")}</span>
-                  </p>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </section>
 

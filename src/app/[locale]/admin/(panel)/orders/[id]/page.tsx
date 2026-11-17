@@ -143,9 +143,9 @@ export default async function AdminOrderPage({ params }: Props) {
                     <ProductArt kind={item.art as ArtKind} className="size-11" />
                   </div>
                   <div className="min-w-0 flex-1">
+                    {/* The product's own page in the panel: it is there even when the shop no longer shows it. */}
                     <Link
-                      href={`/product/${item.slug}`}
-                      target="_blank"
+                      href={`/admin/products/${item.productId}`}
                       className="block truncate text-sm font-medium transition-colors duration-300 hover:text-accent"
                     >
                       {item.title}

@@ -5,9 +5,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { kinds, type SpecKey } from "@/data/products";
 import { routing, type Locale } from "@/i18n/routing";
-import { getAllProducts, getCategory, getProduct, getRelatedProducts } from "@/lib/catalog";
+import { getCategory } from "@/lib/catalog";
 import { discountPercent, formatPrice } from "@/lib/format";
 import { enterDelay, productArtName } from "@/lib/motion";
+import { getBuildSlugs, readCatalog } from "@/server/catalog";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { ProductArt } from "@/components/product/ProductArt";
@@ -15,19 +16,25 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Reveal } from "@/components/ui/Reveal";
 
+// A product page is made once and kept ready: while building for the products
+// known then, on the first visit for the others. The admin panel refreshes it
+// when a product changes; this is the fallback for changes made elsewhere, in
+// seconds. A page that is kept ready cannot ask for the request, which is why
+// it reads the catalogue with `readCatalog`.
+export const revalidate = 300;
+
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
 };
 
-export function generateStaticParams() {
-  return routing.locales.flatMap((locale) =>
-    getAllProducts().map((product) => ({ locale, slug: product.slug })),
-  );
+export async function generateStaticParams() {
+  const slugs = await getBuildSlugs();
+  return routing.locales.flatMap((locale) => slugs.map((slug) => ({ locale, slug })));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
-  const product = getProduct(slug);
+  const product = (await readCatalog()).bySlug(slug);
   if (!product) return {};
   const kind = kinds[product.art];
   return {
@@ -41,14 +48,15 @@ export default async function ProductPage({ params }: Props) {
   const locale = rawLocale as Locale;
   setRequestLocale(locale);
 
-  const product = getProduct(slug);
+  const catalog = await readCatalog();
+  const product = catalog.bySlug(slug);
   if (!product) notFound();
 
   const t = await getTranslations();
   const kind = kinds[product.art];
   const category = getCategory(product.category);
   const discount = discountPercent(product.price, product.oldPrice);
-  const related = getRelatedProducts(product, 5);
+  const related = catalog.related(product, 5);
 
   const specs: [string, string][] = [
     [t("productPage.brand"), product.brand],
@@ -107,11 +115,13 @@ export default async function ProductPage({ params }: Props) {
             <h1 className="mt-1 text-[1.75rem] font-semibold leading-tight sm:text-4xl">{product.title}</h1>
 
             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted">
-              <span className="flex items-center gap-1.5">
-                <Star className="size-4 fill-accent text-accent" strokeWidth={0} />
-                <span className="font-semibold text-ink">{product.rating.toFixed(1)}</span>
-                {t("product.reviews", { count: product.reviews })}
-              </span>
+              {product.reviews > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <Star className="size-4 fill-accent text-accent" strokeWidth={0} />
+                  <span className="font-semibold text-ink">{product.rating.toFixed(1)}</span>
+                  {t("product.reviews", { count: product.reviews })}
+                </span>
+              )}
               <span className="flex items-center gap-1.5">
                 <span className={`size-2 rounded-full ${product.inStock ? "bg-emerald-500" : "bg-faint"}`} />
                 {product.inStock ? t("productPage.inStock") : t("productPage.outOfStock")}

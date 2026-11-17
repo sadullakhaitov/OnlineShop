@@ -9,7 +9,7 @@ Buxoro shahri va tumanlari uchun maishiy texnika internet-do'koni.
 - Tailwind CSS v4; design tokens and the liquid glass system live in `src/app/globals.css`
 - next-intl: `uz` (default) and `ru`, texts in `messages/`
 - Light and dark themes (saved in the browser, follow the system by default)
-- PostgreSQL through Drizzle ORM for orders, customers and payments
+- PostgreSQL through Drizzle ORM for products, orders, customers and payments
 - Payme (Merchant API) and Click (SHOP API), sign-in by phone number and SMS code
 
 The same web app is meant to run as the Telegram Mini App, and the future
@@ -32,6 +32,8 @@ mobile app will talk to the same server routes.
 | `/uz/admin` | Admin panel: today's numbers and the orders that need attention |
 | `/uz/admin/orders` | All orders: status tabs, search by number, phone or name |
 | `/uz/admin/orders/[id]` | One order: status, payment, customer, history |
+| `/uz/admin/products` | All products: search, sections, "in stock" and "shown in the shop" switches |
+| `/uz/admin/products/new`, `/[id]` | Adding and editing a product |
 | `/uz/admin/login` | Admin sign-in |
 
 Server routes under `/api`:
@@ -58,13 +60,15 @@ src/app/[locale]/admin/   the admin panel with its own menu
 src/app/api/              server routes
 src/components/           layout, home, catalog, product, search, favorites,
                           cart, checkout, order, account, admin, ui
-src/data/                 sample categories and products, delivery zones and prices
+src/data/                 categories, product kinds, delivery zones and prices, and the
+                          sample products a new database starts with
 src/db/                   database tables and the connection
 src/i18n/                 locale routing
 src/lib/                  code shared with the browser: catalogue queries, cart,
                           favourites, phone numbers, formatting, theme, motion
-src/server/               server-only code: orders, sign-in, sessions, SMS, settings
-src/server/admin/         the admin panel: sign-in, order management, actions
+src/server/               server-only code: the catalogue, orders, sign-in, sessions,
+                          SMS, settings
+src/server/admin/         the admin panel: sign-in, orders, products, actions
 src/server/payments/      Payme and Click protocols, payment links, the simulator
 ```
 
@@ -76,25 +80,53 @@ settings at all the site still runs: see demo mode below.
 
 ## Database
 
-- Tables are described in `src/db/schema.ts`: customers, sessions, sign-in
-  codes, orders with their items and history, Payme and Click transactions,
-  admin sessions.
+- Tables are described in `src/db/schema.ts`: products, customers, sessions,
+  sign-in codes, orders with their items and history, Payme and Click
+  transactions, admin sessions.
 - **On your computer** nothing has to be installed. Without `DATABASE_URL` the
   site keeps an embedded PostgreSQL (PGlite) in `.data/` and creates the tables
   itself. Delete the folder to start from an empty shop.
 - **On hosting** set `DATABASE_URL` to a PostgreSQL database. `npm run build`
   applies the migrations before building. Serverless hosting (Vercel and the
   like) has no disk for the embedded database, so there `DATABASE_URL` is
-  required: without it the catalogue works, but ordering and sign-in answer
-  with an error.
+  required: without it the shop shows the built-in sample products, but
+  ordering, sign-in and the admin panel do not work.
 - After changing `src/db/schema.ts` run `npm run db:generate` and commit the
   new file in `drizzle/`.
 
-Products are still sample data in `src/data/products.ts`, with drawn
-illustrations instead of photos. Pages and orders never read that file
-directly: they go through `src/lib/catalog.ts`, so moving products into the
-database only means rewriting that one file. An order keeps its own copy of
-each product's name and price.
+## Products
+
+- Products live in the `products` table and are managed in the admin panel. A
+  new database starts with the 38 sample products from `src/data/products.ts`;
+  change, hide or replace them there, not in the file.
+- **Pictures are drawn illustrations**, one per kind of product (fridge, TV,
+  kettle and so on, 18 kinds). A product takes the picture and the short
+  description of its kind. Uploading the shop's own photos is not built yet.
+- **"In stock" is a switch, not a quantity.** The shop does not count pieces:
+  when the last one is sold, someone has to switch the product off.
+- A product is never deleted, only hidden: old orders keep pointing at it. An
+  order keeps its own copy of each product's name and price.
+- A product's code (`p-039`) and its address in the shop are given once and do
+  not change when the product is renamed, so links, carts and favourites keep
+  working.
+- New products have no rating, and the shop shows no stars for them. The
+  ratings of the sample products are sample numbers; there is no way for
+  customers to leave a review yet.
+- "Popular" on the home page and in the catalogue puts products marked as a
+  hit first, so the shop decides what leads.
+
+How the shop reads them: the server keeps all products in memory and answers
+every catalogue question from that copy (`src/lib/catalog.ts`). Before each
+use one small query checks a fingerprint of every product's code and version,
+and the copy is read again when it differs (`src/server/catalog.ts`). Every
+change to a product raises its version.
+
+With PostgreSQL the home page, the favourites page and the product pages are
+prepared ahead of time. They are refreshed at once when a product changes in
+the admin panel and at least every five minutes otherwise, so a change made
+straight in the database shows up within five minutes. Browsers are told not
+to reuse an old copy (`expireTime` in `next.config.ts`). A CDN in front of the
+site that caches pages may still show a change up to five minutes late.
 
 ## Orders
 
@@ -144,6 +176,15 @@ it, and search engines are told not to index it.
   cancel the order, return the money in the Payme or Click cabinet and press
   "Money returned"; a refund made in the Payme cabinet also reaches the site
   by itself.
+- **Products.** The list has a search by name or code, a section filter and
+  tabs for what is on sale, sold out or hidden. Two switches work right in the
+  list: "in stock" (off: the product is shown but cannot be bought) and "shown
+  in the shop" (off: the product disappears from the shop). The form asks for
+  the kind, section, brand, model, price, an optional old price for a
+  discount, a mark (hit or new), colour, warranty and specifications in both
+  languages; a specification written in one language is shown in both. When
+  two people edit the same product, the second save is refused instead of
+  silently undoing the first.
 
 ## Demo mode
 
@@ -212,11 +253,17 @@ stored only as hashes; the session cookie cannot be read by scripts.
 
 - `npm test` runs the automatic tests on an in-memory database: the Payme and
   Click protocols (including repeated and simultaneous requests, refunds and
-  wrong signatures), orders, sign-in and phone numbers.
+  wrong signatures), orders, sign-in, phone numbers, the admin sign-in, order
+  management, product management and the catalogue.
 - The whole path (cart, checkout, test payment, order page, sign-in, account)
   was walked through in a browser in demo mode, on desktop and phone sizes, in
   both languages and both themes; the payment routes were also called over
   HTTP against a real PostgreSQL server.
+- The admin panel was walked through the same way: orders from new to
+  delivered, payments by hand, and products (switches, a new product, a price
+  change, two people saving the same product), each time checking what the
+  shop shows afterwards. This was done on the embedded database and on a real
+  PostgreSQL server with the pages prepared ahead of time.
 - **Not tested against the real services:** Payme and Click have only seen
   requests built from their documentation, never their own sandboxes, and the
   Eskiz sender has never sent a real SMS. Expect small adjustments when the
@@ -254,7 +301,7 @@ npm run db:migrate   # apply migrations to DATABASE_URL by hand
 2. Catalogue, filters, search, product page, favourites (done)
 3. Cart, checkout, delivery, Click and Payme, customer account (done; the
    payment and SMS services wait for the shop's own keys)
-4. Admin panel and Telegram Mini App, then the mobile app
+4. Admin panel (done) and Telegram Mini App, then the mobile app
 
 Still placeholders: delivery prices and days, the shop's phone, e-mail,
 address and working hours, and the information pages listed in the footer

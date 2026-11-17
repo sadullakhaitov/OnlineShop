@@ -1,5 +1,5 @@
 import Form from "next/form";
-import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getDb } from "@/db";
 import type { OrderStatus } from "@/db/schema";
@@ -9,6 +9,7 @@ import { ORDER_STATUSES, listAdminOrders } from "@/server/admin/orders";
 import { requireAdmin } from "@/server/admin/session";
 import { AutoRefresh } from "@/components/admin/AutoRefresh";
 import { OrderRows } from "@/components/admin/OrderRow";
+import { Pagination } from "@/components/admin/Pagination";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -127,31 +128,7 @@ export default async function AdminOrdersPage({ params, searchParams }: Props) {
         <OrderRows orders={list.orders} />
       )}
 
-      {list.pages > 1 && (
-        <nav aria-label={t("orders.pagination")} className="flex items-center justify-center gap-3">
-          {list.page > 1 ? (
-            <Link href={href({ page: list.page - 1 })} className="btn btn-ghost h-10 px-3.5" aria-label={t("orders.prev")}>
-              <ChevronLeft className="size-4" strokeWidth={1.8} />
-            </Link>
-          ) : (
-            <span className="btn btn-ghost h-10 px-3.5 opacity-40" aria-hidden="true">
-              <ChevronLeft className="size-4" strokeWidth={1.8} />
-            </span>
-          )}
-          <span className="min-w-16 text-center text-sm tabular-nums text-muted">
-            {t("orders.page", { page: list.page, pages: list.pages })}
-          </span>
-          {list.page < list.pages ? (
-            <Link href={href({ page: list.page + 1 })} className="btn btn-ghost h-10 px-3.5" aria-label={t("orders.next")}>
-              <ChevronRight className="size-4" strokeWidth={1.8} />
-            </Link>
-          ) : (
-            <span className="btn btn-ghost h-10 px-3.5 opacity-40" aria-hidden="true">
-              <ChevronRight className="size-4" strokeWidth={1.8} />
-            </span>
-          )}
-        </nav>
-      )}
+      <Pagination page={list.page} pages={list.pages} href={(page) => href({ page })} />
     </div>
   );
 }

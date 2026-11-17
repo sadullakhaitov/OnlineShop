@@ -1,10 +1,11 @@
 import { categories } from "@/data/categories";
-import { kinds, products, type ArtKind, type Product } from "@/data/products";
+import { kinds, type ArtKind, type Product } from "@/data/products";
 import type { Locale } from "@/i18n/routing";
 
 /**
- * Catalogue queries. Pages only talk to these functions, so replacing the
- * sample data with a database later means rewriting this file alone.
+ * Catalogue queries over a list of products. This file knows nothing about
+ * where the products come from: `src/server/catalog.ts` reads them from the
+ * database and hands them over. The browser only uses the types and constants.
  */
 
 export const sortOptions = ["popular", "price-asc", "price-desc", "rating", "new"] as const;
@@ -23,6 +24,26 @@ export type CatalogQuery = {
 
 export const PAGE_SIZE = 12;
 
+/** What the cart and the checkout need to know about a product. */
+export type CartProduct = {
+  id: string;
+  slug: string;
+  title: string;
+  kind: string;
+  art: ArtKind;
+  price: number;
+  oldPrice?: number;
+  inStock: boolean;
+};
+
+export type SearchHit = {
+  slug: string;
+  title: string;
+  kind: string;
+  art: Product["art"];
+  price: number;
+};
+
 /** Lower-cases and unifies the apostrophe variants typed in Uzbek words (o‘, g‘). */
 function normalize(text: string): string {
   return text.toLowerCase().replace(/[ʻʼ‘’`´]/g, "'");
@@ -40,128 +61,111 @@ function matchesText(product: Product, text: string): boolean {
     .every((word) => haystack.includes(word));
 }
 
+// Products that compare as equal keep the order they were given in: newest first.
 const sorters: Record<SortOption, (a: Product, b: Product) => number> = {
-  popular: (a, b) => b.reviews - a.reviews,
+  // The shop's own "hit" mark comes first, so the shop decides what leads the home page.
+  popular: (a, b) => Number(b.badge === "hit") - Number(a.badge === "hit") || b.reviews - a.reviews,
   "price-asc": (a, b) => a.price - b.price,
   "price-desc": (a, b) => b.price - a.price,
   rating: (a, b) => b.rating - a.rating || b.reviews - a.reviews,
-  new: (a, b) => Number(b.badge === "new") - Number(a.badge === "new") || b.reviews - a.reviews,
+  new: (a, b) => Number(b.badge === "new") - Number(a.badge === "new") || sorters.popular(a, b),
 };
-
-export function findProducts(query: CatalogQuery = {}): Product[] {
-  const { q, category, brands, min, max, sale, inStock, sort = "popular" } = query;
-  return products
-    .filter((product) => {
-      if (category && product.category !== category) return false;
-      if (brands?.length && !brands.includes(product.brand)) return false;
-      if (min !== undefined && product.price < min) return false;
-      if (max !== undefined && product.price > max) return false;
-      if (sale && !product.oldPrice) return false;
-      if (inStock && !product.inStock) return false;
-      if (q && !matchesText(product, q)) return false;
-      return true;
-    })
-    .sort(sorters[sort]);
-}
-
-export function getProduct(slug: string): Product | undefined {
-  return products.find((product) => product.slug === slug);
-}
-
-export function getProductById(id: string): Product | undefined {
-  return products.find((product) => product.id === id);
-}
-
-/** What the cart and the checkout need to know about a product. */
-export type CartProduct = {
-  id: string;
-  slug: string;
-  title: string;
-  kind: string;
-  art: ArtKind;
-  price: number;
-  oldPrice?: number;
-  inStock: boolean;
-};
-
-/** Current data of the given products; ids that no longer exist are left out. */
-export function getCartProducts(ids: string[], locale: Locale): CartProduct[] {
-  return ids.flatMap((id) => {
-    const product = getProductById(id);
-    if (!product) return [];
-    return [
-      {
-        id: product.id,
-        slug: product.slug,
-        title: product.title,
-        kind: kinds[product.art].name[locale],
-        art: product.art,
-        price: product.price,
-        oldPrice: product.oldPrice,
-        inStock: product.inStock,
-      },
-    ];
-  });
-}
-
-export function getAllProducts(): Product[] {
-  return products;
-}
-
-export function getPopularProducts(limit: number): Product[] {
-  return [...products].sort(sorters.popular).slice(0, limit);
-}
-
-export function getRelatedProducts(product: Product, limit: number): Product[] {
-  const sameKind = products.filter((item) => item.id !== product.id && item.art === product.art);
-  const sameCategory = products.filter(
-    (item) => item.id !== product.id && item.art !== product.art && item.category === product.category,
-  );
-  return [...sameKind, ...sameCategory].slice(0, limit);
-}
-
-/** Brands in a category (or in the whole catalogue), biggest first. */
-export function getBrands(category?: string): { name: string; count: number }[] {
-  const counts = new Map<string, number>();
-  for (const product of products) {
-    if (category && product.category !== category) continue;
-    counts.set(product.brand, (counts.get(product.brand) ?? 0) + 1);
-  }
-  return [...counts.entries()]
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-}
-
-export function getCategoryCounts(): Record<string, number> {
-  const counts: Record<string, number> = {};
-  for (const product of products) {
-    counts[product.category] = (counts[product.category] ?? 0) + 1;
-  }
-  return counts;
-}
 
 export function getCategory(slug?: string) {
   return categories.find((category) => category.slug === slug);
 }
 
-export type SearchHit = {
-  slug: string;
-  title: string;
-  kind: string;
-  art: Product["art"];
-  price: number;
-};
+/** Everything the shop asks about its products. */
+export function createCatalog(products: Product[]) {
+  const byId = new Map(products.map((product) => [product.id, product]));
+  const bySlug = new Map(products.map((product) => [product.slug, product]));
 
-export function searchProducts(text: string, locale: Locale, limit = 6): SearchHit[] {
-  const q = text.trim();
-  if (q.length < 2) return [];
-  return findProducts({ q })
-    .slice(0, limit)
-    .map((product) => ({
-      slug: product.slug,
-      title: product.title,
-      kind: kinds[product.art].name[locale],
-      art: product.art,
-      price: product.price,
-    }));
+  function find(query: CatalogQuery = {}): Product[] {
+    const { q, category, brands, min, max, sale, inStock, sort = "popular" } = query;
+    return products
+      .filter((product) => {
+        if (category && product.category !== category) return false;
+        if (brands?.length && !brands.includes(product.brand)) return false;
+        if (min !== undefined && product.price < min) return false;
+        if (max !== undefined && product.price > max) return false;
+        if (sale && !product.oldPrice) return false;
+        if (inStock && !product.inStock) return false;
+        if (q && !matchesText(product, q)) return false;
+        return true;
+      })
+      .sort(sorters[sort]);
+  }
+
+  return {
+    all: (): Product[] => products,
+    find,
+    bySlug: (slug: string): Product | undefined => bySlug.get(slug),
+    byId: (id: string): Product | undefined => byId.get(id),
+
+    /** Current data of the given products; ids that no longer exist are left out. */
+    cartProducts(ids: string[], locale: Locale): CartProduct[] {
+      return ids.flatMap((id) => {
+        const product = byId.get(id);
+        if (!product) return [];
+        return [
+          {
+            id: product.id,
+            slug: product.slug,
+            title: product.title,
+            kind: kinds[product.art].name[locale],
+            art: product.art,
+            price: product.price,
+            oldPrice: product.oldPrice,
+            inStock: product.inStock,
+          },
+        ];
+      });
+    },
+
+    popular: (limit: number): Product[] => [...products].sort(sorters.popular).slice(0, limit),
+
+    related(product: Product, limit: number): Product[] {
+      const sameKind = products.filter((item) => item.id !== product.id && item.art === product.art);
+      const sameCategory = products.filter(
+        (item) => item.id !== product.id && item.art !== product.art && item.category === product.category,
+      );
+      return [...sameKind, ...sameCategory].slice(0, limit);
+    },
+
+    /** Brands in a category (or in the whole catalogue), biggest first. */
+    brands(category?: string): { name: string; count: number }[] {
+      const counts = new Map<string, number>();
+      for (const product of products) {
+        if (category && product.category !== category) continue;
+        counts.set(product.brand, (counts.get(product.brand) ?? 0) + 1);
+      }
+      return [...counts.entries()]
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    },
+
+    categoryCounts(): Record<string, number> {
+      const counts: Record<string, number> = {};
+      for (const product of products) {
+        counts[product.category] = (counts[product.category] ?? 0) + 1;
+      }
+      return counts;
+    },
+
+    search(text: string, locale: Locale, limit = 6): SearchHit[] {
+      const q = text.trim();
+      if (q.length < 2) return [];
+      return find({ q })
+        .slice(0, limit)
+        .map((product) => ({
+          slug: product.slug,
+          title: product.title,
+          kind: kinds[product.art].name[locale],
+          art: product.art,
+          price: product.price,
+        }));
+    },
+  };
 }
+
+export type Catalog = ReturnType<typeof createCatalog>;
