@@ -8,7 +8,7 @@ import { TELEGRAM_DARK, restoreTelegramMarks, whenWebApp, type WebApp } from "@/
 import { applyTheme } from "@/lib/theme";
 
 /** The page backgrounds of the two themes (`--bg` in globals.css). */
-const BACKGROUND = { light: "#f3eee8", dark: "#0b0b0d" };
+const BACKGROUND = { light: "#f4f4f5", dark: "#0c0c0e" };
 /** Checked once per visit: is this Telegram user a known customer? */
 const SIGN_IN_TRIED = "mm_tg_signin";
 
