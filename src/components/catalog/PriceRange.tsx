@@ -95,7 +95,7 @@ export function PriceRange({ bounds, min, max, labels, onCommit }: Props) {
 
   const field = (which: "low" | "high") => (
     // The word sits above the sum, so a long sum fits even in the narrow sidebar.
-    <label className="field flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-3 focus-within:border-accent">
+    <label className="field flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-2.5 focus-within:border-accent">
       <span className="text-[0.6875rem] leading-none text-faint">{which === "low" ? labels.from : labels.to}</span>
       <input
         inputMode="numeric"
@@ -115,7 +115,7 @@ export function PriceRange({ bounds, min, max, labels, onCommit }: Props) {
           }
         }}
         aria-label={`${which === "low" ? labels.from : labels.to}, ${labels.currency}`}
-        className="w-full min-w-0 bg-transparent text-sm font-medium tabular-nums outline-none placeholder:font-normal placeholder:text-faint"
+        className="w-full min-w-0 bg-transparent text-[0.8125rem] font-medium tabular-nums outline-none placeholder:font-normal placeholder:text-faint"
       />
     </label>
   );
@@ -146,7 +146,6 @@ export function PriceRange({ bounds, min, max, labels, onCommit }: Props) {
       </div>
       <div className="mt-3 flex items-center gap-2">
         {field("low")}
-        <span className="shrink-0 text-faint">–</span>
         {field("high")}
       </div>
     </div>
