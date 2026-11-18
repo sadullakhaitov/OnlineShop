@@ -1,11 +1,13 @@
 import {
   bigint,
   boolean,
+  date,
   doublePrecision,
   index,
   integer,
   jsonb,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -330,6 +332,23 @@ export const telegramMessages = pgTable(
       .on(table.createdAt)
       .where(sql`${table.sentAt} is null and ${table.failedAt} is null`),
   ],
+);
+
+/**
+ * How much customers looked for each product, day by day. A search that finds
+ * the product adds a point; opening it from the search results adds more.
+ * The home page shows the products found most in the last weeks.
+ */
+export const searchInterest = pgTable(
+  "search_interest",
+  {
+    productId: text("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    day: date("day", { mode: "string" }).notNull(),
+    score: integer("score").notNull().default(0),
+  },
+  (table) => [primaryKey({ columns: [table.productId, table.day] }), index("search_interest_day_idx").on(table.day)],
 );
 
 export type ProductRow = typeof products.$inferSelect;

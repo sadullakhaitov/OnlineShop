@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import type { SearchHit } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
+import { reportSearch } from "@/lib/search-track";
 import { ProductArt } from "@/components/product/ProductArt";
 
 const popular = ["Samsung", "Artel", "Xiaomi", "Dyson", "LG"];
@@ -140,7 +141,10 @@ export function SearchDialog() {
                         <li key={hit.slug}>
                           <Link
                             href={`/product/${hit.slug}`}
-                            onClick={close}
+                            onClick={() => {
+                              reportSearch({ slug: hit.slug });
+                              close();
+                            }}
                             className="flex items-center gap-3 rounded-2xl p-2 transition-colors duration-200 hover:bg-hairline"
                           >
                             <span className="tile grid size-14 shrink-0 place-items-center rounded-xl">

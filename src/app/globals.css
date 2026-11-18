@@ -764,6 +764,19 @@
     display: none;
   }
 
+  /* A row of chips that a mouse can drag sideways */
+  .drag-row[data-dragging] {
+    cursor: grabbing;
+  }
+
+  .drag-row[data-dragging] * {
+    pointer-events: none;
+  }
+
+  .fade-in {
+    animation: fade-in 0.35s var(--ease) backwards;
+  }
+
   /* ───────────── Overlays (search, filter sheet) ───────────── */
   .sheet-backdrop {
     animation: fade-in 0.35s var(--ease) backwards;

@@ -10,6 +10,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { PAGE_SIZE, createCatalog, getCategory, sortOptions, type SortOption } from "@/lib/catalog";
 import { gridDelay } from "@/lib/motion";
+import { reportSearch } from "@/lib/search-track";
 import { CatalogShell } from "./CatalogShell";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Breadcrumbs, type Crumb } from "@/components/ui/Breadcrumbs";
@@ -69,6 +70,11 @@ export function CatalogView({ products, query }: Props) {
   useEffect(() => {
     document.title = `${category ? category.name[locale] : t("title")} — Multimedia`;
   }, [category, locale, t]);
+
+  // A search shown here counts towards the products customers look for most.
+  useEffect(() => {
+    if (q.length >= 2) reportSearch({ q });
+  }, [q]);
 
   const crumbs: Crumb[] = [{ label: tp("home"), href: "/" }];
   if (category || q) {

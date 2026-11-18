@@ -1,7 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { Hero } from "@/components/home/Hero";
 import { PromoCards } from "@/components/home/PromoCards";
-import { CategoryChips } from "@/components/home/CategoryChips";
 import { PopularProducts } from "@/components/home/PopularProducts";
 import { Collections } from "@/components/home/Collections";
 import { Benefits } from "@/components/home/Benefits";
@@ -26,7 +25,6 @@ export default async function HomePage({ params }: Props) {
         <Hero />
         <PromoCards />
       </section>
-      <CategoryChips />
       <PopularProducts />
       <Collections />
       <Benefits />

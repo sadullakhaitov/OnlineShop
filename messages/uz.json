@@ -64,7 +64,9 @@
   },
   "popular": {
     "title": "Mashhur tovarlar",
-    "all": "Hammasini ko'rish"
+    "all": "Hammasini ko'rish",
+    "hint": "Xaridorlar do'konda eng ko'p qidirayotgan tovarlar",
+    "empty": "Bu bo'limda hozircha tovar yo'q"
   },
   "product": {
     "hit": "Xit savdo",
