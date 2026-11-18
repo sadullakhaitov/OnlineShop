@@ -764,6 +764,16 @@
     display: none;
   }
 
+  /*
+   * On moving to another page the router scrolls the new page's top edge to
+   * the top of the screen, which leaves it under the sticky header (and under
+   * Telegram's buttons). A margin taller than the header makes that scroll stop
+   * at the very top of the page instead.
+   */
+  .page-root > * {
+    scroll-margin-top: 100vh;
+  }
+
   /* A row of chips that a mouse can drag sideways */
   .drag-row[data-dragging] {
     cursor: grabbing;
