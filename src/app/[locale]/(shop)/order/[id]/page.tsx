@@ -1,3 +1,4 @@
+import { mapLinks } from "@/lib/maps";
 import { cache } from "react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
@@ -231,6 +232,17 @@ export default async function OrderPage({ params }: Props) {
                     </p>
                   ))}
                 </div>
+                {index === 0 && !pickup && order.lat !== null && order.lng !== null && (
+                  <a
+                    href={mapLinks(order.lat, order.lng).yandex}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-accent"
+                  >
+                    <MapPin className="size-4" strokeWidth={1.8} />
+                    {t("order.marked")}
+                  </a>
+                )}
               </section>
             ))}
           </div>

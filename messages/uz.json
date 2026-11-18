@@ -343,6 +343,17 @@
       "perMonth": "oyiga {sum} so'm",
       "summary": "{count} oy × {sum} so'm",
       "markup": "Narxga {percent}% qo'shiladi"
+    },
+    "location": {
+      "mark": "Joylashuvimni xaritada belgilash",
+      "finding": "Joylashuv aniqlanmoqda…",
+      "findMe": "Meni top",
+      "map": "Yetkazib berish joyi xaritasi",
+      "remove": "Belgini olib tashlash",
+      "hint": "Xaritani suring: kurer belgi turgan joyga keladi.",
+      "denied": "Joylashuvga ruxsat berilmadi. Uyingizni xaritada o'zingiz toping yoki telefon sozlamalarida ruxsat bering.",
+      "unavailable": "Joylashuvni aniqlab bo'lmadi. Uyingizni xaritada o'zingiz toping.",
+      "addressPlaceholder": "Uy, xonadon, mo'ljal (ixtiyoriy)"
     }
   },
   "order": {
@@ -414,7 +425,8 @@
     "loginHint": "Barcha buyurtmalaringizni bir joyda ko'rish uchun telefon raqamingiz bilan kiring.",
     "login": "Kabinetga kirish",
     "toAccount": "Buyurtmalarim",
-    "discount": "Promokod {code}"
+    "discount": "Promokod {code}",
+    "marked": "Joylashuv xaritada belgilangan"
   },
   "auth": {
     "title": "Kabinetga kirish",
@@ -695,7 +707,8 @@
         "system": "tizim"
       },
       "installment": "Muddatli to'lov",
-      "installmentValue": "{months} oy, oyiga {sum}"
+      "installmentValue": "{months} oy, oyiga {sum}",
+      "onMap": "Yandex xaritada"
     },
     "products": {
       "title": "Mahsulotlar",

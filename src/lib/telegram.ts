@@ -41,6 +41,16 @@ export type WebApp = {
   openLink(url: string): void;
   requestContact(callback: (shared: boolean, result?: { response?: string }) => void): void;
   BackButton: { show(): void; hide(): void; onClick(callback: Callback): void; offClick(callback: Callback): void };
+  /** Bot API 8.0: the phone's location, asked through Telegram itself. */
+  LocationManager?: {
+    isInited: boolean;
+    isLocationAvailable: boolean;
+    isAccessRequested: boolean;
+    isAccessGranted: boolean;
+    init(callback?: Callback): void;
+    getLocation(callback: (data: { latitude: number; longitude: number } | null) => void): void;
+    openSettings(): void;
+  };
   HapticFeedback?: { notificationOccurred(type: "error" | "success" | "warning"): void };
 };
 

@@ -1,3 +1,4 @@
+import { mapLinks } from "@/lib/maps";
 import type { Order, OrderItem, TelegramEvent } from "@/db/schema";
 import { getDeliveryZone } from "@/data/delivery";
 import { formatDateTime, formatPrice } from "@/lib/format";
@@ -96,6 +97,7 @@ const shopTexts = {
     fee: "Yetkazib berish",
     discount: "Promokod",
     installment: "🗓 Muddatli to'lov: {months} oy, oyiga {sum}",
+    map: "Xaritada ochish",
     free: "bepul",
     total: "JAMI",
     amount: "Summa",
@@ -120,6 +122,7 @@ const shopTexts = {
     fee: "Доставка",
     discount: "Промокод",
     installment: "🗓 Рассрочка: {months} мес., {sum} в месяц",
+    map: "Открыть на карте",
     free: "бесплатно",
     total: "ИТОГО",
     amount: "Сумма",
@@ -161,6 +164,10 @@ export function shopMessage(order: OrderForMessage, event: TelegramEvent, locale
     lines.push(`<b>🚚 ${t.delivery}</b>`);
     if (zone) lines.push(`📍 ${h(zone.name[locale])}`);
     if (order.address) lines.push(`🏠 ${h(order.address)}`);
+    if (order.lat !== null && order.lng !== null) {
+      const links = mapLinks(order.lat, order.lng);
+      lines.push(`🗺 <a href="${links.yandex}">${t.map}</a> · <a href="${links.google}">Google</a>`);
+    }
     lines.push("");
   }
 

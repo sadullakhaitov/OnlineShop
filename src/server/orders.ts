@@ -39,6 +39,8 @@ export const orderInputSchema = z.object({
   deliveryType: z.enum(["delivery", "pickup"]),
   zone: z.string().max(40).optional(),
   address: z.string().trim().max(300).optional(),
+  /** The delivery spot marked on the map; only places in Uzbekistan are taken. */
+  location: z.object({ lat: z.number().min(37).max(46), lng: z.number().min(55).max(74) }).optional(),
   comment: z.string().trim().max(500).optional(),
   paymentMethod: z.enum(["payme", "click", "cash"]),
   locale: z.enum(routing.locales),
@@ -101,7 +103,8 @@ export async function createOrder(
     input.deliveryType === "delivery" ? getDeliveryZone(input.zone) : undefined;
   if (input.deliveryType === "delivery") {
     if (!zone) fields.push("zone");
-    if (!input.address || input.address.length < 5) fields.push("address");
+    // A spot on the map tells the courier where; then the address may be short.
+    if (!input.location && (!input.address || input.address.length < 5)) fields.push("address");
   }
   if (!phone || fields.length > 0)
     return { ok: false, error: "invalid", fields };
@@ -187,7 +190,9 @@ export async function createOrder(
           locale: input.locale,
           deliveryType: input.deliveryType,
           zone: zone?.slug ?? null,
-          address: zone ? (input.address ?? null) : null,
+          address: zone ? (input.address || null) : null,
+          lat: zone && input.location ? Math.round(input.location.lat * 1e6) / 1e6 : null,
+          lng: zone && input.location ? Math.round(input.location.lng * 1e6) / 1e6 : null,
           comment: input.comment || null,
           paymentMethod: input.paymentMethod,
           subtotal,

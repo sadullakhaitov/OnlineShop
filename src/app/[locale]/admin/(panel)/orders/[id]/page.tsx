@@ -1,5 +1,6 @@
+import { mapLinks } from "@/lib/maps";
 import { notFound } from "next/navigation";
-import { ArrowUpRight, ChevronLeft, Phone } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, MapPin, Phone } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getDb } from "@/db";
 import type { OrderEvent, OrderStatus } from "@/db/schema";
@@ -309,6 +310,17 @@ export default async function AdminOrderPage({ params }: Props) {
               <p className="mt-1.5 text-sm leading-relaxed">
                 <span className="text-muted">{t("order.address")}: </span>
                 {order.address}
+              </p>
+            )}
+            {order.lat !== null && order.lng !== null && (
+              <p className="mt-2 flex flex-wrap gap-2">
+                <a href={mapLinks(order.lat, order.lng).yandex} target="_blank" rel="noreferrer" className="btn btn-ghost h-9 px-3.5 text-[0.8125rem]">
+                  <MapPin className="size-4" strokeWidth={1.8} />
+                  {t("order.onMap")}
+                </a>
+                <a href={mapLinks(order.lat, order.lng).google} target="_blank" rel="noreferrer" className="btn btn-ghost h-9 px-3.5 text-[0.8125rem]">
+                  Google Maps
+                </a>
               </p>
             )}
             {order.comment && (

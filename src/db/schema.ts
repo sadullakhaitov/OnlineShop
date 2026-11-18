@@ -136,6 +136,9 @@ export const orders = pgTable(
     /** Delivery zone slug from `src/data/delivery.ts`; empty for pickup. */
     zone: text("zone"),
     address: text("address"),
+    /** The spot the customer marked on the map for delivery, if they did */
+    lat: doublePrecision("lat"),
+    lng: doublePrecision("lng"),
     comment: text("comment"),
     paymentMethod: text("payment_method").$type<PaymentMethod>().notNull(),
     status: text("status").$type<OrderStatus>().notNull().default("new"),

@@ -5,6 +5,8 @@ import { useState } from "react";
 import { Banknote, CalendarClock, CreditCard, Store, TicketPercent, Truck, X } from "lucide-react";
 import { promoDiscount, type PromoTerms } from "@/lib/promo";
 import { monthlyPayment, type InstallmentTerms } from "@/lib/installment";
+import type { Spot } from "@/lib/locate";
+import { LocationPicker } from "./LocationPicker";
 import { useLocale, useTranslations } from "next-intl";
 import type { DeliveryType, PaymentMethod } from "@/db/schema";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -110,6 +112,8 @@ function CheckoutFields({ zones, freeFrom, methods, plans, customer, pickupAddre
   );
   const [zoneSlug, setZoneSlug] = useState(zones.some((zone) => zone.slug === saved.zone) ? text(saved.zone) : "");
   const [address, setAddress] = useState(text(saved.address));
+  /** The spot marked on the map; with it the address may be short */
+  const [spot, setSpot] = useState<Spot | null>(null);
   const [method, setMethod] = useState<PaymentMethod>(methods[0].method);
   /** Months to pay over, or null to pay at once */
   const [months, setMonths] = useState<number | null>(null);
@@ -168,7 +172,7 @@ function CheckoutFields({ zones, freeFrom, methods, plans, customer, pickupAddre
     if (name.trim().length < 2) problems.push("name");
     if (phone.length !== 9) problems.push("phone");
     if (delivery && !zone) problems.push("zone");
-    if (delivery && address.trim().length < 5) problems.push("address");
+    if (delivery && !spot && address.trim().length < 5) problems.push("address");
     return problems;
   }
 
@@ -199,6 +203,7 @@ function CheckoutFields({ zones, freeFrom, methods, plans, customer, pickupAddre
           deliveryType,
           zone: zone?.slug,
           address: delivery ? address.trim() : undefined,
+          location: delivery && spot ? spot : undefined,
           comment: comment.trim() || undefined,
           paymentMethod: method,
           locale,
@@ -404,7 +409,7 @@ function CheckoutFields({ zones, freeFrom, methods, plans, customer, pickupAddre
                   className="field"
                   autoComplete="street-address"
                   maxLength={300}
-                  placeholder={t("checkout.addressPlaceholder")}
+                  placeholder={spot ? t("checkout.location.addressPlaceholder") : t("checkout.addressPlaceholder")}
                   value={address}
                   onChange={(event) => {
                     setAddress(event.target.value);
@@ -418,6 +423,15 @@ function CheckoutFields({ zones, freeFrom, methods, plans, customer, pickupAddre
                     {errorOf("address")}
                   </p>
                 )}
+              </div>
+              <div className="sm:col-span-2">
+                <LocationPicker
+                  value={spot}
+                  onChange={(next) => {
+                    setSpot(next);
+                    if (next) clear("address");
+                  }}
+                />
               </div>
             </div>
           ) : (
