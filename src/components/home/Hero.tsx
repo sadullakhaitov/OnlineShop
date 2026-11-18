@@ -9,14 +9,16 @@ import type { ArtKind } from "@/data/products";
 
 type Slide = {
   key: "home" | "kitchen" | "climate";
-  /** Three illustrations: back left, centre, front right */
+  /** Three products from the shop: back left, centre, front right */
   art: [ArtKind, ArtKind, ArtKind];
+  /** Their photos, kept on the site under public/products */
+  photos: [string, string, string];
 };
 
 const slides: Slide[] = [
-  { key: "home", art: ["coffee", "fridge", "washer"] },
-  { key: "kitchen", art: ["blender", "oven", "airfryer"] },
-  { key: "climate", art: ["robot", "purifier", "ac"] },
+  { key: "home", art: ["coffee", "fridge", "washer"], photos: ["/products/p-007.webp", "/products/p-002.webp", "/products/p-039.webp"] },
+  { key: "kitchen", art: ["blender", "oven", "airfryer"], photos: ["/products/p-009.webp", "/products/p-044.webp", "/products/p-043.webp"] },
+  { key: "climate", art: ["robot", "purifier", "ac"], photos: ["/products/p-021.webp", "/products/p-027.webp", "/products/p-025.webp"] },
 ];
 
 const AUTOPLAY_MS = 6500;
@@ -89,14 +91,20 @@ export function Hero() {
               <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-white/25 to-transparent dark:from-white/5" />
               <ProductArt
                 kind={slide.art[0]}
+                image={slide.photos[0]}
+                eager={i === 0}
                 className="float absolute bottom-[38%] left-[2%] w-[30%] drop-shadow-xl sm:bottom-[44%] sm:left-0 sm:w-[34%]"
               />
               <ProductArt
                 kind={slide.art[1]}
+                image={slide.photos[1]}
+                eager={i === 0}
                 className="absolute bottom-2 right-[4%] w-[46%] drop-shadow-2xl sm:bottom-6 sm:right-[2%] sm:w-[62%]"
               />
               <ProductArt
                 kind={slide.art[2]}
+                image={slide.photos[2]}
+                eager={i === 0}
                 className="absolute bottom-0 left-[26%] w-[34%] drop-shadow-2xl sm:bottom-4 sm:left-[6%] sm:w-[44%]"
               />
             </div>

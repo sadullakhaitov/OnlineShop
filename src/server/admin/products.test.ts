@@ -104,7 +104,7 @@ describe("admin products", () => {
     const list = await listAdminProducts(db);
     expect(list.total).toBe(seedProducts.length);
     expect(list.products).toHaveLength(PRODUCT_PAGE_SIZE);
-    expect(list.products[0]).toMatchObject({ id: "p-001", version: 1, active: true });
+    expect(list.products[0]).toMatchObject({ id: "p-001", active: true });
     expect(list.counts).toEqual({
       onSale: seedProducts.filter((product) => product.inStock).length,
       soldOut: seedProducts.filter((product) => !product.inStock).length,

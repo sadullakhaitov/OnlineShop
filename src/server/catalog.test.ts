@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { eq } from "drizzle-orm";
 import type { Db } from "@/db";
+import { products } from "@/db/schema";
 import { products as seedProducts, specKeys } from "@/data/products";
 import type { ProductInput } from "@/lib/product-input";
 import { createProduct, setProductFlag, updateProduct } from "./admin/products";
@@ -45,7 +47,8 @@ describe("catalogue", () => {
 
     const product = first.byId("p-001")!;
     const row = { ...kettle, category: product.category, art: product.art, brand: product.brand, model: product.model };
-    const saved = await updateProduct(db, product.id, 1, { ...row, price: product.price + 100_000 });
+    const [{ version }] = await db.select({ version: products.version }).from(products).where(eq(products.id, product.id));
+    const saved = await updateProduct(db, product.id, version!, { ...row, price: product.price + 100_000 });
     expect(saved.ok).toBe(true);
 
     const second = await loadCatalog(db);
@@ -115,9 +118,9 @@ describe("catalogue", () => {
     if (!created.ok) throw new Error("no product");
     const catalog = await loadCatalog(db);
 
-    const popular = catalog.popular(10);
     const hits = seedProducts.filter((item) => item.badge === "hit").length + 1;
-    expect(popular.slice(0, Math.min(hits, 10)).every((item) => item.badge === "hit")).toBe(true);
+    const popular = catalog.popular(hits + 2);
+    expect(popular.slice(0, hits).every((item) => item.badge === "hit")).toBe(true);
     expect(popular.map((item) => item.id)).toContain(created.product.id);
   });
 });
