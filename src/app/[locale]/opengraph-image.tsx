@@ -23,16 +23,16 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
           flexDirection: "column",
           justifyContent: "center",
           padding: "80px",
-          background: "linear-gradient(135deg, #f8f1e6 0%, #efe4d4 55%, #e2be96 100%)",
-          color: "#16130f",
+          background: "linear-gradient(135deg, #ffffff 0%, #f4f4f5 60%, #fde2e3 100%)",
+          color: "#111113",
         }}
       >
-        <div style={{ display: "flex", fontSize: 96, fontWeight: 700, letterSpacing: -3 }}>
-          <span>multi</span>
-          <span style={{ color: "#a8743c" }}>media</span>
+        <div style={{ display: "flex", fontSize: 96, fontWeight: 800, fontStyle: "italic", letterSpacing: -2 }}>
+          <span style={{ color: "#e10a14" }}>MULTI</span>
+          <span>MEDIA</span>
         </div>
         <div style={{ marginTop: 24, fontSize: 52, fontWeight: 600 }}>{title}</div>
-        <div style={{ marginTop: 12, fontSize: 36, color: "#6b6258" }}>{note}</div>
+        <div style={{ marginTop: 12, fontSize: 36, color: "#5f5f66" }}>{note}</div>
       </div>
     ),
     size,

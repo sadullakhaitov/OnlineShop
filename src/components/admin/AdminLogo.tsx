@@ -7,10 +7,10 @@ export function AdminLogo() {
 
   return (
     <Link href="/admin" className="group flex items-center gap-2 leading-none">
-      <span className="text-[1.3rem] font-semibold tracking-[-0.045em] text-ink">
-        multi
-        <span className="text-accent transition-opacity duration-300 group-hover:opacity-70">media</span>
-      </span>
+      {/* eslint-disable-next-line @next/next/no-img-element -- the shop's logo, one version per theme */}
+      <img src="/logo.png" alt="Multimedia" width={640} height={79} className="h-5 w-auto dark:hidden" />
+      {/* eslint-disable-next-line @next/next/no-img-element -- the same logo for the dark theme */}
+      <img src="/logo-dark.png" alt="Multimedia" width={640} height={79} className="hidden h-5 w-auto dark:block" />
       <span className="rounded-full bg-accent-soft px-2 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.08em] text-accent">
         {t("label")}
       </span>
