@@ -4,7 +4,7 @@ import type { Db } from "@/db";
 import { products, type ProductRow } from "@/db/schema";
 import { categories } from "@/data/categories";
 import { artKinds, colorKeys, slugify, specKeys, type ProductSpecs, type SpecKey } from "@/data/products";
-import { PRODUCT_LIMITS, type KindHints, type ProductField, type ProductInput } from "@/lib/product-input";
+import { isImageAddress, PRODUCT_LIMITS, type KindHints, type ProductField, type ProductInput } from "@/lib/product-input";
 
 /** What the admin panel reads and changes in products. */
 
@@ -40,13 +40,7 @@ const inputSchema = z.object({
     .string()
     .trim()
     .max(PRODUCT_LIMITS.image)
-    .refine((value) => {
-      try {
-        return new URL(value).protocol === "https:";
-      } catch {
-        return false;
-      }
-    })
+    .refine(isImageAddress)
     .nullable(),
   stock: z.number().int().min(0).max(PRODUCT_LIMITS.maxStock).nullable(),
   // Only the specifications the shop knows how to name.

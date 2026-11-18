@@ -95,7 +95,7 @@ export default async function ProductPage({ params }: Props) {
     brand: { "@type": "Brand", name: product.brand },
     category: kind.name[locale],
     description: kind.about[locale],
-    ...(product.image ? { image: product.image } : {}),
+    ...(product.image ? { image: new URL(product.image, publicSiteUrl()).href } : {}),
     ...(reviews.length > 0
       ? { aggregateRating: { "@type": "AggregateRating", ratingValue: product.rating, reviewCount: product.reviews } }
       : {}),

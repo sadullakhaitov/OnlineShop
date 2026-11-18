@@ -19,7 +19,7 @@ import type { ProductRow } from "@/db/schema";
 import { Link, useRouter } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { discountPercent, formatPrice } from "@/lib/format";
-import { PRODUCT_LIMITS, type KindHints, type ProductField, type ProductInput } from "@/lib/product-input";
+import { isImageAddress, PRODUCT_LIMITS, type KindHints, type ProductField, type ProductInput } from "@/lib/product-input";
 import { saveProductAction, type ProductSaveResult } from "@/server/admin/actions";
 import { ProductArt } from "@/components/product/ProductArt";
 
@@ -170,7 +170,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
     if (!values.model.trim()) fields.push("model");
     if (price < PRODUCT_LIMITS.minPrice || price > PRODUCT_LIMITS.maxPrice) fields.push("price");
     if (values.oldPrice && (oldPrice <= price || oldPrice > PRODUCT_LIMITS.maxPrice)) fields.push("oldPrice");
-    if (values.image.trim() && !/^https:\/\/\S+$/.test(values.image.trim())) fields.push("image");
+    if (values.image.trim() && !isImageAddress(values.image.trim())) fields.push("image");
     return fields;
   };
 
@@ -641,7 +641,7 @@ export function ProductForm({ product, hints, added = false, children }: Props) 
             {values.art && (
               <ProductArt
                 kind={values.art}
-                image={/^https:\/\//.test(values.image.trim()) ? values.image.trim() : null}
+                image={isImageAddress(values.image.trim()) ? values.image.trim() : null}
                 className={`absolute inset-[11%] size-[78%] drop-shadow-lg ${values.inStock ? "" : "opacity-50 grayscale"}`}
               />
             )}

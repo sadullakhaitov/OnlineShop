@@ -51,3 +51,17 @@ export type KindHint = {
 };
 
 export type KindHints = Record<ArtKind, KindHint>;
+
+/**
+ * A photo is an https address on another site, or one of the shop's own
+ * photos, served from /products/ on this site.
+ */
+export function isImageAddress(value: string): boolean {
+  if (/^\/products\/[a-z0-9][a-z0-9._-]*\.(webp|png|jpe?g|avif)$/i.test(value)) return true;
+  if (!/^https:\/\/\S+$/.test(value)) return false;
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}

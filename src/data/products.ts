@@ -358,9 +358,46 @@ export function slugify(value: string): string {
     .replace(/^-|-$/g, "");
 }
 
+/**
+ * The sample products that have a photo of their own, kept on this site under
+ * public/products. The rest are drawn until the shop adds a photo.
+ */
+const photographed = new Set([
+  "p-002",
+  "p-004",
+  "p-005",
+  "p-007",
+  "p-008",
+  "p-010",
+  "p-011",
+  "p-012",
+  "p-014",
+  "p-016",
+  "p-017",
+  "p-018",
+  "p-019",
+  "p-020",
+  "p-021",
+  "p-022",
+  "p-023",
+  "p-025",
+  "p-027",
+  "p-028",
+  "p-029",
+  "p-030",
+  "p-032",
+  "p-033",
+  "p-034",
+  "p-035",
+  "p-036",
+  "p-037",
+  "p-038",
+]);
+
 export const products: Product[] = seeds.map((seed, index) => ({
   ...seed,
   id: `p-${String(index + 1).padStart(3, "0")}`,
+  ...(photographed.has(`p-${String(index + 1).padStart(3, "0")}`) ? { image: `/products/p-${String(index + 1).padStart(3, "0")}.webp` } : {}),
   slug: slugify(`${seed.brand} ${seed.model}`),
   title: `${seed.brand} ${seed.model}`,
   inStock: seed.inStock ?? true,
