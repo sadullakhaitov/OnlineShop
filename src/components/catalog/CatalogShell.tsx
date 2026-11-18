@@ -6,6 +6,7 @@ import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { sortOptions } from "@/lib/catalog";
 import { Select } from "@/components/ui/Select";
+import { PriceRange } from "./PriceRange";
 import { enterDelay } from "@/lib/motion";
 
 type Option = { value: string; label: string; count: number };
@@ -15,6 +16,8 @@ type Props = {
   total: number;
   categories: Option[];
   brands: Option[];
+  /** The cheapest and the dearest price in the chosen category, for the price slider */
+  priceBounds: { min: number; max: number };
   /** The filters in the address; empty in the copy of the page made in advance. */
   searchParams: URLSearchParams;
   children: React.ReactNode;
@@ -32,8 +35,9 @@ function setQuery(query: string) {
 /** Brands shown before "show all" is pressed. */
 const BRAND_LIMIT = 6;
 
-export function CatalogShell({ title, total, categories, brands, searchParams, children }: Props) {
+export function CatalogShell({ title, total, categories, brands, priceBounds, searchParams, children }: Props) {
   const t = useTranslations("catalog");
+  const tProduct = useTranslations("product");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [allBrands, setAllBrands] = useState(false);
 
@@ -117,24 +121,16 @@ export function CatalogShell({ title, total, categories, brands, searchParams, c
         </ul>
       </fieldset>
 
-      <form
-        key={`${min}-${max}`}
-        onSubmit={(event) => {
-          event.preventDefault();
-          const data = new FormData(event.currentTarget);
-          const clean = (value: FormDataEntryValue | null) => String(value ?? "").replace(/\D/g, "");
-          update({ min: clean(data.get("min")) || null, max: clean(data.get("max")) || null });
-        }}
-      >
-        <p className="mb-3 text-sm font-semibold">{t("price")}</p>
-        <div className="flex items-center gap-2">
-          <input name="min" inputMode="numeric" defaultValue={min} placeholder={t("from")} aria-label={t("from")} className="field" />
-          <input name="max" inputMode="numeric" defaultValue={max} placeholder={t("to")} aria-label={t("to")} className="field" />
-        </div>
-        <button type="submit" className="btn btn-ghost mt-2 h-10 w-full">
-          {t("apply")}
-        </button>
-      </form>
+      <div>
+        <p className="mb-2 text-sm font-semibold">{t("price")}</p>
+        <PriceRange
+          bounds={priceBounds}
+          min={min ? Number(min) : null}
+          max={max ? Number(max) : null}
+          labels={{ from: t("from"), to: t("to"), currency: tProduct("currency"), slider: t("price") }}
+          onCommit={(low, high) => update({ min: low === null ? null : String(low), max: high === null ? null : String(high) })}
+        />
+      </div>
 
       <fieldset>
         <legend className="mb-3 text-sm font-semibold">{t("brands")}</legend>

@@ -62,6 +62,8 @@ export function CatalogView({ products, query }: Props) {
   const visible = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const counts = catalog.categoryCounts();
+  const prices = catalog.find({ category: category?.slug }).map((product) => product.price);
+  const priceBounds = prices.length > 0 ? { min: Math.min(...prices), max: Math.max(...prices) } : { min: 0, max: 0 };
   const title = q ? t("searchTitle", { q }) : category ? category.name[locale] : t("allProducts");
 
   useEffect(() => {
@@ -94,6 +96,7 @@ export function CatalogView({ products, query }: Props) {
         title={title}
         total={items.length}
         searchParams={sp}
+        priceBounds={priceBounds}
         categories={categories.map((item) => ({
           value: item.slug,
           label: item.name[locale],
