@@ -34,7 +34,8 @@ function ProductRow({ product }: { product: Product }) {
           <p className="flex items-center gap-2">
             <Link
               href={href}
-              className={`truncate text-[0.9375rem] font-medium transition-colors duration-300 hover:text-accent ${
+              title={title}
+              className={`line-clamp-2 text-[0.9375rem] font-medium lg:line-clamp-1 transition-colors duration-300 hover:text-accent ${
                 state === "hidden" ? "text-muted" : ""
               }`}
             >
@@ -52,7 +53,7 @@ function ProductRow({ product }: { product: Product }) {
               </span>
             )}
           </p>
-          <p className="mt-0.5 truncate text-xs text-muted">
+          <p className="mt-0.5 text-xs text-muted lg:truncate">
             {kinds[product.art].name[locale]}
             {category && ` · ${category}`} · {t("code", { id: product.id.toUpperCase() })}
             {product.stock !== null && ` · ${t("pieces", { count: product.stock })}`}

@@ -52,10 +52,9 @@ export function OrderRow({ order }: { order: OrderWithItems }) {
           </div>
           <AdminStatusBadge status={order.status} deliveryType={order.deliveryType} />
         </div>
-        <p className="mt-2.5 truncate text-sm">
-          {order.name} <span className="text-muted">· {formatPhone(order.phone)}</span>
-        </p>
-        <p className="mt-0.5 truncate text-xs text-muted">
+        <p className="mt-2.5 break-words text-sm">{order.name}</p>
+        <p className="mt-0.5 text-xs tabular-nums text-muted">{formatPhone(order.phone)}</p>
+        <p className="mt-1 line-clamp-2 text-xs text-muted">
           {summary}
           {place && ` · ${place}`}
         </p>
@@ -66,24 +65,27 @@ export function OrderRow({ order }: { order: OrderWithItems }) {
       </div>
 
       {/* Wide screens */}
-      <div className="hidden grid-cols-[7.5rem_minmax(0,1fr)_minmax(0,1.25fr)_8.5rem_10rem_9.5rem] items-center gap-4 lg:grid">
+      <div className="hidden grid-cols-[7rem_minmax(0,1fr)_minmax(0,1.4fr)_10.5rem_minmax(6rem,auto)] items-center gap-4 lg:grid">
         <div>
           <p className="text-sm font-semibold tabular-nums">№{order.number}</p>
           <p className="mt-0.5 text-xs text-muted">{date}</p>
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm">{order.name}</p>
+          <p className="truncate text-sm" title={order.name}>{order.name}</p>
           <p className="mt-0.5 text-xs tabular-nums text-muted">{formatPhone(order.phone)}</p>
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm">{summary}</p>
+          <p className="truncate text-sm" title={summary}>{summary}</p>
           <p className="mt-0.5 truncate text-xs text-muted">
             {t("items", { count: pieces })}
             {place && ` · ${place}`}
           </p>
         </div>
-        <p className="text-right text-sm font-semibold tabular-nums">{total}</p>
-        <PaymentNote order={order} className="text-xs font-medium" />
+        {/* The sum with the state of its payment under it */}
+        <div className="text-right">
+          <p className="text-sm font-semibold tabular-nums">{total}</p>
+          <PaymentNote order={order} className="mt-0.5 block text-xs font-medium" />
+        </div>
         <div className="flex justify-end">
           <AdminStatusBadge status={order.status} deliveryType={order.deliveryType} />
         </div>

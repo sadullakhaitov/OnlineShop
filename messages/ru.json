@@ -562,7 +562,7 @@
       "todayOrders": "Заказы за сегодня",
       "todayAmount": "на {amount} сум",
       "todayRevenue": "Выручка за сегодня",
-      "revenueHint": "оплаченные заказы",
+      "revenueHint": "только оплаченные заказы",
       "waiting": "Ждут подтверждения",
       "waitingHint": "новые заказы",
       "delivering": "В пути или готовы",
@@ -571,9 +571,9 @@
       "chart": "Выручка по дням",
       "chartHint": "{from} – {to}, в сумах",
       "chartDay": "{date}: {amount} сум, заказов: {orders}",
-      "chartEmpty": "За этот период оплат не было.",
-      "week": "7 дней",
-      "month": "30 дней",
+      "chartEmpty": "За этот период оплат не было",
+      "week": "Выручка за 7 дней",
+      "month": "Выручка за 30 дней",
       "periodOrders": "Заказов: {count}",
       "attention": "Требуют внимания",
       "fresh": "Нужно подтвердить",
@@ -589,7 +589,9 @@
       "colRevenue": "Выручка, сум",
       "mln": "{value} млн",
       "thousand": "{value} тыс.",
-      "open": "Открыть"
+      "open": "Открыть",
+      "periodPlaced": "за период оформлено заказов: {count}",
+      "chartEmptyHint": "Оплаченный заказ или отмеченная оплата появятся здесь"
     },
     "orders": {
       "title": "Заказы",

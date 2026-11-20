@@ -562,7 +562,7 @@
       "todayOrders": "Bugungi buyurtmalar",
       "todayAmount": "{amount} so'mlik",
       "todayRevenue": "Bugungi tushum",
-      "revenueHint": "to'langan buyurtmalar",
+      "revenueHint": "faqat to'langan buyurtmalar",
       "waiting": "Tasdiq kutmoqda",
       "waitingHint": "yangi buyurtmalar",
       "delivering": "Yo'lda yoki tayyor",
@@ -571,9 +571,9 @@
       "chart": "Kunlik tushum",
       "chartHint": "{from} – {to}, so'mda",
       "chartDay": "{date}: {amount} so'm, {orders} ta buyurtma",
-      "chartEmpty": "Bu davrda to'lov bo'lmagan.",
-      "week": "7 kun",
-      "month": "30 kun",
+      "chartEmpty": "Bu davrda to'lov bo'lmagan",
+      "week": "7 kunlik tushum",
+      "month": "30 kunlik tushum",
       "periodOrders": "{count} ta buyurtma",
       "attention": "E'tibor talab qiladi",
       "fresh": "Tasdiqlash kerak",
@@ -589,7 +589,9 @@
       "colRevenue": "Tushum, so'm",
       "mln": "{value} mln",
       "thousand": "{value} ming",
-      "open": "Ochish"
+      "open": "Ochish",
+      "periodPlaced": "shu davrda {count} ta buyurtma berilgan",
+      "chartEmptyHint": "Buyurtma to'langanda yoki to'lov belgilanganda shu yerda ko'rinadi"
     },
     "orders": {
       "title": "Buyurtmalar",

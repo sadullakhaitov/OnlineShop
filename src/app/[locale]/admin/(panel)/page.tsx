@@ -135,7 +135,7 @@ export default async function AdminDashboardPage({ params }: Props) {
               <dd className="mt-2">
                 <span className="text-xl font-semibold tracking-tight">{formatPrice(period.revenue)}</span>
                 <span className="ml-1.5 text-xs font-medium text-muted">{currency}</span>
-                <span className="mt-1 block text-xs text-muted">{t("periodOrders", { count: period.orders })}</span>
+                <span className="mt-1 block text-xs text-muted">{t("periodPlaced", { count: period.orders })}</span>
               </dd>
             </div>
           ))}

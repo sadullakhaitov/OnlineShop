@@ -148,7 +148,7 @@ export default async function AdminOrderPage({ params }: Props) {
                     {/* The product's own page in the panel: it is there even when the shop no longer shows it. */}
                     <Link
                       href={`/admin/products/${item.productId}`}
-                      className="block truncate text-sm font-medium transition-colors duration-300 hover:text-accent"
+                      className="line-clamp-2 block break-words text-sm font-medium transition-colors duration-300 hover:text-accent"
                     >
                       {item.title}
                     </Link>
